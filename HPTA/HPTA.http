@@ -1,0 +1,6 @@
+@HPTA_HostAddress = http://localhost:5194
+
+GET {{HPTA_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
