@@ -1,0 +1,17 @@
+{
+  "clientID": "fdc10356-3e76-479f-9aa3-1485050dd9e4",
+  "authority": "https://devonhpta.b2clogin.com/tfp",
+  "redirectUri": "http://localhost:4200/",
+  "cacheLocation": "localStorage",
+  "protectedResourceMap": [
+    [
+      "http://localhost:4200",
+      [
+        "https://devonhpta.onmicrosoft.com/surveys/api/survey.read",
+        "https://devonhpta.onmicrosoft.com/surveys/api/survey.write",
+        "https://devonhpta.onmicrosoft.com/surveys/api/category.read",
+        "https://devonhpta.onmicrosoft.com/surveys/api/category.write"
+      ]
+    ]
+  ]
+}
