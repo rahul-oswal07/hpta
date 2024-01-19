@@ -3,15 +3,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System.Reflection;
 
-namespace HPTA.Data
+namespace HPTA.Repositories
 {
-    public class HPTADbContext(DbContextOptions options) : DbContext(options)
+    public partial class HPTADbContext(DbContextOptions options) : DbContext(options)
     {
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             SetDefaultFieldSize(modelBuilder, 50);
             base.OnModelCreating(modelBuilder);
-
         }
 
         private static void SetDefaultFieldSize(ModelBuilder builder, int size)
