@@ -1,7 +1,7 @@
-﻿using HPTA.Data.Attributes;
+﻿using HPTA.Data.Configurations;
+using HPTA.Repositories.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using System.Reflection;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace HPTA.Repositories
 {
@@ -9,18 +9,29 @@ namespace HPTA.Repositories
     {
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            SetDefaultFieldSize(modelBuilder, 50);
+            modelBuilder.SetDefaultFieldSize(50);
+            modelBuilder.SetShadowProperties();
+            modelBuilder.SetGlobalQueryFilters();
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AnswerConfiguration).Assembly);
             base.OnModelCreating(modelBuilder);
         }
 
-        private static void SetDefaultFieldSize(ModelBuilder builder, int size)
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
-            foreach (IMutableProperty property in builder.Model.GetEntityTypes()
-               .SelectMany(t => t.GetProperties()).Where(p => p.ClrType == typeof(string) && p.PropertyInfo != null && !p.PropertyInfo.GetCustomAttributes().Any(c => c is IsMaxStringLengthAttribute)))
-            {
-                if (!property.GetMaxLength().HasValue)
-                    property.SetMaxLength(size);
-            }
+            configurationBuilder.Conventions.Remove(typeof(CascadeDeleteConvention));
+            configurationBuilder.Conventions.Remove(typeof(SqlServerOnDeleteConvention));
+        }
+
+        public override int SaveChanges()
+        {
+            ChangeTracker.SetShadowProperties();
+            return base.SaveChanges();
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            ChangeTracker.SetShadowProperties();
+            return await base.SaveChangesAsync(cancellationToken);
         }
     }
 }

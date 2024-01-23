@@ -1,0 +1,26 @@
+[
+    {
+        "Id": 1,
+        "Name": "Strategic Alignment"
+    },
+    {
+        "Id": 2,
+        "Name": "Safe Environment"
+    },
+    {
+        "Id": 3,
+        "Name": "Ways of Working"
+    },
+    {
+        "Id": 4,
+        "Name": "Growth Mindset"
+    },
+    {
+        "Id": 5,
+        "Name": "Ownership"
+    },
+    {
+        "Id": 6,
+        "Name": "Culture"
+    }
+]

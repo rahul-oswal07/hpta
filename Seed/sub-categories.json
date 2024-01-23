@@ -1,0 +1,102 @@
+[
+    {
+        "Id": 1,
+        "Name": "Communication",
+        "CategoryId": 1
+    },
+    {
+        "Id": 2,
+        "Name": "Goal Alignment",
+        "CategoryId": 1
+    },
+    {
+        "Id": 3,
+        "Name": "Trust",
+        "CategoryId": 2
+    },
+    {
+        "Id": 4,
+        "Name": "Collaboration",
+        "CategoryId": 2
+    },
+    {
+        "Id": 5,
+        "Name": "Inclusivity",
+        "CategoryId": 2
+    },
+    {
+        "Id": 6,
+        "Name": "Diversity",
+        "CategoryId": 2
+    },
+    {
+        "Id": 7,
+        "Name": "Fear of Failure",
+        "CategoryId": 2
+    },
+    {
+        "Id": 8,
+        "Name": "Adaptability",
+        "CategoryId": 3
+    },
+    {
+        "Id": 9,
+        "Name": "Decision Making",
+        "CategoryId": 3
+    },
+    {
+        "Id": 10,
+        "Name": "Continuous Improvement",
+        "CategoryId": 4
+    },
+    {
+        "Id": 11,
+        "Name": "Professional Development",
+        "CategoryId": 4
+    },
+    {
+        "Id": 12,
+        "Name": "Rapid Experimentation & Risk taking",
+        "CategoryId": 4
+    },
+    {
+        "Id": 13,
+        "Name": "Innovation",
+        "CategoryId": 4
+    },
+    {
+        "Id": 14,
+        "Name": "Accountability",
+        "CategoryId": 5
+    },
+    {
+        "Id": 15,
+        "Name": "Quality",
+        "CategoryId": 5
+    },
+    {
+        "Id": 16,
+        "Name": "Stakeholder Management",
+        "CategoryId": 5
+    },
+    {
+        "Id": 17,
+        "Name": "Leadership",
+        "CategoryId": 5
+    },
+    {
+        "Id": 18,
+        "Name": "Empowerment",
+        "CategoryId": 5
+    },
+    {
+        "Id": 19,
+        "Name": "Celebration & Recognition",
+        "CategoryId": 6
+    },
+    {
+        "Id": 20,
+        "Name": "Core Values",
+        "CategoryId": 6
+    }
+]
