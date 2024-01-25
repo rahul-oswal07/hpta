@@ -1,0 +1,142 @@
+[
+    {
+        "Id": 1,
+        "Text": "Is the mission (vision) for the organization clearly articulated & communicated by the leadership?",
+        "SubCategoryId": 1
+    },
+    {
+        "Id": 2,
+        "Text": "Are you able to communicate clearly with the team members?",
+        "SubCategoryId": 1
+    },
+    {
+        "Id": 3,
+        "Text": "Are the goals & objectives for the team clear?",
+        "SubCategoryId": 2
+    },
+    {
+        "Id": 4,
+        "Text": "Are you clear how your work helps achieve team’s goals?",
+        "SubCategoryId": 2
+    },
+    {
+        "Id": 5,
+        "Text": "Do you feel safe expressing your opinions, ideas during team meetings, discussions?",
+        "SubCategoryId": 3
+    },
+    {
+        "Id": 6,
+        "Text": "Do team members display high levels of cooperation and mutual support?",
+        "SubCategoryId": 4
+    },
+    {
+        "Id": 7,
+        "Text": "Are the ideas considered on their merit rather than from whom they are coming?",
+        "SubCategoryId": 5
+    },
+    {
+        "Id": 8,
+        "Text": "Is everyone valued in the team irrespective of their background, gender, cultural differences?",
+        "SubCategoryId": 6
+    },
+    {
+        "Id": 9,
+        "Text": "Do you feel secure that you will not be punished for your mistakes, when trying your best to achieve the goals?",
+        "SubCategoryId": 7
+    },
+    {
+        "Id": 10,
+        "Text": "Do you get constructive & actionable feedbacks?",
+        "SubCategoryId": 8
+    },
+    {
+        "Id": 11,
+        "Text": "Does the team respond well to changes?",
+        "SubCategoryId": 8
+    },
+    {
+        "Id": 12,
+        "Text": "Is the team able to take decisions in time bound manner?",
+        "SubCategoryId": 9
+    },
+    {
+        "Id": 13,
+        "Text": "Do team members act according to the decisions taken?",
+        "SubCategoryId": 9
+    },
+    {
+        "Id": 14,
+        "Text": "Does the team try to consciously improve regularly & frequently?",
+        "SubCategoryId": 10
+    },
+    {
+        "Id": 15,
+        "Text": "Are learning & development opportunities available to you?",
+        "SubCategoryId": 11
+    },
+    {
+        "Id": 16,
+        "Text": "Are the learnings from even failed experiments valued?",
+        "SubCategoryId": 12
+    },
+    {
+        "Id": 17,
+        "Text": "Are the boundaries within which to experiment clear?",
+        "SubCategoryId": 12
+    },
+    {
+        "Id": 18,
+        "Text": "Does the team inspire you to try out new approaches, tools, novel solutions for the work?",
+        "SubCategoryId": 13
+    },
+    {
+        "Id": 19,
+        "Text": "Do team members get things done when they say they will?",
+        "SubCategoryId": 14
+    },
+    {
+        "Id": 20,
+        "Text": "Do team members proactively communicate regarding any delays?",
+        "SubCategoryId": 14
+    },
+    {
+        "Id": 21,
+        "Text": "Does the team take pride in the work they do?",
+        "SubCategoryId": 15
+    },
+    {
+        "Id": 22,
+        "Text": "Does the team interact with the stakeholders frequently?",
+        "SubCategoryId": 16
+    },
+    {
+        "Id": 23,
+        "Text": "Is the team's work positively impacting the stakeholders?",
+        "SubCategoryId": 16
+    },
+    {
+        "Id": 24,
+        "Text": "Does the leadership provide support when the team asks for help?",
+        "SubCategoryId": 17
+    },
+    {
+        "Id": 25,
+        "Text": "Is the team able to get help / support from other teams in the organization to get the job done?",
+        "SubCategoryId": 17
+    },
+    {
+        "Id": 26,
+        "Text": "Is the team enabled to take decisions as per the situation on its own?",
+        "SubCategoryId": 18
+    },
+    {
+        "Id": 27,
+        "Text": "Does the team have culture of celebration & recognition where successes are celebrated & recognized in meanigful ways",
+        "SubCategoryId": 19
+    },
+    {
+        "Id": 28,
+        "Text": "Does the team ensure that every member adheres to the core values?",
+        "SubCategoryId": 20
+    }
+]

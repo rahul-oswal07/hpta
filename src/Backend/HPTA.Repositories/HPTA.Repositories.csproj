@@ -6,4 +6,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HPTA.Common\HPTA.Common.csproj" />
+    <ProjectReference Include="..\HPTA.Data.Configurations\HPTA.Data.Configurations.csproj" />
+    <ProjectReference Include="..\HPTA.Data\HPTA.Data.csproj" />
+  </ItemGroup>
+
 </Project>
