@@ -3,35 +3,35 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPTA.Api", "HPTA.Api\HPTA.Api.csproj", "{0E54D544-60F6-41FA-AE2F-DB03D314F757}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPTA.Api", "HPTA.Api\HPTA.Api.csproj", "{0E54D544-60F6-41FA-AE2F-DB03D314F757}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPTA.Data", "HPTA.Data\HPTA.Data.csproj", "{69FD0B1D-59F4-4E8A-9765-88B273FF17BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPTA.Data", "HPTA.Data\HPTA.Data.csproj", "{69FD0B1D-59F4-4E8A-9765-88B273FF17BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPTA.DTO", "HPTA.DTO\HPTA.DTO.csproj", "{CF4B2AD0-6B07-4238-9CB0-E462D758BEAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPTA.DTO", "HPTA.DTO\HPTA.DTO.csproj", "{CF4B2AD0-6B07-4238-9CB0-E462D758BEAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPTA.Mapping", "HPTA.Mapping\HPTA.Mapping.csproj", "{53C9A028-0BE9-46F3-BC86-7B33E360C898}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPTA.Mapping", "HPTA.Mapping\HPTA.Mapping.csproj", "{53C9A028-0BE9-46F3-BC86-7B33E360C898}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPTA.Migrations", "HPTA.Migrations\HPTA.Migrations.csproj", "{51B66914-993E-405D-93DD-129D1B406855}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPTA.Migrations", "HPTA.Migrations\HPTA.Migrations.csproj", "{51B66914-993E-405D-93DD-129D1B406855}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPTA.Repositories", "HPTA.Repositories\HPTA.Repositories.csproj", "{19C0EA0B-5E78-44A2-B655-52AF84962A02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPTA.Repositories", "HPTA.Repositories\HPTA.Repositories.csproj", "{19C0EA0B-5E78-44A2-B655-52AF84962A02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPTA.Services", "HPTA.Services\HPTA.Services.csproj", "{3B19D368-C2A2-477E-9F6A-3DE40998BE77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPTA.Services", "HPTA.Services\HPTA.Services.csproj", "{3B19D368-C2A2-477E-9F6A-3DE40998BE77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPTA.Common", "HPTA.Common\HPTA.Common.csproj", "{740697FC-5B72-401B-A2DD-D613BC3AB45C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPTA.Common", "HPTA.Common\HPTA.Common.csproj", "{740697FC-5B72-401B-A2DD-D613BC3AB45C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPTA.Api.Tests", "HPTA.Api.Tests\HPTA.Api.Tests.csproj", "{9B08BA24-D8DF-43EE-AE62-5D0785889F56}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPTA.Api.Tests", "HPTA.Api.Tests\HPTA.Api.Tests.csproj", "{9B08BA24-D8DF-43EE-AE62-5D0785889F56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPTA.Common.Tests", "HPTA.Common.Tests\HPTA.Common.Tests.csproj", "{F64EC2AE-DF8E-43DB-88D5-B45B0B7F42C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPTA.Common.Tests", "HPTA.Common.Tests\HPTA.Common.Tests.csproj", "{F64EC2AE-DF8E-43DB-88D5-B45B0B7F42C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPTA.Data.Tests", "HPTA.Data.Tests\HPTA.Data.Tests.csproj", "{D098FB5F-2FA8-4C39-8B51-79A2658676B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPTA.Data.Tests", "HPTA.Data.Tests\HPTA.Data.Tests.csproj", "{D098FB5F-2FA8-4C39-8B51-79A2658676B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPTA.Repositories.Tests", "HPTA.Repositories.Tests\HPTA.Repositories.Tests.csproj", "{EFCD1B7F-DF7F-4170-A28B-E3F4C2ED00D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPTA.Repositories.Tests", "HPTA.Repositories.Tests\HPTA.Repositories.Tests.csproj", "{EFCD1B7F-DF7F-4170-A28B-E3F4C2ED00D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPTA.Services.Tests", "HPTA.Services.Tests\HPTA.Services.Tests.csproj", "{2F8EB6E8-BCB1-4816-A84A-99BE154D1850}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPTA.Services.Tests", "HPTA.Services.Tests\HPTA.Services.Tests.csproj", "{2F8EB6E8-BCB1-4816-A84A-99BE154D1850}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E5F10BD5-BD84-4F2F-98C0-58F3364D3174}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPTA.Data.ConfigurationExtensions", "HPTA.Data.ConfigurationExtensions\HPTA.Data.ConfigurationExtensions.csproj", "{64272FE3-A2D2-4604-84DE-C72A607AA3A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPTA.Data.Configurations", "HPTA.Data.Configurations\HPTA.Data.Configurations.csproj", "{64272FE3-A2D2-4604-84DE-C72A607AA3A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

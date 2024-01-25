@@ -1,4 +1,5 @@
 using HPTA.Api.AuthorizationPolicies;
+using HPTA.Repositories.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 
@@ -16,6 +17,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
               builder.Configuration.Bind("AzureAd", options);
           });
 
+builder.Services.DependencyRegistry(builder.Configuration.GetConnectionString("MasterDbConnectionString"));
 builder.Services.AddControllers();
 
 builder.Services.AddAuthorization(options =>
