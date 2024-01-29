@@ -1,0 +1,48 @@
+<nav id="w_navbar" class="navbar gap-2">
+  <a id="sidebar_logo" class="navbar-logo flex items-end gap-2" [routerLink]="['/']">
+    <img src="https://devon.global/wp-content/uploads/2016/12/devon-logo-blue.png" height="50" class="h-8" />
+    <span class="app-title">{{ title }}</span>
+  </a>
+  <span class="flex-grow"></span>
+  <div class="right-bar flex flex-row justify-start items-center">
+    <ng-container *ngTemplateOutlet="rightSection"></ng-container>
+  </div>
+</nav>
+<ng-template #rightSection>
+  <!-- <button
+    mat-icon-button
+    *ngIf="notificationCount || -1 as notifications"
+    [routerLink]="['notifications', 'alerts']"
+    [matBadge]="notifications"
+    [matBadgeHidden]="notifications <= 0"
+    [matBadgeOverlap]="true"
+    matBadgeColor="warn"
+  >
+    <mat-icon>
+      {{ notifications <= 0 ? "notifications_none" : "notifications_active" }}
+    </mat-icon>
+  </button> -->
+  <button *ngIf="loginDisplay" mat-button (click)="login()">Login</button>
+  <button *ngIf="!loginDisplay && loggedInUser" [matMenuTriggerFor]="userMenu" class="flex flex-row items-center gap-1">
+    <!-- <kbs-avatar
+      [src]="loggedInUser.avatarUrl"
+      [value]="loggedInUser.displayName"
+      [size]="32"
+    ></kbs-avatar> -->
+    <div *ngIf="!isMobile" class="flex flex-col items-start">
+      <div>{{ loggedInUser.name }}</div>
+      <small>{{loggedInUser.username}}</small>
+    </div>
+    <mat-icon>arrow_drop_down</mat-icon>
+  </button>
+  <mat-menu #userMenu="matMenu">
+    <a routerLink="/profile" routerLinkActive="active" mat-menu-item>
+      <mat-icon>manage_accounts</mat-icon>
+      Manage</a>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Sign Out
+    </button>
+  </mat-menu>
+
+</ng-template>

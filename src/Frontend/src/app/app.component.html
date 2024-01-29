@@ -1,28 +1,17 @@
-<mat-toolbar color="primary">
-  <a class="title" href="/">{{ title }}</a>
+<div class="site-container">
 
-  <div class="flex-auto"></div>
+  <app-navbar [title]="title" [loggedInUser]="accountInfo" [loginDisplay]="loginDisplay" (loginClick)="loginRedirect()"
+    (logoutClick)="logout()"></app-navbar>
+  <div class="ux-application-container" [class.sidebar-collapsed]="sidebarCollapsed">
+    <!-- Container for sidebar -->
+    <app-sidebar id="sidebar-wrapper" [theme]="theme" [menu]="(menu | async) || []" [(collapsed)]="sidebarCollapsed"
+      (onThemeSelected)="onThemeSelected($event)"></app-sidebar>
+    <div class="main-container">
+      <div class="content-wrapper">
 
-  <button mat-button [routerLink]="['profile']">
-    Profile
-  </button>
-
-  <button mat-raised-button [matMenuTriggerFor]="loginMenu" *ngIf="!loginDisplay">Login</button>
-  <mat-menu #loginMenu="matMenu">
-    <button mat-menu-item (click)="loginRedirect()">Login using Redirect</button>
-    <button mat-menu-item (click)="loginPopup()">Login using Popup</button>
-  </mat-menu>
-
-  <button mat-raised-button [matMenuTriggerFor]="logoutMenu" *ngIf="loginDisplay">
-    {{accountInfo?.name}} - {{accountInfo?.username}}
-  </button>
-  <mat-menu #logoutMenu="matMenu">
-    <button mat-menu-item (click)="logout()">Logout using Redirect</button>
-    <button mat-menu-item (click)="logout(true)">Logout using Popup</button>
-  </mat-menu>
-
-</mat-toolbar>
-<div class="container">
-  <!--This is to avoid reload during acquireTokenSilent() because of hidden iframe -->
-  <router-outlet *ngIf="!isIframe"></router-outlet>
+        <!--This is to avoid reload during acquireTokenSilent() because of hidden iframe -->
+        <router-outlet *ngIf="!isIframe"></router-outlet>
+      </div>
+    </div>
+  </div>
 </div>

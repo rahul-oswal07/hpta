@@ -11,8 +11,8 @@ export const environment = {
     }
   },
   apiConfig: {
-    scopes: ['ENTER_SCOPE'],
-    uri: 'ENTER_URI'
+    scopes: ['user.read'],
+    uri: 'https://graph.microsoft.com/v1.0'
   }
 };
 

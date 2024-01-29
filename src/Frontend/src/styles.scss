@@ -1,5 +1,103 @@
-@import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
-/* You can add global styles to this file, and also import other style files */
+@use "sass:map";
+@use "@angular/material" as mat;
+@use "./app/core/navbar/navbar-theme" as navbar;
+@use "./app/core/sidebar/sidebar-theme" as sidebar;
+@use "./app/core/shared/components/table-control-bar/table-control-bar-theme" as tablecontrolbar;
+@import "variables.scss";
+@import "~@angular/cdk/overlay-prebuilt.css";
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$cms-primary: mat.define-palette(mat.$orange-palette);
+$cms-accent: mat.define-palette(mat.$light-blue-palette, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$cms-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$cms-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $cms-primary,
+      accent: $cms-accent,
+      warn: $cms-warn
+    )
+  )
+);
+/* Dark Theme */
+$cms-dark-primary: mat.define-palette(mat.$teal-palette);
+$cms-dark-accent: mat.define-palette(mat.$amber-palette, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$cms-dark-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$cms-dark-theme: mat.define-dark-theme(
+  (
+    color: (
+      primary: $cms-dark-primary,
+      accent: $cms-dark-accent,
+      warn: $cms-dark-warn
+    )
+  )
+);
+
+/* End of Dark Theme */
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($cms-theme);
+@include mat.form-field-density(-3);
+@include navbar.navbar_theme($cms-theme);
+@include sidebar.sidebar_theme($cms-theme);
+@include tablecontrolbar.table_control_bar_theme($cms-theme);
+
+$color-config: mat.get-color-config($cms-theme);
+$background: map.get($color-config, "background");
+
+$foreground: map.get($color-config, "foreground");
+
+$card-background-color: mat.get-color-from-palette($background, card);
+$card-foreground-color: mat.get-color-from-palette($foreground, text);
+
+// .mat-toolbar:not(.mat-primary):not(.mat-accent):not(.mat-warn) {
+//   background-color: $card-background-color !important;
+//   color: $card-foreground-color !important;
+// }
+
+.dark-theme {
+  @include mat.all-component-colors($cms-dark-theme);
+  @include navbar.navbar_theme($cms-dark-theme);
+  @include sidebar.sidebar_theme($cms-dark-theme);
+  @include tablecontrolbar.table_control_bar_theme($cms-dark-theme);
+
+  $color-config: mat.get-color-config($cms-dark-theme);
+  $background: map.get($color-config, "background");
+
+  $foreground: map.get($color-config, "foreground");
+
+  $card-background-color: mat.get-color-from-palette($background, card);
+  $card-foreground-color: mat.get-color-from-palette($foreground, text);
+
+  // .mat-toolbar:not(.mat-primary):not(.mat-accent):not(.mat-warn) {
+  //   background-color: $card-background-color !important;
+  //   color: $card-foreground-color !important;
+  // }
+  .img-theme-aware {
+    filter: brightness(30%); // Darken the image
+  }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -33,10 +131,183 @@ body {
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
-  &.light-theme.mat-app-background {
-    background-color: #ebebeb;
+}
+
+.site-container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: absolute;
+  justify-content: flex-start;
+  align-items: stretch;
+  align-content: stretch;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+.ux-application-container {
+  height: 100%;
+  display: flex;
+}
+/* a container with flex-direction column */
+.main-container {
+  height: 100%;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  padding: 15px;
+  flex: 1 1 auto;
+}
+
+/* this is the flex container that will take the rest of the height */
+.content-wrapper {
+  min-height: 0px;
+  width: 100%;
+  height: 100%;
+}
+
+#sidebar-wrapper {
+  width: $w-sidebar-width-full;
+  min-width: $w-sidebar-width-full;
+  height: calc(100vh - $app-navbar-height);
+  // background: $sidebar-background-color;
+  margin: 0;
+  padding: 0;
+  &.sidebar-collapsed {
+    width: $w-sidebar-width-collapsed;
+    min-width: $w-sidebar-width-collapsed;
+    transition: width 1ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
-.container {
-  margin: 1%;
+
+.custom-scrollbar {
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  scrollbar-color: var(--palette-black-alpha-20, rgba(0, 0, 0, 0.2)) transparent;
+  scrollbar-width: thin;
+}
+
+.custom-scrollbar.scroll-auto-hide {
+  scrollbar-color: transparent transparent;
+}
+
+.custom-scrollbar.scroll-auto-hide:hover {
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  scrollbar-color: var(--palette-black-alpha-20, rgba(0, 0, 0, 0.2)) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 18px;
+  height: 18px;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 6px solid transparent;
+  background: rgba(0, 0, 0, 0.2);
+  background: var(--palette-black-alpha-20, rgba(0, 0, 0, 0.2));
+  border-radius: 10px;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+  min-height: 30px;
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+  min-width: 30px;
+}
+
+.scroll-auto-hide::-webkit-scrollbar-thumb {
+  background: transparent;
+  background-clip: padding-box;
+}
+
+.custom-scrollbar.scroll-auto-hide:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  background: var(--palette-black-alpha-20, rgba(0, 0, 0, 0.2));
+  background-clip: padding-box;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+  background: var(--palette-black-alpha-30, rgba(0, 0, 0, 0.3));
+  background-clip: padding-box;
+  border: 4px solid transparent;
+}
+
+.custom-scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.custom-scrollbar-hidden::-webkit-scrollbar {
+  width: 0;
+}
+
+.cdk-overlay-pane.fly-out-dialog {
+  // Slide dialog in from right
+  // Source:  https://github.com/angular/components/issues/8857#issuecomment-638576836
+  @keyframes slide {
+    100% {
+      right: 0;
+    }
+  }
+
+  position: fixed !important;
+  right: -100vw;
+  animation: slide 200ms forwards;
+  animation-delay: 100ms;
+
+  .mat-dialog-container,
+  .mat-mdc-dialog-container {
+    margin-top: 4rem;
+    height: calc(100vh - 4rem);
+    width: calc(100vw - 4rem);
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field
+  .mdc-notched-outline__notch {
+  border-right-style: hidden;
+}
+.mat-mdc-input-element {
+  box-shadow: none !important;
+}
+
+.mat-divider-vertical {
+  height: auto;
+}
+
+.key-value-floating {
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+  padding: 10px;
+  place-self: flex-start;
+  label {
+    font-size: small;
+    color: #5982c1;
+  }
+}
+table {
+  th {
+    text-align: left;
+  }
+}
+
+.mat-mdc-tab-body-content {
+  overflow-x: hidden;
+}
+
+.table-container {
+  max-height: calc(100vh - 195px);
+  overflow: auto;
+  display: block;
+  margin-bottom: 10px;
 }

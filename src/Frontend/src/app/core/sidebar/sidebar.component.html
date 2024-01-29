@@ -1,0 +1,79 @@
+<div class="region-navigation flex-column flex-grow" [class.collapsed]="collapsed">
+  <div id="middle-container" class="navigation-section flex-column flex-grow custom-scrollbar">
+    <div class="nav-menu-container" *ngFor="let menu of mainMenu">
+      <a class="nav-menu" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: menu.route === '/' }"
+        [routerLink]="menu.route" [matTooltip]="menu.name" *ngIf="!menu.subMenu else menuWithSubmenu">
+        <span class="nav-menu-icon">
+          <mat-icon color="primary">{{ menu.icon }}</mat-icon>
+        </span>
+        <span class="nav-menu-text"> {{ menu.name }} </span>
+      </a>
+      <ng-template #menuWithSubmenu>
+        <a class="nav-menu cursor-pointer" [matMenuTriggerFor]="subMenuTemplate" *ngIf="collapsed">
+          <span class="nav-menu-icon">
+            <mat-icon color="primary">{{ menu.icon }}</mat-icon>
+          </span>
+          <span class="nav-menu-text"> {{ menu.name }} </span>
+        </a>
+        <ng-container *ngIf="!collapsed">
+          <div class="nav-menu">
+            <span class="nav-menu-icon">
+              <mat-icon color="primary">{{ menu.icon }}</mat-icon>
+            </span>
+            <span class="nav-menu-text"> {{ menu.name }} </span>
+          </div>
+          <div class="sub-menu nav-menu-container" *ngFor="let subMenu of menu.subMenu">
+            <a class="nav-menu" [routerLinkActive]="'active'"
+              [routerLinkActiveOptions]="{ exact: subMenu.route === '/' }" [routerLink]="subMenu.route"
+              [matTooltip]="subMenu.name">
+              <span class="nav-menu-icon">
+                <mat-icon>{{ subMenu.icon }}</mat-icon>
+              </span>
+              <span class="nav-menu-text"> {{ subMenu.name }} </span>
+            </a>
+          </div>
+        </ng-container>
+        <mat-menu #subMenuTemplate xPosition="after" overlapTrigger="true">
+          <a mat-menu-item *ngFor="let subMenu of menu.subMenu" [routerLinkActive]="'active'"
+            [routerLinkActiveOptions]="{ exact: subMenu.route === '/' }" [routerLink]="subMenu.route"
+            [matTooltip]="subMenu.name">
+            <span class="nav-menu-icon">
+              <mat-icon>{{ subMenu.icon }}</mat-icon>
+            </span>
+            <span class="nav-menu-text"> {{ subMenu.name }} </span>
+          </a>
+        </mat-menu>
+      </ng-template>
+    </div>
+    <ng-template #collapsedTemplate>
+      <span class="sidebar-menu-label">Sidebar Menu</span>
+    </ng-template>
+  </div>
+  <div class="collapsible-section p-2">
+    <button class="flex items-center" [matMenuTriggerFor]="settingsMenuTemplate">
+      <mat-icon>settings</mat-icon>
+      <div *ngIf="!collapsed">Settings</div>
+    </button>
+    <button mat-icon-button (click)="toggleSidebar()">
+      <mat-icon>{{
+        collapsed ? "keyboard_double_arrow_right" : "keyboard_double_arrow_left"
+        }}</mat-icon>
+    </button>
+  </div>
+</div>
+<mat-menu #settingsMenuTemplate="matMenu">
+  <button *ngFor="let menu of settingsMenu || []" mat-menu-item [routerLink]="menu.route" routerLinkActive="link-active"
+    [matTooltip]="menu.description ?? menu.name">
+    <mat-icon mat-list-icon>{{ menu.icon }}</mat-icon>
+    <span>{{ menu.name }}</span>
+  </button>
+  <button mat-menu-item [matMenuTriggerFor]="themeMenu">Theme</button>
+</mat-menu>
+<mat-menu #themeMenu>
+  <button mat-menu-item (click)="toggleDarkMode()">
+    <mat-icon>{{
+      theme === darkClassName ? "light_mode" : "dark_mode"
+      }}</mat-icon>
+    {{theme === darkClassName ? "Light Theme" : "Dark Theme"}}
+  </button>
+</mat-menu>

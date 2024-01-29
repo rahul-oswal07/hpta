@@ -1,0 +1,12 @@
+<mat-chip-listbox aria-label="Filter selection">
+  <mat-chip
+    color="primary"
+    *ngFor="let f of filters"
+    selected
+    [removable]="true"
+    (click)="onEditFilter(f, $event)"
+    (removed)="onRemoveClick(f)">
+    {{ f.label }}
+    <mat-icon matChipRemove>cancel</mat-icon>
+  </mat-chip>
+</mat-chip-listbox>
