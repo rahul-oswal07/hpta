@@ -16,6 +16,10 @@ import { MSAL_GUARD_CONFIG, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG, MsalBroadcas
 import { environment } from 'src/environments/environment.prod';
 import { FailedLoginComponent } from './failed-login/failed-login.component';
 import { ProfileComponent } from './profile/profile.component';
+import { SidebarComponent } from 'src/app/core/sidebar/sidebar.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { NavbarComponent } from 'src/app/core/navbar/navbar.component';
 
 export const APP_DATE_FORMATS = {
   parse: {
@@ -91,7 +95,9 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     AppComponent,
     HomeComponent,
     FailedLoginComponent,
-    ProfileComponent
+    ProfileComponent,
+    SidebarComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
@@ -101,7 +107,9 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     // MsalApplicationModule.forRoot('config.json'),
     MatToolbarModule,
     MatMenuModule,
-    MsalModule
+    MsalModule,
+    MatIconModule,
+    MatTooltipModule
   ],
   // providers: [
   //   AppConfigService,

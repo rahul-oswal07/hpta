@@ -1,0 +1,21 @@
+@import "../../../../../variables.scss";
+app-table-control-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 10px;
+  padding: 5px;
+  app-filter-list {
+    display: flex;
+    margin-right: 16px;
+  }
+}
+
+.display-columns-menu {
+  display: flex;
+  justify-content: stretch;
+  .mat-checkbox {
+    flex: auto;
+    pointer-events: none;
+  }
+}

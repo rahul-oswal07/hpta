@@ -1,0 +1,36 @@
+@use "sass:map";
+@use "@angular/material" as mat;
+
+@mixin color($theme) {
+  // Get the color config from the theme.
+  $color-config: mat.get-color-config($theme);
+
+  $background: map.get($color-config, "background");
+
+  $foreground: map.get($color-config, "foreground");
+
+  .kbs-table-control-bar {
+    background-color: mat.get-color-from-palette($background, card);
+    color: map.get($foreground, "text");
+  }
+}
+
+@mixin typography($theme) {
+  // Get the typography config from the theme.
+  $typography-config: mat.get-typography-config($theme);
+  .kbs-table-control-bar {
+    font-family: mat.font-family($typography-config);
+  }
+}
+
+@mixin table_control_bar_theme($theme) {
+  $color-config: mat.get-color-config($theme);
+  @if $color-config != null {
+    @include color($theme);
+  }
+
+  $typography-config: mat.get-typography-config($theme);
+  @if $typography-config != null {
+    @include typography($theme);
+  }
+}

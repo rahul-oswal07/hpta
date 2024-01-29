@@ -1,7 +1,10 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, Inject, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
 import { AccountInfo, AuthenticationResult, EventMessage, EventType, IPublicClientApplication, InteractionStatus, InteractionType, PopupRequest, PublicClientApplication, RedirectRequest } from '@azure/msal-browser';
-import { Subject, filter, map, takeUntil } from 'rxjs';
+import { Observable, Subject, filter, map, of, takeUntil } from 'rxjs';
+import { MenuItem } from 'src/app/core/models/menu-item';
+import { UserProfileService } from 'src/app/core/services/user-profile.service';
 
 @Component({
   selector: 'app-root',
@@ -9,17 +12,33 @@ import { Subject, filter, map, takeUntil } from 'rxjs';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'hpta-client';
+  title = 'HPTA';
   accountInfo: AccountInfo | null = null;
   isIframe = false;
+  theme = '';
   loginDisplay = false;
+  sidebarCollapsed = false;
+  menu!: Observable<MenuItem[]>;
   private readonly _destroying$ = new Subject<void>();
   constructor(@Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
     private authService: MsalService,
-    private msalBroadcastService: MsalBroadcastService) {
+    private msalBroadcastService: MsalBroadcastService,
+    private readonly renderer: Renderer2,
+    @Inject(DOCUMENT) private readonly document: Document) {
 
   }
   ngOnInit(): void {
+    this.menu = of([
+      { id: '', name: 'Dashboard', route: '', icon: 'home', canRead: true, isMainMenu: true },
+      {
+        id: '', name: 'Masters', route: 'master', icon: 'folder', canRead: true, isMainMenu: true, subMenu: [
+          { id: '', name: 'Categories', route: 'categories', icon: 'category', canRead: true, isMainMenu: true },
+          { id: '', name: 'Sub-Categories', route: 'subcategories', icon: 'subtitles', canRead: true, isMainMenu: true },
+          { id: '', name: 'Questions', route: 'questions', icon: 'quiz', canRead: true, isMainMenu: true }
+        ]
+      },
+      { id: '', name: 'Survey', route: 'surveys', icon: 'mood', canRead: true, isMainMenu: true }
+    ])
     /**
      * You can subscribe to MSAL events as shown below. For more info,
      * visit: https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-angular/docs/v2-docs/events.md
@@ -51,7 +70,7 @@ export class AppComponent implements OnInit, OnDestroy {
       })
   }
   setLoginDisplay() {
-    this.loginDisplay = this.authService.instance.getAllAccounts().length > 0;
+    this.loginDisplay = this.authService.instance.getAllAccounts().length === 0;
   }
   checkAndSetActiveAccount() {
     /**
@@ -66,6 +85,12 @@ export class AppComponent implements OnInit, OnDestroy {
       this.authService.instance.setActiveAccount(accounts[0]);
     }
     this.accountInfo = this.authService.instance.getActiveAccount();
+    // if (this.accountInfo) {
+
+    //   this.profileService.getUserPhoto().subscribe(r => {
+    //     console.log(r);
+    //   })
+    // }
     console.log(this.accountInfo);
   }
 
@@ -90,6 +115,23 @@ export class AppComponent implements OnInit, OnDestroy {
         .subscribe((response: AuthenticationResult) => {
           this.authService.instance.setActiveAccount(response.account);
         });
+    }
+  }
+  onThemeSelected(newTheme: string) {
+    localStorage.setItem('theme', newTheme);
+    this.applyTheme();
+  }
+
+  applyTheme() {
+    this.theme = localStorage.getItem('theme') ?? 'light-theme';
+    const hostElement = this.document.body;
+    this.renderer.removeClass(hostElement, 'dark-theme');
+    this.renderer.removeClass(hostElement, 'light-theme');
+    this.renderer.addClass(hostElement, this.theme);
+    if (this.theme === 'dark-theme') {
+      this.document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
   }
 
