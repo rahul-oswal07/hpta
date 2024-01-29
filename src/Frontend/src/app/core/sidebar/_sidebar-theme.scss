@@ -12,7 +12,7 @@
   $hover-color: mat.get-color-from-palette($background, hover); // Lighter shade for hover
   $active-color: mat.get-color-from-palette($background, focused-button); // Darker shade for active
   $border_color: mat.get-color-from-palette($foreground, divider);
-  .kbs-sidebar {
+  .dvn-sidebar {
     $card-color: mat.get-color-from-palette($background, card);
     $dark-card-color: darken($card-color, 10%);
     background-color: $dark-card-color;
@@ -36,7 +36,7 @@
 @mixin typography($theme) {
   // Get the typography config from the theme.
   $typography-config: mat.get-typography-config($theme);
-  .kbs-table-control-bar {
+  .dvn-table-control-bar {
     font-family: mat.font-family($typography-config);
   }
 }

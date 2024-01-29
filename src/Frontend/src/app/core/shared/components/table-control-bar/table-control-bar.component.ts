@@ -26,7 +26,7 @@ import { positionTopLeftRelativeToTopLeft } from 'src/app/core/util';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
-    class: 'kbs-table-control-bar'
+    class: 'dvn-table-control-bar'
   }
 })
 export class TableControlBarComponent {
