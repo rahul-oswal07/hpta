@@ -9,7 +9,7 @@
 
   $foreground: map.get($color-config, "foreground");
 
-  .kbs-table-control-bar {
+  .dvn-table-control-bar {
     background-color: mat.get-color-from-palette($background, card);
     color: map.get($foreground, "text");
   }
@@ -18,7 +18,7 @@
 @mixin typography($theme) {
   // Get the typography config from the theme.
   $typography-config: mat.get-typography-config($theme);
-  .kbs-table-control-bar {
+  .dvn-table-control-bar {
     font-family: mat.font-family($typography-config);
   }
 }

@@ -7,7 +7,7 @@ import { AccountInfo } from '@azure/msal-browser';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
   host: {
-    class: 'kbs-navbar',
+    class: 'dvn-navbar',
     '[class]': 'color ? "mat-" + color : ""'
   }
 })

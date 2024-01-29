@@ -9,17 +9,25 @@ const routes: Routes = [
   {
     path: 'profile',
     component: ProfileComponent,
-    canActivate: [MsalGuard]
-  }, {
-    path: '', component: HomeComponent
-
-  }, {
+    canActivate: [MsalGuard],
+  },
+  {
+    path: '',
+    component: HomeComponent,
+  },
+  {
     path: 'login-failed',
-    component: FailedLoginComponent
-  }];
+    component: FailedLoginComponent,
+  },
+  {
+    path: 'survey',
+    loadChildren: () =>
+      import('./modules/survey/survey.module').then((m) => m.SurveyModule),
+  },
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

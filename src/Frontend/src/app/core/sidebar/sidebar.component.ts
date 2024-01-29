@@ -6,7 +6,7 @@ import { MenuItem } from 'src/app/core/models/menu-item';
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss'],
   host: {
-    class: 'kbs-sidebar'
+    class: 'dvn-sidebar'
   }
 })
 export class SidebarComponent {

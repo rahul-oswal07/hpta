@@ -12,7 +12,7 @@
 
   $foreground: map.get($color-config, "foreground");
   $background: map.get($color-config, "background");
-  .kbs-navbar {
+  .dvn-navbar {
     background-color: mat.get-color-from-palette($background, card);
     $border_color: mat.get-color-from-palette($foreground, divider);
     border-bottom: solid 1px $border_color;
@@ -44,7 +44,7 @@
 @mixin typography($theme) {
   // Get the typography config from the theme.
   $typography-config: mat.get-typography-config($theme);
-  .kbs-navbar {
+  .dvn-navbar {
     font-family: mat.font-family($typography-config);
   }
 }
