@@ -1,4 +1,6 @@
-import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { Subscription, filter } from 'rxjs';
 import { MenuItem } from 'src/app/core/models/menu-item';
 
 @Component({
@@ -9,8 +11,9 @@ import { MenuItem } from 'src/app/core/models/menu-item';
     class: 'dvn-sidebar'
   }
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit, OnDestroy {
   darkClassName = 'dark-theme';
+  private routerSubscription!: Subscription;
   @Input() collapsed: boolean = false;
   @Input()
   theme!: string;
@@ -30,15 +33,41 @@ export class SidebarComponent {
     this.mainMenu = value?.filter(m => m.isMainMenu) ?? [];
     this.settingsMenu = value?.filter(m => !m.isMainMenu) ?? [];
   }
+  constructor(private router: Router, private activatedRoute: ActivatedRoute) { }
+  ngOnInit(): void {
+    this.routerSubscription = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        this.activateSubMenu();
+      });
+    this.activateSubMenu();
+  }
 
   @HostBinding('class.sidebar-collapsed') get isCollapsed() { return this.collapsed; }
   public toggleSidebar() {
     this.collapsed = !this.collapsed;
     this.collapsedChange.emit(this.collapsed);
   }
-
+  activateSubMenu() {
+    this.activatedRoute.url.subscribe(r => {
+      const url = this.router.url;
+      console.log('url:', url);
+      this.menu?.forEach(m => {
+        if (m.subMenu) {
+          m.isSubMenuActive = m.subMenu.some(s => s.route && url === ((s.route.startsWith('/') ? '' : '/') + s.route));
+          console.log(m.isSubMenuActive);
+          console.log(m);
+        }
+      })
+    })
+  }
   toggleDarkMode() {
     const className = this.theme === this.darkClassName ? 'light-theme' : this.darkClassName;
     this.onThemeSelected.emit(className);
+  }
+  ngOnDestroy(): void {
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
   }
 }

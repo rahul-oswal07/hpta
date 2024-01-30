@@ -152,12 +152,13 @@ body {
 }
 /* a container with flex-direction column */
 .main-container {
-  height: 100%;
+  height: calc(100vh - 50px);
   display: flex;
   position: relative;
   flex-direction: column;
   padding: 15px;
   flex: 1 1 auto;
+  overflow: auto;
 }
 
 /* this is the flex container that will take the rest of the height */
