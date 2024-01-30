@@ -1,6 +1,6 @@
-﻿namespace HPTA.Repositories
+﻿namespace HPTA.Common
 {
-    internal static class Constants
+    public static class Constants
     {
         public const string SOFT_DELETE_FIELD_NAME = "IsDeleted";
     }

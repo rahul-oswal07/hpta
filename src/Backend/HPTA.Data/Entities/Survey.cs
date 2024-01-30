@@ -18,6 +18,8 @@ public partial class Survey
     [DataType(DataType.Date)]
     public DateTime? EndDate { get; set; }
 
+    public bool IsActive { get; set; }
+
     #region Audit Properties
     public DateTime CreatedOn { get; set; }
     public DateTime UpdatedOn { get; set; }

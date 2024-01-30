@@ -1,4 +1,5 @@
-﻿using HPTA.Common.Constraints;
+﻿using HPTA.Common;
+using HPTA.Common.Constraints;
 using HPTA.Data.Attributes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;

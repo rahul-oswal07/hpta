@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HPTA.DTO\HPTA.DTO.csproj" />
+    <ProjectReference Include="..\HPTA.Repositories\HPTA.Repositories.csproj" />
+  </ItemGroup>
+
 </Project>
