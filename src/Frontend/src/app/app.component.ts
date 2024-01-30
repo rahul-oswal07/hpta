@@ -29,7 +29,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     this.menu = of([
-      { id: '', name: 'Dashboard', route: '', icon: 'home', canRead: true, isMainMenu: true },
+      { id: '', name: 'Dashboard', route: '/', icon: 'home', canRead: true, isMainMenu: true },
       {
         id: '', name: 'Masters', route: 'master', icon: 'folder', canRead: true, isMainMenu: true, subMenu: [
           { id: '', name: 'Categories', route: 'categories', icon: 'category', canRead: true, isMainMenu: true },
@@ -37,10 +37,12 @@ export class AppComponent implements OnInit, OnDestroy {
           { id: '', name: 'Questions', route: 'questions', icon: 'quiz', canRead: true, isMainMenu: true }
         ]
       },
-      { id: '', name: 'Survey', route: 'surveys', icon: 'mood', canRead: true, isMainMenu: true, subMenu: [
-        { id: '', name: 'HPTA for Sprint 21', route: 'survey/1', icon: 'summarize', canRead: true, isMainMenu: true },
-        { id: '', name: 'HPTA for Sprint 22', route: 'survey/2', icon: 'summarize', canRead: true, isMainMenu: true }
-      ] }
+      {
+        id: '', name: 'Survey', route: 'surveys', icon: 'mood', canRead: true, isMainMenu: true, subMenu: [
+          { id: '', name: 'HPTA for Sprint 21', route: 'survey/1', icon: 'summarize', canRead: true, isMainMenu: true },
+          { id: '', name: 'HPTA for Sprint 22', route: 'survey/2', icon: 'summarize', canRead: true, isMainMenu: true }
+        ]
+      }
     ])
     /**
      * You can subscribe to MSAL events as shown below. For more info,

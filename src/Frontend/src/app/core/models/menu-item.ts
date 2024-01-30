@@ -13,4 +13,6 @@ export declare class MenuItem {
   canWrite?: boolean;
   canApprove?: boolean;
   subMenu?: MenuItem[];
+  expanded?: boolean;
+  isSubMenuActive?: boolean;
 }

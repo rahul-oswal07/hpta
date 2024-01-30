@@ -16,21 +16,27 @@
           <span class="nav-menu-text"> {{ menu.name }} </span>
         </a>
         <ng-container *ngIf="!collapsed">
-          <div class="nav-menu">
+          <div class="nav-menu cursor-pointer"
+            (click)="!!menu.isSubMenuActive ? menu.expanded = true : menu.expanded = !menu.expanded">
             <span class="nav-menu-icon">
               <mat-icon color="primary">{{ menu.icon }}</mat-icon>
             </span>
             <span class="nav-menu-text"> {{ menu.name }} </span>
+            <span class="flex-auto"></span>
+            <mat-icon color="primary" *ngIf="!menu.isSubMenuActive">{{menu.expanded ? 'arrow_drop_up':
+              'arrow_drop_down'}}</mat-icon>
           </div>
-          <div class="sub-menu nav-menu-container" *ngFor="let subMenu of menu.subMenu">
-            <a class="nav-menu" [routerLinkActive]="'active'"
-              [routerLinkActiveOptions]="{ exact: subMenu.route === '/' }" [routerLink]="subMenu.route"
-              [matTooltip]="subMenu.name">
-              <span class="nav-menu-icon">
-                <mat-icon>{{ subMenu.icon }}</mat-icon>
-              </span>
-              <span class="nav-menu-text"> {{ subMenu.name }} </span>
-            </a>
+          <div class="sub-menu" [ngClass]="{expanded: menu.expanded || menu.isSubMenuActive}">
+            <div class="nav-menu-container" *ngFor="let subMenu of menu.subMenu">
+              <a class="nav-menu" [routerLinkActive]="'active'"
+                [routerLinkActiveOptions]="{ exact: subMenu.route === '/' }" [routerLink]="subMenu.route"
+                [matTooltip]="subMenu.name">
+                <span class="nav-menu-icon">
+                  <mat-icon>{{ subMenu.icon }}</mat-icon>
+                </span>
+                <span class="nav-menu-text"> {{ subMenu.name }} </span>
+              </a>
+            </div>
           </div>
         </ng-container>
         <mat-menu #subMenuTemplate xPosition="after" overlapTrigger="true">
