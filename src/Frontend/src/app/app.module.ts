@@ -53,11 +53,13 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     auth: {
       clientId: environment.msalConfig.auth.clientId,
       authority: environment.msalConfig.auth.authority,
+      navigateToLoginRequestUrl: true,
       redirectUri: '/',
       postLogoutRedirectUri: '/'
     },
     cache: {
-      cacheLocation: BrowserCacheLocation.LocalStorage
+      cacheLocation: BrowserCacheLocation.LocalStorage,
+      storeAuthStateInCookie: false
     },
     system: {
       allowNativeBroker: false, // Disables WAM Broker
@@ -72,10 +74,18 @@ export function MSALInstanceFactory(): IPublicClientApplication {
 
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   const protectedResourceMap = new Map<string, Array<string>>();
-  protectedResourceMap.set(environment.apiConfig.uri, environment.apiConfig.scopes);
+  // protectedResourceMap.set(environment.apiConfig.uri, environment.apiConfig.scopes);
+  protectedResourceMap.set(
+    'api/*',
+    ['https://devonhpta.onmicrosoft.com/14d3b6e3-2d3c-40cc-9099-fd81b654394f/Survey.Read']
+  );
+  protectedResourceMap.set(
+    'https://graph.microsoft.com/v1.0/me',
+    ['User.Read', 'User.ReadBasic.All']
+  );
 
   return {
-    interactionType: InteractionType.Redirect,
+    interactionType: InteractionType.Popup,
     protectedResourceMap
   };
 }
@@ -84,7 +94,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
   return {
     interactionType: InteractionType.Redirect,
     authRequest: {
-      scopes: [...environment.apiConfig.scopes]
+      // scopes: [...environment.apiConfig.scopes]
     },
     loginFailedRoute: '/login-failed'
   };

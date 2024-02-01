@@ -6,14 +6,14 @@ export const environment = {
   production: false,
   msalConfig: {
     auth: {
-      clientId: 'fdc10356-3e76-479f-9aa3-1485050dd9e4',
-      authority: 'https://login.microsoftonline.com/faa7bfeb-3b94-4f11-ab93-99c26590835c'
+      clientId: '53662eb5-c96e-4534-a057-3c0679367c74',
+      authority: 'https://login.microsoftonline.com/devonhpta.onmicrosoft.com'
     }
   },
-  apiConfig: {
-    scopes: ['user.read'],
-    uri: 'https://graph.microsoft.com/v1.0'
-  }
+  // apiConfig: {
+  //   scopes: ['user.read'],
+  //   uri: 'https://graph.microsoft.com/v1.0'
+  // }
 };
 
 /*

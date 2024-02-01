@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
+import { SafeUrl } from '@angular/platform-browser';
 import { AccountInfo } from '@azure/msal-browser';
 
 @Component({
@@ -29,7 +30,8 @@ export class NavbarComponent implements OnInit {
   @Input()
   loginDisplay = false;
 
-
+  @Input()
+  avatarUrl?: SafeUrl;
 
   @Output()
   onSearch = new EventEmitter<string>();

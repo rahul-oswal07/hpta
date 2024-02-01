@@ -24,6 +24,7 @@
   </button> -->
   <button *ngIf="loginDisplay" mat-button (click)="login()">Login</button>
   <button *ngIf="!loginDisplay && loggedInUser" [matMenuTriggerFor]="userMenu" class="flex flex-row items-center gap-1">
+    <img *ngIf="avatarUrl" [src]="avatarUrl" width="48" height="48" />
     <div *ngIf="!isMobile" class="flex flex-col items-start">
       <div>{{ loggedInUser.name }}</div>
       <small>{{loggedInUser.username}}</small>

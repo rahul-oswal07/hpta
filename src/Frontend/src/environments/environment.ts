@@ -7,13 +7,13 @@ export const environment = {
   msalConfig: {
     auth: {
       clientId: 'fdc10356-3e76-479f-9aa3-1485050dd9e4',
-      authority: 'https://devonhpta.b2clogin.com/devonhpta.onmicrosoft.com/B2C_1_SingUpSingIn'
+      authority: 'https://devonhpta.b2clogin.com/devonhpta.onmicrosoft.com/B2C_1_SignUpSignIn'
     }
   },
-  apiConfig: {
-    scopes: ['user.read'],
-    uri: 'https://graph.microsoft.com/v1.0'
-  }
+  // apiConfig: {
+  //   scopes: ['user.read'],
+  //   uri: 'https://graph.microsoft.com/v1.0'
+  // }
 };
 
 /*

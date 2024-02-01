@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
 import { AccountInfo, AuthenticationResult, EventMessage, EventType, IPublicClientApplication, InteractionStatus, InteractionType, PopupRequest, PublicClientApplication, RedirectRequest } from '@azure/msal-browser';
 import { Observable, Subject, filter, map, of, takeUntil } from 'rxjs';
@@ -14,6 +15,7 @@ import { UserProfileService } from 'src/app/core/services/user-profile.service';
 export class AppComponent implements OnInit, OnDestroy {
   title = 'HPTA';
   accountInfo: AccountInfo | null = null;
+  avatarUrl?: SafeUrl;
   isIframe = false;
   theme = '';
   loginDisplay = false;
@@ -24,6 +26,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private authService: MsalService,
     private msalBroadcastService: MsalBroadcastService,
     private readonly renderer: Renderer2,
+    private profileService: UserProfileService,
+    private domSanitizer: DomSanitizer,
     @Inject(DOCUMENT) private readonly document: Document) {
 
   }
@@ -39,8 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
       },
       {
         id: '', name: 'Survey', route: 'surveys', icon: 'mood', canRead: true, isMainMenu: true, subMenu: [
-          { id: '', name: 'HPTA for Sprint 21', route: 'survey/1', icon: 'summarize', canRead: true, isMainMenu: true },
-          { id: '', name: 'HPTA for Sprint 22', route: 'survey/2', icon: 'summarize', canRead: true, isMainMenu: true }
+          { id: '', name: 'Active Survey', route: 'survey/1', icon: 'summarize', canRead: true, isMainMenu: true }
         ]
       }
     ])
@@ -90,12 +93,17 @@ export class AppComponent implements OnInit, OnDestroy {
       this.authService.instance.setActiveAccount(accounts[0]);
     }
     this.accountInfo = this.authService.instance.getActiveAccount();
-    // if (this.accountInfo) {
+    if (this.accountInfo) {
 
-    //   this.profileService.getUserPhoto().subscribe(r => {
-    //     console.log(r);
-    //   })
-    // }
+      this.profileService.getUserPhoto().subscribe(r => {
+        const urlCreator = window.URL || window.webkitURL;
+        const pic = this.domSanitizer.bypassSecurityTrustUrl(urlCreator.createObjectURL(r))
+        this.avatarUrl = pic;
+      })
+      this.profileService.getUserProfile().subscribe(r => {
+        console.log(r);
+      })
+    }
     console.log(this.accountInfo);
   }
 
