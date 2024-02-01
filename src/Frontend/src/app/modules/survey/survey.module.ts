@@ -7,6 +7,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RatingModule } from 'src/app/modules/rating/rating.module';
 import { MatButtonModule } from '@angular/material/button';
+import { DataStatusIndicatorModule } from 'src/app/modules/data-status-indicator/data-status-indicator.module';
 
 const SURVEY_ROUTES: Routes = [
   {
@@ -25,6 +26,7 @@ const SURVEY_ROUTES: Routes = [
     MatExpansionModule,
     MatButtonModule,
     RatingModule,
+    DataStatusIndicatorModule,
     RouterModule.forChild(SURVEY_ROUTES)
   ],
 })

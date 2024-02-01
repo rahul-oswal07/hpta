@@ -95,14 +95,18 @@ export class AppComponent implements OnInit, OnDestroy {
     this.accountInfo = this.authService.instance.getActiveAccount();
     if (this.accountInfo) {
 
-      this.profileService.getUserPhoto().subscribe(r => {
-        const urlCreator = window.URL || window.webkitURL;
-        const pic = this.domSanitizer.bypassSecurityTrustUrl(urlCreator.createObjectURL(r))
-        this.avatarUrl = pic;
+      this.profileService.getUserPhoto().subscribe((r: Blob | null) => {
+        if (r) {
+          const urlCreator = window.URL || window.webkitURL;
+          const pic = this.domSanitizer.bypassSecurityTrustUrl(urlCreator.createObjectURL(r))
+          this.avatarUrl = pic;
+        } else {
+          this.avatarUrl = undefined;
+        }
       })
-      this.profileService.getUserProfile().subscribe(r => {
-        console.log(r);
-      })
+      // this.profileService.getUserProfile().subscribe(r => {
+      //   console.log(r);
+      // })
     }
     console.log(this.accountInfo);
   }

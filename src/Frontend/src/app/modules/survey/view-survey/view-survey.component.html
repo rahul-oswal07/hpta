@@ -1,6 +1,6 @@
-<div>
+<div #survey>
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <mat-stepper #stepper *ngIf="getKeys(groupedQuestions) as categories" [linear]="true">
+    <mat-stepper *ngIf="getKeys(groupedQuestions) as categories" [linear]="true">
       <mat-step *ngFor="let category of categories; let i=index" [completed]="form.get(category)?.valid">
         <ng-template matStepLabel>{{ category }}</ng-template>
         <ng-template matStepContent>
@@ -13,9 +13,9 @@
                   <div class="flex flex-col gap-2" formArrayName="questions">
                     <div *ngFor="let question of groupedQuestions[category][subCategory]; let qIndex = index"
                       [formGroupName]="qIndex">
-                      <p>{{question.id}}. {{ question.text }}</p>
+                      <p>{{question.questionNumber}}. {{ question.question }}</p>
                       <div class="pl-2">
-                        <input type="hidden" formControlName="questionId">
+                        <input type="hidden" formControlName="questionNumber">
                         <app-rating formControlName="rating"></app-rating>
                       </div>
                     </div>
@@ -38,3 +38,4 @@
     </mat-stepper>
   </form>
 </div>
+<app-data-status-indicator [element]="survey" [initialState]="'Loading'"></app-data-status-indicator>
