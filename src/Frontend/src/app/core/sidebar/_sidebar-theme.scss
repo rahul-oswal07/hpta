@@ -1,0 +1,54 @@
+@use "sass:map";
+@use "@angular/material" as mat;
+
+@mixin color($theme) {
+  // Get the color config from the theme.
+  $color-config: mat.get-color-config($theme);
+
+  $background: map.get($color-config, "background");
+
+  $foreground: map.get($color-config, "foreground");
+
+  $hover-color: mat.get-color-from-palette($background, hover); // Lighter shade for hover
+  $active-color: mat.get-color-from-palette($background, focused-button); // Darker shade for active
+  $border_color: mat.get-color-from-palette($foreground, divider);
+  .dvn-sidebar {
+    $card-color: mat.get-color-from-palette($background, card);
+    $dark-card-color: darken($card-color, 10%);
+    background-color: $dark-card-color;
+    color: map.get($foreground, "text");
+
+    .nav-menu {
+      color: mat.get-color-from-palette($color-config, 500); // Text color
+      &:hover {
+        background-color: $hover-color;
+      }
+      &.active {
+        background-color: $active-color;
+      }
+    }
+    .collapsible-section {
+      border-top: solid 1px $border_color;
+    }
+  }
+}
+
+@mixin typography($theme) {
+  // Get the typography config from the theme.
+  $typography-config: mat.get-typography-config($theme);
+  .dvn-table-control-bar {
+    font-family: mat.font-family($typography-config);
+  }
+}
+
+@mixin sidebar_theme($theme) {
+  $color-config: mat.get-color-config($theme);
+  @if $color-config != null {
+    @include color($theme);
+  }
+
+  $typography-config: mat.get-typography-config($theme);
+  @if $typography-config != null {
+    @include typography($theme);
+  }
+}
