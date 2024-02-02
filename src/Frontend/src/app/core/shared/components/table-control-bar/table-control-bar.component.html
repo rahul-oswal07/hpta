@@ -1,0 +1,26 @@
+<div class="flex flex-row gap-1">
+  <app-filter-menu *ngIf="displayColumns" [filters]="filters" [filterOptions]="displayColumns"
+    (addFilter)="onAddFilter($event)">
+  </app-filter-menu>
+  <ng-content></ng-content>
+  <div class="flex-auto"></div>
+  <button *ngIf="displayColumns" class="display-columns-menu-trigger" mat-button
+    [disabled]="!(displayColumns.length > 0)" [matMenuTriggerFor]="menu" aria-label="Display columns menu" @.disabled>
+    <mat-icon>list</mat-icon>
+    Columns
+    <mat-menu #menu="matMenu" class="display-columns-menu">
+      <div mat-menu-item *ngFor="let c of displayColumns; trackBy: trackDisplayColumnBy" (click)="
+          $event.stopPropagation();
+          c.hidden = !c.hidden;
+          onDisplayColumnChange(c, cb.checked)
+        ">
+        <mat-checkbox #cb color="primary" [checked]="!c.hidden">{{
+          c.label
+          }}</mat-checkbox>
+      </div>
+    </mat-menu>
+  </button>
+</div>
+<app-filter-list class="grow" [filters]="filters" (editFilter)="onEditFilter($event)"
+  (removeFilter)="onFilterRemoved($event)">
+</app-filter-list>

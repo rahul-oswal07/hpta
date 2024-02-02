@@ -1,0 +1,90 @@
+{
+  "/account/*": {
+    "target": "https://localhost:3001",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  },
+  "/Account/*": {
+    "target": "https://localhost:3001",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  },
+  "/*.js": {
+    "target": "http://localhost:4200",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": false
+  },
+  "/index.html": {
+    "target": "http://localhost:4200",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": false
+  },
+  "/*.map": {
+    "target": "http://localhost:4200",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": false
+  },
+  "/*.woff2": {
+    "target": "http://localhost:4200",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": false
+  },
+  "/*.woff": {
+    "target": "http://localhost:4200",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": false
+  },
+  "/*.ttf": {
+    "target": "http://localhost:4200",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": false
+  },
+  "/assets/*": {
+    "target": "http://localhost:4200",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  },
+  "/api": {
+    "target": "https://localhost:3001",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/hubs": {
+    "target": "https://localhost:3001",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "ws": true
+  },
+  "/hangfire/*": {
+    "target": "https://localhost:3001",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "ws": true
+  },
+  "/_vs/*": {
+    "target": "https://localhost:3001",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "ws": true
+  },
+  "/_framework/*": {
+    "target": "https://localhost:3001",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "ws": true
+  }
+}

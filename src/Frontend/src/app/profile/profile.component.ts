@@ -22,7 +22,7 @@ export class ProfileComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.getProfile(environment.apiConfig.uri);
+    // this.getProfile(environment.apiConfig.uri);
   }
 
   getProfile(url: string) {
