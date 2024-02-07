@@ -63,7 +63,9 @@ namespace HPTA.Services
             newTeam.TeamUsers = new List<UserTeam>();
             foreach (var item in team)
             {
-                UserTeam newTeamMember = CreateUserTeam(azureAdUserId, email, existingUsers, item);
+                var newTeamMember = CreateUserTeam(azureAdUserId, email, existingUsers, item);
+                if (!existingUsers.Any(u => u.EmployeeCode == item.EmpId))
+                    existingUsers.Add(newTeamMember.User);
                 newTeam.TeamUsers.Add(newTeamMember);
             }
             _teamRepository.Add(newTeam);
@@ -87,12 +89,15 @@ namespace HPTA.Services
 
         private async Task AddTeamMembersIfNotExist(string azureAdUserId, string email, List<DevCentralTeamsResponse> team, List<User> existingUsers)
         {
-            foreach (var item in team)
+            foreach (var member in team)
             {
-                if (!await _userTeamRepository.AnyAsync(t => t.User.EmployeeCode == item.EmpId && t.TeamId == item.TeamId))
+                if (!await _userTeamRepository.AnyAsync(t => t.User.EmployeeCode == member.EmpId && t.TeamId == member.TeamId && t.RoleId == member.RoleId && t.StartDate == member.StartDate))
                 {
-                    var newTeamMember = CreateUserTeam(azureAdUserId, email, existingUsers, item);
+                    var newTeamMember = CreateUserTeam(azureAdUserId, email, existingUsers, member);
                     _userTeamRepository.Add(newTeamMember);
+
+                    if (!existingUsers.Any(u => u.EmployeeCode == member.EmpId))
+                        existingUsers.Add(newTeamMember.User);
                 }
             }
             await _userTeamRepository.SaveAsync();
