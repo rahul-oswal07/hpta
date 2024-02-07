@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HPTA.Data.Entities;
 
@@ -22,10 +21,9 @@ public abstract partial class Answer
 
     public SurveyQuestion Question { get; set; }
 
-    [ForeignKey(nameof(Employee))]
-    [MaxLength(128)]
-    public string EmployeeId { get; set; }
+    [ForeignKey(nameof(User))]
+    public string UserId { get; set; }
 
-    public Employee Employee { get; set; }
+    public User User { get; set; }
     #endregion
 }

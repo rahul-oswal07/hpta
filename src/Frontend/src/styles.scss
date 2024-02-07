@@ -156,7 +156,6 @@ body {
   display: flex;
   position: relative;
   flex-direction: column;
-  padding: 15px;
   flex: 1 1 auto;
   overflow: auto;
 }
@@ -311,4 +310,9 @@ table {
   overflow: auto;
   display: block;
   margin-bottom: 10px;
+}
+
+.drawer-container {
+  width: 100%;
+  height: 100%;
 }

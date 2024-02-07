@@ -1,4 +1,4 @@
-﻿using HPTA.Common;
+﻿using HPTA.Common.Configurations;
 using HPTA.Services.Infrastructure;
 
 namespace HPTA.Api.Infrastructure;
@@ -9,6 +9,6 @@ public static class DependencyRegistry
     {
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddSingleton(appSettings);
-        ServiceDependencyRegistry.RegisterDependency(services, appSettings);
+        ServiceDependencyRegistry.RegisterServices(services, appSettings);
     }
 }

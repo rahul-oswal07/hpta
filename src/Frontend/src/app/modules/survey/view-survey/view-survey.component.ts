@@ -1,7 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup, UntypedFormArray, UntypedFormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { DataRetrievalStatus } from 'src/app/core/models/data-retrieval-status';
 import { DataStatusIndicator } from 'src/app/modules/data-status-indicator/data-status-indicator.component';
+import { AnswerService } from 'src/app/modules/survey/answer.service';
 import { SurveyService } from 'src/app/modules/survey/survey.service';
 
 type Question = {
@@ -27,34 +29,28 @@ export class ViewSurveyComponent implements OnInit {
   groupedQuestions: GroupedQuestions = {};
   questions: Question[] = [];
   form = new UntypedFormGroup({});
+  submitting = false;
   @ViewChild(DataStatusIndicator)
   dataStatusIndicator?: DataStatusIndicator;
-  constructor(private surveyService: SurveyService) { }
+  constructor(private surveyService: SurveyService, private answerService: AnswerService, private router: Router) { }
 
   ngOnInit() {
     this.loadData();
   }
 
   loadData() {
-    if (this.dataStatusIndicator) {
-      this.dataStatusIndicator.status = 'Loading';
-    }
+    this.dataStatusIndicator?.setLoading();
     this.surveyService.getList<Question>().subscribe({
       next: r => {
         this.questions = r;
         this.groupQuestions();
       }, error: () => {
-        if (this.dataStatusIndicator) {
-          this.dataStatusIndicator.errorMessage = 'An error occured while retrieving questions.';
-        }
+        this.dataStatusIndicator?.setError('An error occured while retrieving questions.');
       }, complete: () => {
-        if (!this.dataStatusIndicator) {
-          return;
-        }
         if (this.questions?.length > 0) {
-          this.dataStatusIndicator.status = 'Default';
-        } else if (this.dataStatusIndicator.status !== 'Error') {
-          this.dataStatusIndicator.status = 'NoData';
+          this.dataStatusIndicator?.setDefault();
+        } else if (this.dataStatusIndicator?.status !== 'Error') {
+          this.dataStatusIndicator?.setNoData();
         }
       }
     });
@@ -95,7 +91,7 @@ export class ViewSurveyComponent implements OnInit {
   getKeys(obj: any): string[] {
     return Object.keys(obj);
   }
-  flattenFormValues(formValues: any): { questionNumber: number; rating: any }[] {
+  flattenFormValues(formValues: any): { questionNumber: number; rating?: number }[] {
     return Object.values(formValues).flatMap((category: any) =>
       Object.values(category).flatMap((subCategory: any) =>
         subCategory.questions.map((question: any) => ({
@@ -108,7 +104,16 @@ export class ViewSurveyComponent implements OnInit {
 
   onSubmit() {
     const formValues = this.form.value;
-    const flattenedValues = this.flattenFormValues(formValues);
-    console.log(flattenedValues);
+    const answers = this.flattenFormValues(formValues);
+    this.submitting = true;
+    this.answerService.post(answers, '1').subscribe({
+      next: () => {
+        this.router.navigate(['/survey', 'results', '1']);
+      }, error: () => {
+        this.submitting = false;
+      }, complete: () => {
+        this.submitting = false;
+      }
+    });
   }
 }

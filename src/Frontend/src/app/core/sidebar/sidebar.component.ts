@@ -2,6 +2,7 @@ import { Component, EventEmitter, HostBinding, Input, OnDestroy, OnInit, Output 
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
 import { MenuItem } from 'src/app/core/models/menu-item';
+import { MenuService } from 'src/app/core/services/menu.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -22,25 +23,20 @@ export class SidebarComponent implements OnInit, OnDestroy {
   onThemeSelected = new EventEmitter<string>()
   mainMenu: MenuItem[] = [];
   settingsMenu: MenuItem[] = [];
-  private _menu?: MenuItem[] | undefined;
-  public get menu(): MenuItem[] | undefined {
-    return this._menu;
-  }
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private menuService: MenuService) {
 
-  @Input()
-  public set menu(value: MenuItem[] | undefined) {
-    this._menu = value;
-    this.mainMenu = value?.filter(m => m.isMainMenu) ?? [];
-    this.settingsMenu = value?.filter(m => !m.isMainMenu) ?? [];
   }
-  constructor(private router: Router, private activatedRoute: ActivatedRoute) { }
   ngOnInit(): void {
+    this.menuService.menu.subscribe(value => {
+      this.mainMenu = value?.filter(m => m.isMainMenu) ?? [];
+      this.settingsMenu = value?.filter(m => !m.isMainMenu) ?? [];
+      this.activateSubMenu();
+    })
     this.routerSubscription = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: any) => {
         this.activateSubMenu();
       });
-    this.activateSubMenu();
   }
 
   @HostBinding('class.sidebar-collapsed') get isCollapsed() { return this.collapsed; }
@@ -52,10 +48,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.activatedRoute.url.subscribe(r => {
       const url = this.router.url;
       console.log('url:', url);
-      this.menu?.forEach(m => {
+      this.mainMenu?.forEach(m => {
         if (m.subMenu) {
           m.isSubMenuActive = m.subMenu.some(s => s.route && url === ((s.route.startsWith('/') ? '' : '/') + s.route));
-          console.log(m.isSubMenuActive);
           console.log(m);
         }
       })

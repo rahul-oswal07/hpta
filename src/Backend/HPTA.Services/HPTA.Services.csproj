@@ -3,10 +3,16 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DevCentralClient\DevCentralClient.csproj" />
     <ProjectReference Include="..\HPTA.DTO\HPTA.DTO.csproj" />
     <ProjectReference Include="..\HPTA.Repositories\HPTA.Repositories.csproj" />
   </ItemGroup>

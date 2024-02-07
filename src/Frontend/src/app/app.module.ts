@@ -55,11 +55,12 @@ export function MSALInstanceFactory(): IPublicClientApplication {
       authority: environment.msalConfig.auth.authority,
       navigateToLoginRequestUrl: true,
       redirectUri: '/',
-      postLogoutRedirectUri: '/'
+      postLogoutRedirectUri: '/',
+
     },
     cache: {
       cacheLocation: BrowserCacheLocation.LocalStorage,
-      storeAuthStateInCookie: false
+      storeAuthStateInCookie: true
     },
     system: {
       allowNativeBroker: false, // Disables WAM Broker
@@ -107,7 +108,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     FailedLoginComponent,
     ProfileComponent,
     SidebarComponent,
-    NavbarComponent
+    NavbarComponent,
   ],
   imports: [
     BrowserModule,
