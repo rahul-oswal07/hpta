@@ -1,5 +1,5 @@
 ﻿namespace HPTA.Data.Entities;
 
-partial class Employee : IEntity
+partial class User : IEntity
 {
 }

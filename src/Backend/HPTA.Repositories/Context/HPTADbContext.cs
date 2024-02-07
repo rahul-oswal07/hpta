@@ -17,5 +17,9 @@ public partial class HPTADbContext
 
     public DbSet<Answer> Answers { get; set; }
 
-    public DbSet<Employee> Employees { get; set; }
+    public DbSet<User> Users { get; set; }
+
+    public DbSet<Team> Teams { get; set; }
+
+    public DbSet<UserTeam> UserTeams { get; set; }
 }

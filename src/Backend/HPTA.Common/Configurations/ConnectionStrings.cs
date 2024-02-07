@@ -1,4 +1,4 @@
-﻿namespace HPTA.Common;
+﻿namespace HPTA.Common.Configurations;
 
 public class ConnectionStrings
 {

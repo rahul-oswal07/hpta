@@ -31,7 +31,7 @@
             <button type="button" matStepperNext mat-raised-button [disabled]="!form.get(category)?.valid"
               *ngIf="i < categories.length - 1">Next</button>
             <button type="submit" mat-raised-button color="primary" *ngIf="i === categories.length - 1"
-              [disabled]="!form.valid">Submit</button>
+              [disabled]="!form.valid || submitting">Submit</button>
           </div>
         </ng-template>
       </mat-step>

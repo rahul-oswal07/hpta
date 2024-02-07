@@ -1,4 +1,4 @@
-﻿using HPTA.Common;
+﻿using HPTA.Common.Configurations;
 using HPTA.Repositories.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +7,7 @@ namespace HPTA.Repositories.Infrastructure;
 
 public static class RepositoryDependencyRegistry
 {
-    public static void DependencyRegistry(this IServiceCollection services, ConnectionStrings appSettings)
+    public static void RetisterRepositories(this IServiceCollection services, ConnectionStrings appSettings)
     {
         services.AddDbContext<HPTADbContext>(options =>
         {
@@ -19,5 +19,8 @@ public static class RepositoryDependencyRegistry
         services.AddTransient<ICategoryRepository, CategoryRepository>();
         services.AddTransient<ISurveyRepository, SurveyRepository>();
         services.AddTransient<IAnswerRepository, AnswerRepository>();
+        services.AddTransient<IUserRepository, UserRepository>();
+        services.AddTransient<ITeamRepository, TeamRepository>();
+        services.AddTransient<IUserTeamRepository, UserTeamRepository>();
     }
 }

@@ -8,16 +8,24 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RatingModule } from 'src/app/modules/rating/rating.module';
 import { MatButtonModule } from '@angular/material/button';
 import { DataStatusIndicatorModule } from 'src/app/modules/data-status-indicator/data-status-indicator.module';
+import { SurveyResultComponent } from './survey-result/survey-result.component';
+import { CreateSurveyComponent } from './create-survey/create-survey.component';
 
 const SURVEY_ROUTES: Routes = [
   {
-    path: ':id',
+    path: 'view/:id',
     component: ViewSurveyComponent,
+  },
+  {
+    path: 'results/:id',
+    component: SurveyResultComponent,
   },
 ];
 @NgModule({
   declarations: [
-    ViewSurveyComponent
+    ViewSurveyComponent,
+    SurveyResultComponent,
+    CreateSurveyComponent
   ],
   imports: [
     CommonModule,

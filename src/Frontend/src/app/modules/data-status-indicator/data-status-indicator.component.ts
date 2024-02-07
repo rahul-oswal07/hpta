@@ -35,4 +35,17 @@ export class DataStatusIndicator implements OnInit {
       this.renderer.addClass(this.element, 'invisible');
     }
   }
+  setNoData() {
+    this.status = 'NoData';
+  }
+  setDefault() {
+    this.status = 'Default';
+  }
+  setLoading() {
+    this.status = 'Loading';
+  }
+  setError(message: string) {
+    this.status = 'Error';
+    this.errorMessage = message;
+  }
 }

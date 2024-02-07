@@ -13,7 +13,7 @@ namespace HPTA.Data.Configurations
                 .HasValue<RatingAnswer>(QuestionAnswerType.Rating)
                 .HasValue<FreeTextAnswer>(QuestionAnswerType.FreeText);
             builder.HasOne(a => a.Question).WithMany(q => q.Answers).HasForeignKey(f => new { f.SurveyId, f.QuestionNumber });
-            builder.HasIndex(p => new { p.SurveyId, p.QuestionNumber, p.EmployeeId }).IsUnique().HasFilter("[IsDeleted] = 0");
+            builder.HasIndex(p => new { p.SurveyId, p.QuestionNumber, p.UserId }).IsUnique().HasFilter("[IsDeleted] = 0");
         }
     }
 }

@@ -1,11 +1,5 @@
 {
-  "/account/*": {
-    "target": "https://localhost:3001",
-    "secure": false,
-    "logLevel": "debug",
-    "changeOrigin": true
-  },
-  "/Account/*": {
+  "/user/config": {
     "target": "https://localhost:3001",
     "secure": false,
     "logLevel": "debug",

@@ -5,7 +5,7 @@
     (logoutClick)="logout()"></app-navbar>
   <div class="ux-application-container" [class.sidebar-collapsed]="sidebarCollapsed">
     <!-- Container for sidebar -->
-    <app-sidebar id="sidebar-wrapper" [theme]="theme" [menu]="(menu | async) || []" [(collapsed)]="sidebarCollapsed"
+    <app-sidebar id="sidebar-wrapper" [theme]="theme" [(collapsed)]="sidebarCollapsed"
       (onThemeSelected)="onThemeSelected($event)"></app-sidebar>
     <div class="main-container">
       <div class="content-wrapper">

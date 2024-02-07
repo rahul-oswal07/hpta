@@ -5,6 +5,8 @@ import { MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalSe
 import { AccountInfo, AuthenticationResult, EventMessage, EventType, IPublicClientApplication, InteractionStatus, InteractionType, PopupRequest, PublicClientApplication, RedirectRequest } from '@azure/msal-browser';
 import { Observable, Subject, filter, map, of, takeUntil } from 'rxjs';
 import { MenuItem } from 'src/app/core/models/menu-item';
+import { MenuService } from 'src/app/core/services/menu.service';
+import { UserConfigService } from 'src/app/core/services/user-config.service';
 import { UserProfileService } from 'src/app/core/services/user-profile.service';
 
 @Component({
@@ -20,33 +22,20 @@ export class AppComponent implements OnInit, OnDestroy {
   theme = '';
   loginDisplay = false;
   sidebarCollapsed = false;
-  menu!: Observable<MenuItem[]>;
   private readonly _destroying$ = new Subject<void>();
   constructor(@Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
     private authService: MsalService,
     private msalBroadcastService: MsalBroadcastService,
+    private userConfigService: UserConfigService,
     private readonly renderer: Renderer2,
     private profileService: UserProfileService,
+    private menuService: MenuService,
     private domSanitizer: DomSanitizer,
     @Inject(DOCUMENT) private readonly document: Document) {
 
   }
   ngOnInit(): void {
-    this.menu = of([
-      { id: '', name: 'Dashboard', route: '/', icon: 'home', canRead: true, isMainMenu: true },
-      {
-        id: '', name: 'Masters', route: 'master', icon: 'folder', canRead: true, isMainMenu: true, subMenu: [
-          { id: '', name: 'Categories', route: 'categories', icon: 'category', canRead: true, isMainMenu: true },
-          { id: '', name: 'Sub-Categories', route: 'subcategories', icon: 'subtitles', canRead: true, isMainMenu: true },
-          { id: '', name: 'Questions', route: 'questions', icon: 'quiz', canRead: true, isMainMenu: true }
-        ]
-      },
-      {
-        id: '', name: 'Survey', route: 'surveys', icon: 'mood', canRead: true, isMainMenu: true, subMenu: [
-          { id: '', name: 'Active Survey', route: 'survey/1', icon: 'summarize', canRead: true, isMainMenu: true }
-        ]
-      }
-    ])
+    this.menuService.reloadMenu();
     /**
      * You can subscribe to MSAL events as shown below. For more info,
      * visit: https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-angular/docs/v2-docs/events.md
@@ -55,14 +44,22 @@ export class AppComponent implements OnInit, OnDestroy {
     this.setLoginDisplay();
 
     this.authService.instance.enableAccountStorageEvents(); // Optional - This will enable ACCOUNT_ADDED and ACCOUNT_REMOVED events emitted when a user logs in or out of another tab or window
+
+    // Listen for successful login or token acquisition
     this.msalBroadcastService.msalSubject$
       .pipe(
-        filter((msg: EventMessage) => msg.eventType === EventType.ACCOUNT_ADDED || msg.eventType === EventType.ACCOUNT_REMOVED),
+        filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS
+          || msg.eventType === EventType.ACQUIRE_TOKEN_SUCCESS
+          || msg.eventType === EventType.ACCOUNT_ADDED
+          || msg.eventType === EventType.ACCOUNT_REMOVED),
+        takeUntil(this._destroying$)
       )
       .subscribe((result: EventMessage) => {
-        if (this.authService.instance.getAllAccounts().length === 0) {
-          window.location.pathname = "/";
-        } else {
+        console.log('msalEvent', result);
+        if (result.eventType === EventType.LOGIN_SUCCESS) {
+          this.registerUser();
+        }
+        if (this.authService.instance.getAllAccounts().length > 0) {
           this.setLoginDisplay();
         }
       });
@@ -76,6 +73,12 @@ export class AppComponent implements OnInit, OnDestroy {
         this.setLoginDisplay();
         this.checkAndSetActiveAccount();
       })
+  }
+
+  registerUser() {
+    this.userConfigService.getUserConfig().subscribe(r => {
+
+    });
   }
   setLoginDisplay() {
     this.loginDisplay = this.authService.instance.getAllAccounts().length === 0;

@@ -1,11 +1,9 @@
 ﻿using HPTA.Services.Contracts;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HPTA.Api.Controllers;
 
 [Route("api/[controller]")]
-[Authorize]
 public class SurveyController : BaseController
 {
     private readonly ISurveyService _surveyService;
