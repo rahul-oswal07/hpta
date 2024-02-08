@@ -23,18 +23,26 @@ const routes: Routes = [
     path: 'survey',
     loadChildren: () =>
       import('./modules/survey/survey.module').then((m) => m.SurveyModule),
-  }, {
+  },
+  {
     path: 'categories',
     loadChildren: () =>
       import('./modules/categories/categories.module').then((m) => m.CategoriesModule),
-  }, {
+  },
+  {
     path: 'subcategories',
     loadChildren: () =>
       import('./modules/sub-categories/sub-categories.module').then((m) => m.SubCategoriesModule),
-  }, {
+  },
+  {
     path: 'questions',
     loadChildren: () =>
       import('./modules/questions/questions.module').then((m) => m.QuestionsModule),
+  },
+  {
+    path: 'result',
+    loadChildren: () =>
+      import('./modules/survey-result/survey-result.module').then((m) => m.SurveyResultModule),
   },
 ];
 
