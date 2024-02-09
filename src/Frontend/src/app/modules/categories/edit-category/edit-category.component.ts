@@ -6,7 +6,7 @@ import { Observable, catchError, finalize, map, of, switchMap, take } from 'rxjs
 import { BlockNavigationIfChange } from 'src/app/core/guards/unsaved-changes.guard';
 import { CategoriesService } from 'src/app/modules/categories/categories.service';
 import { Category } from 'src/app/modules/categories/category';
-import { categoryNameAvailabilityValidator } from 'src/app/modules/categories/category-availability-check';
+import { availabilityValidator } from 'src/app/core/utils/availability-check';
 
 @Component({
   selector: 'app-edit-category',
@@ -21,7 +21,7 @@ export class EditCategoryComponent implements OnInit, OnDestroy, BlockNavigation
     name: new UntypedFormControl('',
       {
         validators: [Validators.required],
-        asyncValidators: [categoryNameAvailabilityValidator((
+        asyncValidators: [availabilityValidator((
           (name, id) => this.categoryService.checkNameAvailability(name, id)
         ))]
       })

@@ -13,6 +13,7 @@ public static class ServiceDependencyRegistry
         services.AddScoped<IIdentityService, AzureAdIdentityService>();
         services.AddTransient<IQuestionService, QuestionService>();
         services.AddTransient<ICategoryService, CategoryService>();
+        services.AddTransient<ISubCategoryService, SubCategoryService>();
         services.AddTransient<ISurveyService, SurveyService>();
         services.AddTransient<IAnswerService, AnswerService>();
         services.AddTransient<IUserService, UserService>();
