@@ -4,21 +4,8 @@ import { Router } from '@angular/router';
 import { DataRetrievalStatus } from 'src/app/core/models/data-retrieval-status';
 import { DataStatusIndicator } from 'src/app/modules/data-status-indicator/data-status-indicator.component';
 import { AnswerService } from 'src/app/modules/survey/answer.service';
+import { GroupedQuestions, SurveyQuestion } from 'src/app/modules/survey/survey-question';
 import { SurveyService } from 'src/app/modules/survey/survey.service';
-
-type Question = {
-  questionNumber: number;
-  question: string;
-  subCategory: string;
-  category: string;
-};
-
-type GroupedQuestions = {
-  [category: string]: {
-    [subCategory: string]: Question[];
-  };
-};
-
 
 @Component({
   selector: 'app-view-survey',
@@ -27,7 +14,7 @@ type GroupedQuestions = {
 })
 export class ViewSurveyComponent implements OnInit {
   groupedQuestions: GroupedQuestions = {};
-  questions: Question[] = [];
+  questions: SurveyQuestion[] = [];
   form = new UntypedFormGroup({});
   submitting = false;
   @ViewChild(DataStatusIndicator)
@@ -40,7 +27,7 @@ export class ViewSurveyComponent implements OnInit {
 
   loadData() {
     this.dataStatusIndicator?.setLoading();
-    this.surveyService.getList<Question>().subscribe({
+    this.surveyService.listQuestions().subscribe({
       next: r => {
         this.questions = r;
         this.groupQuestions();
@@ -106,7 +93,7 @@ export class ViewSurveyComponent implements OnInit {
     const formValues = this.form.value;
     const answers = this.flattenFormValues(formValues);
     this.submitting = true;
-    this.answerService.post(answers, '1').subscribe({
+    this.answerService.submitAnswers(1, answers).subscribe({
       next: () => {
         this.router.navigate(['/survey', 'results', '1']);
       }, error: () => {

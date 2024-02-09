@@ -10,7 +10,7 @@ namespace HPTA.Repositories.Contracts
         /// </summary>
         /// <param name="includes">The 0 or more navigation properties to include for EF eager loading.</param>
         /// <returns>The list of entities</returns>
-        List<T> GetAll(params Expression<Func<T, object>>[] includes);
+        IQueryable<T> GetAll(params Expression<Func<T, object>>[] includes);
 
         /// <summary>
         /// To get all entities asynchronously.
@@ -24,7 +24,7 @@ namespace HPTA.Repositories.Contracts
         /// </summary>
         /// <param name="predicate">The conditions to filter with.</param>
         /// <returns>The list of entities</returns>
-        List<T> GetBy(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes);
+        IQueryable<T> GetBy(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes);
 
         Task<List<T>> GetByAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes);
 
@@ -60,6 +60,8 @@ namespace HPTA.Repositories.Contracts
         /// </summary>
         /// <param name="entity">The entity to delete.</param>
         void Delete(T entity);
+
+        Task DeleteByAsync(Expression<Func<T, bool>> predicate);
 
         Task<int> SaveAsync();
     }

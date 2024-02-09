@@ -1,5 +1,4 @@
-﻿using HPTA.Common.Constraints;
-using HPTA.Common.Extensions;
+﻿using HPTA.Common.Extensions;
 using HPTA.Data;
 using HPTA.Repositories.Contracts;
 using Microsoft.EntityFrameworkCore;
@@ -58,9 +57,14 @@ namespace HPTA.Repositories.Infrastructure
         /// </summary>
         /// <param name="predicate">The conditions to filter with.</param>
         /// <returns>The list of entities</returns>GetAllAsync
-        public List<T> GetBy(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
+        public IQueryable<T> GetBy(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
         {
-            return this.GetByAsync(predicate, includes).Result;
+            if (includes != null)
+            {
+                return this.Include(this.dbset.Where(this.ApplyFilters(predicate)), includes);
+            }
+
+            return this.dbset.Where(this.ApplyFilters(predicate));
         }
 
         /// <summary>
@@ -71,12 +75,7 @@ namespace HPTA.Repositories.Infrastructure
         /// <returns>The list of entities</returns>
         public async Task<List<T>> GetByAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
         {
-            if (includes != null)
-            {
-                return await this.Include(this.dbset.Where(this.ApplyFilters(predicate)), includes).ToListAsync().ConfigureAwait(false);
-            }
-
-            return await this.dbset.Where(this.ApplyFilters(predicate)).ToListAsync().ConfigureAwait(false);
+            return await GetBy(predicate, includes).ToListAsync();
         }
 
         /// <summary>
@@ -84,9 +83,14 @@ namespace HPTA.Repositories.Infrastructure
         /// </summary>
         /// <param name="includes">The 0 or more navigation properties to include for EF eager loading.</param>
         /// <returns>The list of entities</returns>
-        public virtual List<T> GetAll(params Expression<Func<T, object>>[] includes)
+        public virtual IQueryable<T> GetAll(params Expression<Func<T, object>>[] includes)
         {
-            return this.GetAllAsync(includes).Result;
+            if (includes != null)
+            {
+                return this.Include(this.dbset.Where(this.ApplyFilters()), includes);
+            }
+
+            return this.dbset.Where(this.ApplyFilters());
         }
 
         /// <summary>
@@ -96,12 +100,7 @@ namespace HPTA.Repositories.Infrastructure
         /// <returns>The list of entities</returns>
         public virtual async Task<List<T>> GetAllAsync(params Expression<Func<T, object>>[] includes)
         {
-            if (includes != null)
-            {
-                return await this.Include(this.dbset.Where(this.ApplyFilters()), includes).ToListAsync().ConfigureAwait(false);
-            }
-
-            return await this.dbset.Where(this.ApplyFilters()).ToListAsync().ConfigureAwait(false);
+            return await this.GetAll(includes).ToListAsync();
         }
 
         /// <summary>
@@ -173,6 +172,12 @@ namespace HPTA.Repositories.Infrastructure
             {
                 // Nothing to dispose here.
             }
+        }
+
+        public async Task DeleteByAsync(Expression<Func<T, bool>> predicate)
+        {
+            var entity = await this.dbset.FirstOrDefaultAsync(this.ApplyFilters(predicate));
+            dbset.Remove(entity);
         }
     }
 }

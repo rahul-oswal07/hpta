@@ -15,7 +15,6 @@ import { UserProfileService } from 'src/app/core/services/user-profile.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'HPTA';
   accountInfo: AccountInfo | null = null;
   avatarUrl?: SafeUrl;
   isIframe = false;
@@ -36,6 +35,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     this.menuService.reloadMenu();
+
     /**
      * You can subscribe to MSAL events as shown below. For more info,
      * visit: https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-angular/docs/v2-docs/events.md

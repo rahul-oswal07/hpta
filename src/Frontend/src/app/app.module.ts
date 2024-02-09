@@ -20,6 +20,10 @@ import { SidebarComponent } from 'src/app/core/sidebar/sidebar.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NavbarComponent } from 'src/app/core/navbar/navbar.component';
+import { DialogModule } from 'src/app/modules/dialog/dialog.module';
+import { ErrorHandlerInterceptor } from 'src/app/core/interceptors/error-handler.interceptor';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormField } from '@angular/material/form-field';
+import { SharedModule } from 'src/app/core/shared/shared.module';
 
 export const APP_DATE_FORMATS = {
   parse: {
@@ -115,12 +119,14 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
+    SharedModule,
     // MsalApplicationModule.forRoot('config.json'),
     MatToolbarModule,
     MatMenuModule,
     MsalModule,
     MatIconModule,
-    MatTooltipModule
+    MatTooltipModule,
+    DialogModule
   ],
   // providers: [
   //   AppConfigService,
@@ -138,6 +144,11 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
       multi: true
     },
     {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorHandlerInterceptor,
+      multi: true
+    },
+    {
       provide: MSAL_INSTANCE,
       useFactory: MSALInstanceFactory
     },
@@ -149,6 +160,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
       provide: MSAL_INTERCEPTOR_CONFIG,
       useFactory: MSALInterceptorConfigFactory
     },
+    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' } },
     MsalService,
     MsalGuard,
     MsalBroadcastService

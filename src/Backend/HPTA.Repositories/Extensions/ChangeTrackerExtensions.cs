@@ -15,10 +15,10 @@ namespace HPTA.Repositories.Extensions
 
             foreach (var entry in changeTracker.Entries())
             {
-                var type = entry.GetType();
+                var type = entry.Entity.GetType();
                 if (typeof(IAuditable).IsAssignableFrom(type))
                 {
-                    var entity = (IAuditable)entry;
+                    var entity = (IAuditable)entry.Entity;
                     entity.UpdatedOn = timestamp;
 
                     if (entry.State == EntityState.Added)

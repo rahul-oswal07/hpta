@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Inject, Injectable, Injector } from '@angular/core';
-import { Observable, finalize, map } from 'rxjs';
+import { Observable, Subject, finalize, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,12 +9,17 @@ export abstract class DataService {
   abstract readonly path: string;
   private readonly baseUrl = '/api';
   protected http: HttpClient;
+  private reloadRequest = new Subject<void>();
+
+  reloadRequest$ = this.reloadRequest.asObservable();
   constructor(injector: Injector) {
     this.http = injector.get(HttpClient);
   }
-
-  getList<T>(path?: string, queryParameters: { [key: string]: string | number } | null = null): Observable<T[]> {
-    const url = this.getUrl(path, null, this.createHttpParams(queryParameters));
+  public requestReload() {
+    this.reloadRequest.next();
+  }
+  protected getList<T>(pathParameters?: string | string[], queryParameters: { [key: string]: string | number | undefined } | null = null): Observable<T[]> {
+    const url = this.getUrl(pathParameters, this.createHttpParams(queryParameters));
     const headers = { headers: {} };
     return this.http.get(url, headers)
       .pipe(map((response) => {
@@ -22,16 +27,16 @@ export abstract class DataService {
       }));
   }
 
-  getSingle<T>(path?: string, id?: string | number | null, queryParameters: { [key: string]: string | number } | null = null): Observable<T> {
-    const url = this.getUrl(path, id, this.createHttpParams(queryParameters));
+  protected getSingle<T>(pathParameters?: string | string[], queryParameters: { [key: string]: string | number | undefined } | null = null): Observable<T> {
+    const url = this.getUrl(pathParameters, this.createHttpParams(queryParameters));
     return this.http.get(url)
       .pipe(map(response => {
         return response as T;
       }));
   }
 
-  post<T, R>(data: T, path?: string, queryParameters: { [key: string]: string | number } | null = null): Observable<R> {
-    const url = this.getUrl(path, null, this.createHttpParams(queryParameters));
+  protected post<T, R = void>(data: T, pathParameters?: string | string[], queryParameters: { [key: string]: string | number | undefined } | null = null): Observable<R> {
+    const url = this.getUrl(pathParameters, this.createHttpParams(queryParameters));
     let httpOptions;
     if (typeof data === 'string' || data instanceof String) {
       httpOptions = {
@@ -46,8 +51,8 @@ export abstract class DataService {
       }));
   }
 
-  postAsFormData<T, R>(data: T, path?: string, queryParameters: { [key: string]: string | number } | null = null): Observable<R> {
-    const url = this.getUrl(path, null, this.createHttpParams(queryParameters));
+  protected postAsFormData<T, R>(data: T, pathParameters?: string | string[], queryParameters: { [key: string]: string | number | undefined } | null = null): Observable<R> {
+    const url = this.getUrl(pathParameters, this.createHttpParams(queryParameters));
     const formData: FormData = new FormData();
     if (data) {
       Object.keys(data).forEach(key => {
@@ -68,16 +73,16 @@ export abstract class DataService {
       }));
   }
 
-  put<T, R>(id: string | number, data: T, path?: string, queryParameters: { [key: string]: string | number } | null = null): Observable<R> {
-    const url = this.getUrl(path, id, this.createHttpParams(queryParameters));
+  protected put<T, R = void>(data: T, pathParameters?: string | string[], queryParameters: { [key: string]: string | number | undefined } | null = null): Observable<R> {
+    const url = this.getUrl(pathParameters, this.createHttpParams(queryParameters));
     return this.http.put(url, data)
       .pipe(map(response => {
         return response as R;
       }));
   }
 
-  putAsFormData<T, R>(id: string | number, data: T, path?: string, queryParameters: { [key: string]: string | number } | null = null): Observable<R> {
-    const url = this.getUrl(path, id, this.createHttpParams(queryParameters));
+  protected putAsFormData<T, R>(data: T, pathParameters?: string | string[], queryParameters: { [key: string]: string | number | undefined } | null = null): Observable<R> {
+    const url = this.getUrl(pathParameters, this.createHttpParams(queryParameters));
     const formData: any = new FormData();
     if (data) {
       Object.keys(data).forEach(key => formData.append(key, (data as any)[key]));
@@ -88,15 +93,15 @@ export abstract class DataService {
       }));
   }
 
-  delete(id: string | number, path?: string): Observable<any> {
-    const url = this.getUrl(path, id);
+  protected delete(pathParameters?: string | string[]): Observable<any> {
+    const url = this.getUrl(pathParameters);
     return this.http.delete(url)
       .pipe(map(response => {
         return response;
       }));
   }
-  deleteSelected(ids: string[], path?: string): any {
-    const url = this.getUrl(path);
+  protected deleteSelected(ids: string[], pathParameters?: string | string[]): any {
+    const url = this.getUrl(pathParameters);
     return this.http.post(url, { body: { ids } })
       .pipe(map(response => {
         return response;
@@ -109,13 +114,11 @@ export abstract class DataService {
   //   }));
   // }
 
-  protected getUrl(path?: string, id?: string | number | null, queryParameters?: HttpParams): string {
+  protected getUrl(pathParameters?: string | string[], queryParameters?: HttpParams): string {
     let url = `${this.baseUrl}/${this.path}`;
-    if (path) {
+    if (pathParameters) {
+      const path = typeof pathParameters === 'string' ? pathParameters : pathParameters.join('/');
       url += (url.endsWith('/') ? '' : '/') + path;
-    }
-    if (id) {
-      url += (url.endsWith('/') ? '' : '/') + id;
     }
     if (queryParameters && queryParameters.keys().length > 0) {
       url = url.concat('?' + queryParameters.toString());
@@ -123,7 +126,7 @@ export abstract class DataService {
     return url;
   }
 
-  protected createHttpParams(params: { [key: string]: string | number } | null): HttpParams {
+  protected createHttpParams(params: { [key: string]: string | number | undefined } | null): HttpParams {
     let httpParams: HttpParams = new HttpParams();
     if (!params || this.isEmpty(params)) {
       return httpParams;

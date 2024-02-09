@@ -1,15 +1,54 @@
-<mat-drawer-container class="drawer-container">
-  <mat-drawer mode="side" opened class="category-list">
-    <p class="p-2">
+<mat-drawer-container class="drawer-container" autosize>
+  <mat-drawer mode="side" opened="true" class="category-list">
+    <div [ngClass]="{'hidden': isLoading}">
 
-      Categories will be listed here
-    </p>
+      <div class="p-1 flex gap-2 items-center">
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>Search Categories</mat-label>
+          <input type="text" matInput placeholder="Search Categories" [(ngModel)]="searchTerm" />
+          <button matSuffix mat-icon-button disabled="true" *ngIf="!searchTerm">
+            <mat-icon>search</mat-icon>
+          </button>
+          <button matSuffix mat-icon-button color="warn" *ngIf="searchTerm" (click)="clearSearch()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+        <a mat-button color="primary" [routerLink]="'create'">
+          <mat-icon>
+            add
+          </mat-icon>
+          Add Category
+        </a>
+      </div>
+      <mat-list>
+
+        <mat-list-item *ngFor="let category of categories" [activated]="category.id === activeCategoryId">
+          <div matListItemTitle>{{category.name}}</div>
+          <small matListItemLine class="text-xs">
+            Created on: {{category.createdOn | date:'dd-MMM-yyyy HH:mm:ss'}}
+          </small>
+          <small matListItemLine class="text-xs">
+            Last Modified on: {{category.updatedOn | date:'dd-MMM-yyyy HH:mm:ss'}}
+          </small>
+          <div matListItemMeta>
+
+            <a mat-icon-button [routerLink]="[category.id,'edit']" matTooltip="Edit category"
+              [disabled]="category.id === activeCategoryId">
+              <mat-icon>edit_note</mat-icon>
+            </a>
+            <button mat-icon-button color="warn" (click)="deleteCategory(category.id)"
+              [disabled]="category.id === activeCategoryId" matTooltip="Delete category">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </mat-list-item>
+      </mat-list>
+    </div>
+    <div *ngIf="isLoading" class="loading-spinner-container">
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    </div>
   </mat-drawer>
   <mat-drawer-content>
-    <p class="p-2">
-
-      Selected category can be edited here.
-    </p>
     <router-outlet></router-outlet>
   </mat-drawer-content>
 </mat-drawer-container>

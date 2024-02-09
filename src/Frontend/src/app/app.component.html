@@ -1,6 +1,6 @@
 <div class="site-container">
 
-  <app-navbar [title]="title" [loggedInUser]="accountInfo" [loginDisplay]="loginDisplay"
+  <app-navbar [loggedInUser]="accountInfo" [loginDisplay]="loginDisplay"
     [avatarUrl]="avatarUrl || 'assets/avatar-placeholder.svg'" (loginClick)="loginRedirect()"
     (logoutClick)="logout()"></app-navbar>
   <div class="ux-application-container" [class.sidebar-collapsed]="sidebarCollapsed">

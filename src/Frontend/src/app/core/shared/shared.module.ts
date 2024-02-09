@@ -27,11 +27,6 @@ import { FilterStringFormComponent } from 'src/app/core/shared/components/filter
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FilterService } from 'src/app/core/shared/services/filter.service';
-import { ActivityTypePipe } from 'src/app/core/shared/pipes/activity-type.pipe';
-import { BiddingTypePipe } from 'src/app/core/shared/pipes/bidding-type.pipe';
-import { SpotBiddingTypePipe } from 'src/app/core/shared/pipes/spot-bidding-type.pipe';
-import { TimeUnitPipe } from 'src/app/core/shared/pipes/time-unit.pipe';
-import { QuotationStatusPipe } from 'src/app/core/shared/pipes/quotation-status.pipe';
 
 @NgModule({
   declarations: [
@@ -43,12 +38,7 @@ import { QuotationStatusPipe } from 'src/app/core/shared/pipes/quotation-status.
     FilterDateFormComponent,
     FilterNumberFormComponent,
     FilterSelectFormComponent,
-    FilterStringFormComponent,
-    ActivityTypePipe,
-    TimeUnitPipe,
-    SpotBiddingTypePipe,
-    BiddingTypePipe,
-    QuotationStatusPipe
+    FilterStringFormComponent
   ],
   imports: [
     CommonModule,
@@ -68,12 +58,7 @@ import { QuotationStatusPipe } from 'src/app/core/shared/pipes/quotation-status.
   exports: [
     TableControlBarComponent,
     FilterListComponent,
-    FilterMenuComponent,
-    ActivityTypePipe,
-    TimeUnitPipe,
-    SpotBiddingTypePipe,
-    BiddingTypePipe,
-    QuotationStatusPipe
+    FilterMenuComponent
   ],
   providers: [
     FilterService

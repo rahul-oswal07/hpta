@@ -5,6 +5,7 @@
 @use "./app/core/shared/components/table-control-bar/table-control-bar-theme" as tablecontrolbar;
 @import "variables.scss";
 @import "~@angular/cdk/overlay-prebuilt.css";
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
 // Plus imports for other components in your app.
 
 // Include the common styles for Angular Material. We include this here so that you only
@@ -15,8 +16,8 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$cms-primary: mat.define-palette(mat.$indigo-palette);
-$cms-accent: mat.define-palette(mat.$light-blue-palette, A200, A100, A400);
+$cms-primary: mat.define-palette(mat.$blue-palette);
+$cms-accent: mat.define-palette(mat.$deep-orange-palette, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
 $cms-warn: mat.define-palette(mat.$red-palette);
@@ -57,7 +58,8 @@ $cms-dark-theme: mat.define-dark-theme(
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include mat.all-component-themes($cms-theme);
-@include mat.form-field-density(-3);
+@include mat.form-field-density(-1);
+
 @include navbar.navbar_theme($cms-theme);
 @include sidebar.sidebar_theme($cms-theme);
 @include tablecontrolbar.table_control_bar_theme($cms-theme);
@@ -74,7 +76,9 @@ $card-foreground-color: mat.get-color-from-palette($foreground, text);
 //   background-color: $card-background-color !important;
 //   color: $card-foreground-color !important;
 // }
-
+.content-body {
+  background-color: $card-background-color;
+}
 .dark-theme {
   @include mat.all-component-colors($cms-dark-theme);
   @include navbar.navbar_theme($cms-dark-theme);
@@ -88,7 +92,9 @@ $card-foreground-color: mat.get-color-from-palette($foreground, text);
 
   $card-background-color: mat.get-color-from-palette($background, card);
   $card-foreground-color: mat.get-color-from-palette($foreground, text);
-
+  .content-body {
+    background-color: $card-background-color;
+  }
   // .mat-toolbar:not(.mat-primary):not(.mat-accent):not(.mat-warn) {
   //   background-color: $card-background-color !important;
   //   color: $card-foreground-color !important;
@@ -165,6 +171,10 @@ body {
   min-height: 0px;
   width: 100%;
   height: 100%;
+  .content-body {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 #sidebar-wrapper {
@@ -272,8 +282,42 @@ body {
   }
 }
 
-.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field
-  .mdc-notched-outline__notch {
+.selection-list,
+.mat-mdc-list-item,
+.mat-mdc-tree-node {
+  border-left: solid 4px transparent;
+  &:first-child {
+    border-top: solid 1px #bcbcbc;
+  }
+  &:hover {
+    border-left: solid 4px mat.get-color-from-palette($cms-primary);
+    cursor: pointer;
+    // background: get_background_color(focused-button, .2);
+  }
+  border-bottom: solid 1px #bcbcbc;
+}
+
+// .tree-node-hover {
+//   background: get_background_color(hover);
+// }
+
+.mat-row,
+.selection-list,
+.mat-mdc-list-item,
+.mat-mdc-tree-node {
+  position: relative;
+  &:hover,
+  &:focus {
+    .list-action-buttons {
+      opacity: 1;
+    }
+  }
+  &.mdc-list-item--activated {
+    border-left: solid 4px mat.get-color-from-palette($cms-accent);
+  }
+}
+
+.mat-mdc-form-field .mdc-notched-outline__notch {
   border-right-style: hidden;
 }
 .mat-mdc-input-element {
@@ -315,4 +359,12 @@ table {
 .drawer-container {
   width: 100%;
   height: 100%;
+}
+
+.loading-spinner-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
 }

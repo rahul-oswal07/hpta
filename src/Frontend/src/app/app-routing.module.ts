@@ -9,33 +9,40 @@ const routes: Routes = [
   {
     path: 'profile',
     component: ProfileComponent,
+    data: { title: 'Profile Information' },
     canActivate: [MsalGuard],
   },
   {
     path: '',
     component: HomeComponent,
+    data: { title: 'Dashboard' }
   },
   {
     path: 'login-failed',
+    data: { title: 'Failed Login' },
     component: FailedLoginComponent,
   },
   {
     path: 'survey',
+    data: { title: 'Survey' },
     loadChildren: () =>
       import('./modules/survey/survey.module').then((m) => m.SurveyModule),
   },
   {
     path: 'categories',
+    data: { title: 'Categories' },
     loadChildren: () =>
       import('./modules/categories/categories.module').then((m) => m.CategoriesModule),
   },
   {
     path: 'subcategories',
+    data: { title: 'Sub-Categories' },
     loadChildren: () =>
       import('./modules/sub-categories/sub-categories.module').then((m) => m.SubCategoriesModule),
   },
   {
     path: 'questions',
+    data: { title: 'Questions' },
     loadChildren: () =>
       import('./modules/questions/questions.module').then((m) => m.QuestionsModule),
   },
