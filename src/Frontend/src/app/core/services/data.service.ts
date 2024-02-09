@@ -117,7 +117,7 @@ export abstract class DataService {
   protected getUrl(pathParameters?: string | string[], queryParameters?: HttpParams): string {
     let url = `${this.baseUrl}/${this.path}`;
     if (pathParameters) {
-      const path = typeof pathParameters === 'string' ? pathParameters : pathParameters.join('/');
+      const path = Array.isArray(pathParameters) ? pathParameters.join('/') :pathParameters;
       url += (url.endsWith('/') ? '' : '/') + path;
     }
     if (queryParameters && queryParameters.keys().length > 0) {
