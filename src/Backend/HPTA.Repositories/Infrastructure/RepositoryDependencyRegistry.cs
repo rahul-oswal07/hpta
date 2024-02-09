@@ -17,6 +17,7 @@ public static class RepositoryDependencyRegistry
         services.AddDbContext<HPTADbContext>();
         services.AddTransient<IQuestionRepository, QuestionRepository>();
         services.AddTransient<ICategoryRepository, CategoryRepository>();
+        services.AddTransient<ISubCategoryRepository, SubCategoryRepository>();
         services.AddTransient<ISurveyRepository, SurveyRepository>();
         services.AddTransient<IAnswerRepository, AnswerRepository>();
         services.AddTransient<IUserRepository, UserRepository>();
