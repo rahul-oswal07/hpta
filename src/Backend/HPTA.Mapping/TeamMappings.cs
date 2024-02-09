@@ -9,6 +9,7 @@ namespace HPTA.Mapping
         public TeamMappings()
         {
             CreateMap<DevCentralTeamsResponse.TeamInfo, Team>();
+            CreateMap<Team, TeamModel>();
         }
     }
 }

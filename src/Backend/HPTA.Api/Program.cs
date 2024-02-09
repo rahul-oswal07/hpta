@@ -1,4 +1,3 @@
-using AutoMapper;
 using Azure.Identity;
 using DevCentralClient.Infrastructure;
 using DevCentralClient.Models;
@@ -39,11 +38,6 @@ builder.Services.AddAuthorization(options =>
 {
     options.Register(builder.Configuration, "AuthorizationPolicies");
 });
-
-builder.Services.AddSingleton(provider => new MapperConfiguration(cfg =>
-{
-    cfg.AddProfile(new AutoMapperConfig());
-}).CreateMapper());
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
