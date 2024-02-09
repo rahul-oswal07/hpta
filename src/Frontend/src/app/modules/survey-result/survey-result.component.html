@@ -1,0 +1,29 @@
+<form [formGroup]="form">
+  <mat-form-field appearance="outline" class="drop-down-form">
+    <mat-select
+      formControlName="selectedTeam"
+      placeholder="Please select an option"
+      panelClass="my-panel"
+    >
+      <input matInput placeholder="Search" (input)="onSearchInput($event)" />
+      <mat-option *ngFor="let option of filteredOptions" [value]="option.id">
+        {{ option.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</form>
+
+<div *ngIf="chartOptions" id="chart">
+  <apx-chart
+    [series]="chartOptions.series"
+    [chart]="chartOptions.chart"
+    [xaxis]="chartOptions.xaxis"
+    [dataLabels]="chartOptions.dataLabels"
+    [grid]="chartOptions.grid"
+    [stroke]="chartOptions.stroke"
+    [title]="chartOptions.title"
+    [labels]="chartOptions.labels"
+    [annotations]="chartOptions.annotations"
+    [fill]="chartOptions.fill"
+  ></apx-chart>
+</div>

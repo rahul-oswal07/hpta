@@ -19,6 +19,7 @@
     <ProjectReference Include="..\HPTA.Common\HPTA.Common.csproj" />
     <ProjectReference Include="..\HPTA.Data.Configurations\HPTA.Data.Configurations.csproj" />
     <ProjectReference Include="..\HPTA.Data\HPTA.Data.csproj" />
+    <ProjectReference Include="..\HPTA.DTO\HPTA.DTO.csproj" />
   </ItemGroup>
 
 </Project>

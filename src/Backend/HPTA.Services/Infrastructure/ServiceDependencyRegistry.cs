@@ -16,5 +16,6 @@ public static class ServiceDependencyRegistry
         services.AddTransient<ISurveyService, SurveyService>();
         services.AddTransient<IAnswerService, AnswerService>();
         services.AddTransient<IUserService, UserService>();
+        services.AddTransient<ITeamService, TeamService>();
     }
 }
