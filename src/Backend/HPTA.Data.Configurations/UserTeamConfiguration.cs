@@ -9,7 +9,7 @@ namespace HPTA.Data.Configurations
         public void Configure(EntityTypeBuilder<UserTeam> builder)
         {
             builder.Property(ut => ut.Id).ValueGeneratedNever();
-            builder.HasIndex(p => new { p.UserId, p.TeamId }).IsUnique().HasFilter("[IsDeleted] = 0");
+            builder.HasIndex(p => new { p.UserId, p.TeamId, p.StartDate, p.RoleId }).IsUnique().HasFilter("[IsDeleted] = 0");
         }
     }
 }
