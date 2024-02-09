@@ -29,7 +29,7 @@ export class SurveyResultComponent implements OnInit {
   constructor(private formBuilder: FormBuilder, private teamService: SurveyResultService) {
     this._buildForm();
     this.form.controls['selectedTeam'].valueChanges.subscribe(value => {
-      this.teamService.getList<ChartDataModel>(value).subscribe(data => {
+      this.teamService.getChartData(value).subscribe(data => {
         this.chartData = data;
         this.buildChartData();
       });
@@ -38,7 +38,7 @@ export class SurveyResultComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.teamService.getList<TeamsModel>().subscribe(teams => {
+    this.teamService.getTeams().subscribe(teams => {
       this.teams = this.filteredOptions = teams;
     });
   }

@@ -20,8 +20,6 @@ namespace HPTA.Services
         {
             var email = _identityService.GetEmail();
             var azureAdUserId = _identityService.GetId();
-            email = "r.oswal@devon.nl";
-            azureAdUserId = Guid.NewGuid().ToString();
             if (email == null || azureAdUserId == null)
                 throw new Exception("Invalid identity.");
             var existingUser = (await _userRepository.GetByAsync(e => e.Email == email)).FirstOrDefault();
