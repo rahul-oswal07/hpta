@@ -1,25 +1,14 @@
 <mat-drawer-container class="drawer-container" autosize>
   <mat-drawer mode="side" opened="true" class="sub-category-list">
     <div [ngClass]="{ hidden: isLoading }">
-      <div class="p-1 flex gap-2 items-center justify-stretch">
+      <div class="p-1 flex gap-2 items-center justify-stretch search-panel bg-white dark:bg-black">
         <mat-form-field subscriptSizing="dynamic" class="flex-auto">
           <mat-label>Search Sub-Categories</mat-label>
-          <input
-            type="text"
-            matInput
-            placeholder="Search Sub-Categories"
-            [(ngModel)]="searchTerm"
-          />
+          <input type="text" matInput placeholder="Search Sub-Categories" [(ngModel)]="searchTerm" />
           <button matSuffix mat-icon-button disabled="true" *ngIf="!searchTerm">
             <mat-icon>search</mat-icon>
           </button>
-          <button
-            matSuffix
-            mat-icon-button
-            color="warn"
-            *ngIf="searchTerm"
-            (click)="clearSearch()"
-          >
+          <button matSuffix mat-icon-button color="warn" *ngIf="searchTerm" (click)="clearSearch()">
             <mat-icon>close</mat-icon>
           </button>
         </mat-form-field>
@@ -27,7 +16,7 @@
       </div>
       <mat-list>
         <ng-container *ngFor="let category of subCategories | keyvalue">
-          <div class="flex" mat-subheader>
+          <mat-toolbar mat-subheader>
             <div class="flex-auto">
               {{ categoryDictionary[category.key] }}
             </div>
@@ -35,12 +24,9 @@
               <mat-icon> add </mat-icon>
               Add Sub-Category
             </a>
-          </div>
-          <mat-list-item
-            *ngFor="let subCategory of category.value"
-            [activated]="subCategory.id === activeCategoryId"
-          >
-            <div matListItemTitle>{{ subCategory.name }}</div>
+          </mat-toolbar>
+          <mat-list-item *ngFor="let subCategory of category.value" [activated]="subCategory.id === activeCategoryId">
+            <div matListItemTitle class="w-96">{{ subCategory.name }}</div>
             <small matListItemLine class="text-xs">
               Created on:
               {{ subCategory.createdOn | date : "dd-MMM-yyyy HH:mm:ss" }}
@@ -50,21 +36,12 @@
               {{ subCategory.updatedOn | date : "dd-MMM-yyyy HH:mm:ss" }}
             </small>
             <div matListItemMeta>
-              <a
-                mat-icon-button
-                [routerLink]="[subCategory.id, 'edit']"
-                matTooltip="Edit sub-category"
-                [disabled]="subCategory.id === activeCategoryId"
-              >
+              <a mat-icon-button [routerLink]="[subCategory.id, 'edit']" matTooltip="Edit sub-category"
+                [disabled]="subCategory.id === activeCategoryId">
                 <mat-icon>edit_note</mat-icon>
               </a>
-              <button
-                mat-icon-button
-                color="warn"
-                (click)="deleteSubCategory(subCategory.id)"
-                [disabled]="subCategory.id === activeCategoryId"
-                matTooltip="Delete sub-category"
-              >
+              <button mat-icon-button color="warn" (click)="deleteSubCategory(subCategory.id)"
+                [disabled]="subCategory.id === activeCategoryId" matTooltip="Delete sub-category">
                 <mat-icon>delete</mat-icon>
               </button>
             </div>

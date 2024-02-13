@@ -1,9 +1,9 @@
-<div class="flex flex-row gap-1">
+<div class="flex flex-row gap-1 items-center">
   <app-filter-menu *ngIf="displayColumns" [filters]="filters" [filterOptions]="displayColumns"
     (addFilter)="onAddFilter($event)">
   </app-filter-menu>
   <ng-content></ng-content>
-  <div class="flex-auto"></div>
+  <!-- <div class="flex-auto"></div> -->
   <button *ngIf="displayColumns" class="display-columns-menu-trigger" mat-button
     [disabled]="!(displayColumns.length > 0)" [matMenuTriggerFor]="menu" aria-label="Display columns menu" @.disabled>
     <mat-icon>list</mat-icon>

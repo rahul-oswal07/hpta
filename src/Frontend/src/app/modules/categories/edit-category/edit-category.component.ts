@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, catchError, finalize, map, of, switchMap, take } from 'rxjs';
@@ -17,7 +17,7 @@ export class EditCategoryComponent implements OnInit, OnDestroy, BlockNavigation
   isLoading = false;
   title = '';
   form = new UntypedFormGroup({
-    id: new UntypedFormControl(0),
+    id: new FormControl<number>(0),
     name: new UntypedFormControl('',
       {
         validators: [Validators.required],
@@ -68,6 +68,7 @@ export class EditCategoryComponent implements OnInit, OnDestroy, BlockNavigation
     }
     observer.pipe(finalize(() => this.isLoading = false)).subscribe({
       next: () => {
+        this.form.reset();
         this.categoryService.requestReload();
         this.router.navigate(['/categories']);
       }, error: (e: Error) => {

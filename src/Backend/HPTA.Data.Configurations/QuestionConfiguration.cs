@@ -9,7 +9,10 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
 {
     public void Configure(EntityTypeBuilder<Question> builder)
     {
+#if DEBUG
+
         var data = SeedHelper.SeedData<Question>("questions.json");
         builder.HasData(data);
+#endif
     }
 }

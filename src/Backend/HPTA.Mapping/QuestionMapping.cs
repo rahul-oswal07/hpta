@@ -8,7 +8,7 @@ namespace HPTA.Mapping
     {
         public QuestionMapping()
         {
-            CreateMap<Question, QuestionModel>();
+            CreateMap<Question, QuestionModel>().ForMember(dst => dst.CategoryName, opt => opt.MapFrom(src => src.SubCategory.Category.Name));
             CreateMap<QuestionEditModel, Question>();
             CreateMap<Question, QuestionEditModel>()
                 .ForMember(dst => dst.CategoryId, opt => opt.MapFrom(src => src.SubCategory.CategoryId));

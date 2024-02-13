@@ -23,5 +23,6 @@ public static class RepositoryDependencyRegistry
         services.AddTransient<IUserRepository, UserRepository>();
         services.AddTransient<ITeamRepository, TeamRepository>();
         services.AddTransient<IUserTeamRepository, UserTeamRepository>();
+        services.AddTransient<ISurveyQuestionRepository, SurveyQuestionRepository>();
     }
 }

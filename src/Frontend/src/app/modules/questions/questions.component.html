@@ -1,3 +1,49 @@
-<p>
-  questions works!
-</p>
+<app-table-control-bar>
+  <mat-form-field class="w-96">
+    <mat-label>Search Questions</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Search Questions" #input>
+    <button matSuffix mat-icon-button disabled="true" *ngIf="!input.value">
+      <mat-icon>search</mat-icon>
+    </button>
+    <button matSuffix mat-icon-button color="warn" *ngIf="input.value" (click)="clearFilter()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+  <div class="flex-auto"></div>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of questios"></mat-paginator>
+</app-table-control-bar>
+
+<div class="mat-elevation-z1">
+  <table mat-table [dataSource]="dataSource" matSort>
+
+    <ng-container matColumnDef="answerType">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
+      <td mat-cell *matCellDef="let row"> {{row.answerType | answerType}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="categoryName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Category </th>
+      <td mat-cell *matCellDef="let row"> {{row.categoryName}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="subCategoryName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Sub-Category </th>
+      <td mat-cell *matCellDef="let row"> {{row.subCategoryName}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="text">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Question </th>
+      <td mat-cell *matCellDef="let row"> {{row.text}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns;"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    <!-- Row shown when there is no matching data. -->
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell text-center" colspan="4">No data matching the filter "{{input.value}}"</td>
+    </tr>
+  </table>
+
+
+</div>

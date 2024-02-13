@@ -9,8 +9,11 @@ namespace HPTA.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Category> builder)
         {
+#if DEBUG
+
             var data = SeedHelper.SeedData<Category>("categories.json");
             builder.HasData(data);
+#endif
         }
     }
 }

@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
+  FormControl,
   UntypedFormControl,
   UntypedFormGroup,
   Validators,
@@ -18,19 +19,16 @@ import { SubCategory } from '../sub-category';
   styleUrls: ['./edit-sub-category.component.css'],
 })
 export class EditSubCategoryComponent
-  implements OnInit, OnDestroy, BlockNavigationIfChange
-{
+  implements OnInit, OnDestroy, BlockNavigationIfChange {
   isLoading = false;
   title = '';
   form = new UntypedFormGroup({
-    id: new UntypedFormControl(0),
-    categoryId: new UntypedFormControl(null),
+    id: new FormControl<number>(0),
+    categoryId: new FormControl<number>(0),
     name: new UntypedFormControl('', {
       validators: [Validators.required],
       asyncValidators: [
-        availabilityValidator((name, id) =>
-          this.categoryService.checkNameAvailability(name, id)
-        ),
+        availabilityValidator(this.categoryService.checkNameAvailability),
       ],
     }),
   });
@@ -39,7 +37,7 @@ export class EditSubCategoryComponent
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private snackbarService: MatSnackBar
-  ) {}
+  ) { }
 
   ngOnDestroy(): void {
     console.log('On destroy');
@@ -53,7 +51,7 @@ export class EditSubCategoryComponent
     this.activatedRoute.params
       .pipe(
         map((params) => {
-          return { id: params['id'], categoryId: params['categoryId'] };
+          return { id: +params['id'] ?? 0, categoryId: +params['categoryId'] };
         }),
         switchMap((p) => {
           if (p.id) return this.categoryService.getSubCategoryById(p.id);
@@ -88,6 +86,7 @@ export class EditSubCategoryComponent
     }
     observer.pipe(finalize(() => (this.isLoading = false))).subscribe({
       next: () => {
+        this.form.reset();
         this.categoryService.requestReload();
         this.router.navigate(['/subcategories']);
       },

@@ -79,6 +79,9 @@ $card-foreground-color: mat.get-color-from-palette($foreground, text);
 .content-body {
   background-color: $card-background-color;
 }
+.accent-text {
+  color: mat.get-color-from-palette($cms-accent, A200); // Adjust as needed
+}
 .dark-theme {
   @include mat.all-component-colors($cms-dark-theme);
   @include navbar.navbar_theme($cms-dark-theme);
@@ -94,6 +97,9 @@ $card-foreground-color: mat.get-color-from-palette($foreground, text);
   $card-foreground-color: mat.get-color-from-palette($foreground, text);
   .content-body {
     background-color: $card-background-color;
+  }
+  .accent-text {
+    color: mat.get-color-from-palette($cms-dark-accent, A200); // Adjust as needed
   }
   // .mat-toolbar:not(.mat-primary):not(.mat-accent):not(.mat-warn) {
   //   background-color: $card-background-color !important;
@@ -363,6 +369,8 @@ table {
 
 .loading-spinner-container {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
   height: 100%;
   width: 100%;
   align-items: center;
