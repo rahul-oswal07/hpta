@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
 import { SafeUrl } from '@angular/platform-browser';
-import { ActivatedRouteSnapshot, Router, RoutesRecognized } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router, RoutesRecognized } from '@angular/router';
 import { AccountInfo } from '@azure/msal-browser';
-import { filter, map } from 'rxjs';
+import { filter, map, mergeMap } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -42,16 +42,22 @@ export class NavbarComponent implements OnInit {
   logoutClick = new EventEmitter();
   private appTitle = 'HPTA';
   title = this.appTitle;
-  constructor(private router: Router) { }
+  constructor(private router: Router, private activatedRoute: ActivatedRoute) { }
   ngOnInit() {
-    this.router.events.pipe(filter((event: any) => event instanceof RoutesRecognized),
-      map((event: RoutesRecognized) => {
-        return event?.state?.root?.firstChild?.data || { title: '' };
-      }))
-      .subscribe(customData => {
-        const title = customData['title']
-        this.title = this.appTitle + (title ? (' | ' + title) : '');
-      });
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd), // Filter for NavigationEnd events
+      map(() => this.activatedRoute), // Start with the activated route
+      map(route => {
+        while (route.firstChild) route = route.firstChild; // Traverse over the state tree to find the activated route
+        return route;
+      }),
+      filter(route => route.outlet === 'primary'), // Filter for primary outlet
+      mergeMap(route => route.title) // Access route's data
+    ).subscribe(data => {
+      if (data) {
+        this.title = data;
+      }
+    });
   }
   getTitleRecursively(node: ActivatedRouteSnapshot | any, title: string): string {
     if (node?.children?.length > 0) {

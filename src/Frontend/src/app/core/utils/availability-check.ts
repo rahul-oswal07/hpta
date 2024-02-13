@@ -3,7 +3,7 @@ import { Observable, catchError, debounceTime, map, of, switchMap, take } from "
 import { AvailabilityCheckResult } from "src/app/core/models/availability-check-result";
 export type CheckAvailabilityFunction = (name: string, id: any) => Observable<AvailabilityCheckResult>;
 
-export function categoryNameAvailabilityValidator(clientFunction: CheckAvailabilityFunction, idKey: string = 'id'): AsyncValidatorFn {
+export function availabilityValidator(clientFunction: CheckAvailabilityFunction, idKey: string = 'id'): AsyncValidatorFn {
   return (control: AbstractControl): Observable<ValidationErrors | null> => {
     if (!control.value) {
       return of(null); // return null if the field is empty

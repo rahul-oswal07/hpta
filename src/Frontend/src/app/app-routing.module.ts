@@ -9,45 +9,46 @@ const routes: Routes = [
   {
     path: 'profile',
     component: ProfileComponent,
-    data: { title: 'Profile Information' },
+    title: 'HPTA | Profile Information',
     canActivate: [MsalGuard],
   },
   {
     path: '',
     component: HomeComponent,
-    data: { title: 'Dashboard' }
+    title: 'HPTA | Dashboard'
   },
   {
     path: 'login-failed',
-    data: { title: 'Failed Login' },
+    title: 'HPTA | Failed Login',
     component: FailedLoginComponent,
   },
   {
     path: 'survey',
-    data: { title: 'Survey' },
+    title: 'HPTA | Survey',
     loadChildren: () =>
       import('./modules/survey/survey.module').then((m) => m.SurveyModule),
   },
   {
     path: 'categories',
-    data: { title: 'Categories' },
+    title: 'HPTA | Categories',
     loadChildren: () =>
       import('./modules/categories/categories.module').then((m) => m.CategoriesModule),
   },
   {
     path: 'subcategories',
-    data: { title: 'Sub-Categories' },
+    title: 'HPTA | Sub-Categories',
     loadChildren: () =>
       import('./modules/sub-categories/sub-categories.module').then((m) => m.SubCategoriesModule),
   },
   {
     path: 'questions',
-    data: { title: 'Questions' },
+    title: 'HPTA | Questions',
     loadChildren: () =>
       import('./modules/questions/questions.module').then((m) => m.QuestionsModule),
   },
   {
     path: 'result',
+    title: 'HPTA | Result',
     loadChildren: () =>
       import('./modules/survey-result/survey-result.module').then((m) => m.SurveyResultModule),
   },

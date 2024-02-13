@@ -27,6 +27,7 @@ import { FilterStringFormComponent } from 'src/app/core/shared/components/filter
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FilterService } from 'src/app/core/shared/services/filter.service';
+import { AnswerTypePipe } from 'src/app/core/pipes/answer-type.pipe';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { FilterService } from 'src/app/core/shared/services/filter.service';
     FilterDateFormComponent,
     FilterNumberFormComponent,
     FilterSelectFormComponent,
-    FilterStringFormComponent
+    FilterStringFormComponent,
+    AnswerTypePipe
   ],
   imports: [
     CommonModule,
@@ -58,7 +60,8 @@ import { FilterService } from 'src/app/core/shared/services/filter.service';
   exports: [
     TableControlBarComponent,
     FilterListComponent,
-    FilterMenuComponent
+    FilterMenuComponent,
+    AnswerTypePipe
   ],
   providers: [
     FilterService

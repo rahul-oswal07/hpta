@@ -30,9 +30,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.RegisterDependency(configRoot.ConnectionStrings);
 builder.Services.RegisterDevCentralClient(configRoot.DevCentralConfig);
 builder.Services.RegisterMappingProfiles();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString;
+});
 
-builder.Services.AddControllersWithViews();
+//builder.Services.AddControllersWithViews();
 
 builder.Services.AddAuthorization(options =>
 {
@@ -51,8 +54,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.UseDeveloperExceptionPage();
 }
+else
+{
+    app.UseHttpsRedirection();
+}
 
-//app.UseHttpsRedirection();
+app.UseStaticFiles();
+
 app.UseRouting();
 app.UseCors(options => options
     .WithOrigins(builder.Configuration.GetSection("AllowedOrigins").GetChildren().Select(c => c.Value).ToArray())
@@ -63,11 +71,13 @@ app.UseCors(options => options
 app.UseAuthentication();
 
 app.UseAuthorization();
+app.MapControllers();
+app.MapFallbackToFile("index.html");
 
 //app.MapControllers();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+//app.MapControllerRoute(
+//    name: "default",
+//    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

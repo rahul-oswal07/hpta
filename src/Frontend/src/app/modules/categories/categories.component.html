@@ -3,7 +3,7 @@
     <div [ngClass]="{'hidden': isLoading}">
 
       <div class="p-1 flex gap-2 items-center">
-        <mat-form-field subscriptSizing="dynamic">
+        <mat-form-field subscriptSizing="dynamic" class="flex-auto">
           <mat-label>Search Categories</mat-label>
           <input type="text" matInput placeholder="Search Categories" [(ngModel)]="searchTerm" />
           <button matSuffix mat-icon-button disabled="true" *ngIf="!searchTerm">
@@ -23,7 +23,7 @@
       <mat-list>
 
         <mat-list-item *ngFor="let category of categories" [activated]="category.id === activeCategoryId">
-          <div matListItemTitle>{{category.name}}</div>
+          <div matListItemTitle class="w-96">{{category.name}}</div>
           <small matListItemLine class="text-xs">
             Created on: {{category.createdOn | date:'dd-MMM-yyyy HH:mm:ss'}}
           </small>

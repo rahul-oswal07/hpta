@@ -1,3 +1,31 @@
-<p>
-  edit-sub-category works!
-</p>
+<div class="content-body">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <input type="hidden" formControlName="id" />
+    <input type="hidden" formControlName="categoryId" />
+    <mat-toolbar class="gap-2">
+      <div class="flex-auto">
+        {{ title }}
+      </div>
+
+      <a mat-stroked-button [routerLink]="'/subcategories'" color="warn">Cancel</a>
+      <button type="submit" mat-raised-button color="primary" [disabled]="!form.valid || isLoading || form.pristine">
+        Submit
+      </button>
+    </mat-toolbar>
+    <div class="flex flex-col max-w-96 p-4">
+      <mat-form-field class="flex-auto">
+        <mat-label>Sub-Category Name</mat-label>
+        <input matInput formControlName="name" placeholder="Category Name" />
+        <mat-error *ngIf="form.get('name')?.errors?.['taken']">
+          Sub-Category name is taken.
+        </mat-error>
+        <mat-error *ngIf="form.get('name')?.errors?.['required']">
+          Sub-Category name is required.
+        </mat-error>
+        <mat-error *ngIf="form.get('name')?.errors?.['unavailable']">
+          Sub-Category name check unavailable. Try again later.
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+</div>

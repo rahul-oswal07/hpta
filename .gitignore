@@ -44,3 +44,4 @@ msbuild.wrn
 node_modules/
 .angular/
 .vscode/
+wwwroot/

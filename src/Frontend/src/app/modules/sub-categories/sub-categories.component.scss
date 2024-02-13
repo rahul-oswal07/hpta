@@ -1,0 +1,13 @@
+.sub-category-list {
+  min-width: 300px;
+}
+.search-panel {
+  position: sticky;
+  top: 0; /* Adjust this value based on your needs */
+  z-index: 1000; /* Ensure the header is above other content */
+}
+mat-toolbar.mat-mdc-subheader {
+  position: sticky;
+  top: 50px; /* Adjust this value based on your needs */
+  z-index: 1000; /* Ensure the header is above other content */
+}

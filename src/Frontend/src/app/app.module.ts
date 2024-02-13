@@ -112,7 +112,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     FailedLoginComponent,
     ProfileComponent,
     SidebarComponent,
-    NavbarComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
@@ -160,7 +160,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
       provide: MSAL_INTERCEPTOR_CONFIG,
       useFactory: MSALInterceptorConfigFactory
     },
-    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' } },
+    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline', subscriptSizing: 'dynamic' } },
     MsalService,
     MsalGuard,
     MsalBroadcastService

@@ -95,7 +95,7 @@ export class ViewSurveyComponent implements OnInit {
     this.submitting = true;
     this.answerService.submitAnswers(1, answers).subscribe({
       next: () => {
-        this.router.navigate(['/survey', 'results', '1']);
+        this.router.navigate(['/result']);
       }, error: () => {
         this.submitting = false;
       }, complete: () => {
