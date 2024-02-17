@@ -1,7 +1,8 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SurveyResultService } from './services/survey-result.service';
-import { ChartDataModel, ChartOptions, TeamsModel } from './models/team.model';
+import { TeamDataModel, ChartOptions, TeamsModel } from './models/team.model';
+import { DataStatusIndicator } from 'src/app/modules/data-status-indicator/data-status-indicator.component';
 
 const CATEGORY_COLORS: any = {
   'Culture': '#85b5c7',
@@ -23,15 +24,27 @@ export class SurveyResultComponent implements OnInit {
   form: FormGroup;
   teams: TeamsModel[];
   filteredOptions: TeamsModel[];
-  chartData: ChartDataModel[] = [];
+  chartData = {} as TeamDataModel;
   public chartOptions: ChartOptions;
+
+  @ViewChild(DataStatusIndicator)
+  dataStatusIndicator?: DataStatusIndicator;
 
   constructor(private formBuilder: FormBuilder, private teamService: SurveyResultService) {
     this._buildForm();
     this.form.controls['selectedTeam'].valueChanges.subscribe(value => {
+      this.dataStatusIndicator?.setLoading();
+
       this.teamService.getChartData(value).subscribe(data => {
-        this.chartData = data;
-        this.buildChartData();
+
+        if (data.scores) {
+          this.dataStatusIndicator?.setDefault();
+          this.chartData = data;
+          this.buildChartData();
+        }
+        else {
+          this.dataStatusIndicator?.setNoData();
+        }
       });
     });
 
@@ -39,6 +52,7 @@ export class SurveyResultComponent implements OnInit {
 
   ngOnInit(): void {
     this.teamService.getTeams().subscribe(teams => {
+      this.dataStatusIndicator?.setDefault();
       this.teams = this.filteredOptions = teams;
     });
   }
@@ -55,7 +69,7 @@ export class SurveyResultComponent implements OnInit {
       series: [
         {
           name: 'Average',
-          data: this.chartData.map((data) => data.average),
+          data: this.chartData.scores.map((data) => data.average),
         },
       ],
       fill: {
@@ -78,7 +92,7 @@ export class SurveyResultComponent implements OnInit {
         enabled: false
       },
       xaxis: {
-        categories: this.chartData.map((data) => data.categoryName),
+        categories: this.chartData.scores.map((data) => data.categoryName),
         axisTicks: {
           show: false
         },
@@ -88,6 +102,11 @@ export class SurveyResultComponent implements OnInit {
         labels: {
           show: false,
         },
+      },
+      yaxis: {
+        show: true,
+        min: 0,
+        max: 5
       },
       annotations: {},
       grid: {},

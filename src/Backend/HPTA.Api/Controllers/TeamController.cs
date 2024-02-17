@@ -15,8 +15,7 @@ public class TeamController : BaseController
 
     [HttpGet("{teamId}")]
     public async Task<ActionResult> LoadChartData(int teamId)
-         => Ok(await _teamService.LoadChartData(teamId));
-
+        => Ok(await _teamService.LoadChartData(teamId));
 
     [HttpGet]
     public async Task<ActionResult> GetAllTeams()

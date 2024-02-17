@@ -18,5 +18,6 @@ public static class ServiceDependencyRegistry
         services.AddTransient<IAnswerService, AnswerService>();
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<ITeamService, TeamService>();
+        services.AddTransient<IOpenAIService, OpenAIService>();
     }
 }
