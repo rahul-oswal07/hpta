@@ -25,6 +25,7 @@ export class SurveyResultComponent implements OnInit {
   teams: TeamsModel[];
   filteredOptions: TeamsModel[];
   chartData = {} as TeamDataModel;
+  showDropdown: boolean = false;
   public chartOptions: ChartOptions;
 
   @ViewChild(DataStatusIndicator)
@@ -33,24 +34,16 @@ export class SurveyResultComponent implements OnInit {
   constructor(private formBuilder: FormBuilder, private teamService: SurveyResultService) {
     this._buildForm();
     this.form.controls['selectedTeam'].valueChanges.subscribe(value => {
-      this.dataStatusIndicator?.setLoading();
-
-      this.teamService.getChartData(value).subscribe(data => {
-
-        if (data.scores) {
-          this.dataStatusIndicator?.setDefault();
-          this.chartData = data;
-          this.buildChartData();
-        }
-        else {
-          this.dataStatusIndicator?.setNoData();
-        }
-      });
+      this._loadChartData(value);
     });
-
   }
 
+
   ngOnInit(): void {
+    this._enableDisableDropdown();
+  }
+
+  private _loadTeams() {
     this.teamService.getTeams().subscribe(teams => {
       this.dataStatusIndicator?.setDefault();
       this.teams = this.filteredOptions = teams;
@@ -124,5 +117,31 @@ export class SurveyResultComponent implements OnInit {
     this.form = this.formBuilder.group({
       selectedTeam: ['']
     })
+  }
+
+  private _loadChartData(teamId: number) {
+    this.dataStatusIndicator?.setLoading();
+
+    this.teamService.getChartData(teamId).subscribe(data => {
+
+      if (data.scores) {
+        this.dataStatusIndicator?.setDefault();
+        this.chartData = data;
+        this.buildChartData();
+      }
+      else {
+        this.dataStatusIndicator?.setNoData();
+      }
+    });
+  }
+
+  private _enableDisableDropdown() {
+    this.showDropdown = true; //TODO: Compute the logic based on role
+    if (!this.showDropdown) {
+      this._loadChartData(170);
+    }
+    else {
+      this._loadTeams();
+    }
   }
 }

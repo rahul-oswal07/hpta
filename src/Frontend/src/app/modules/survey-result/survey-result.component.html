@@ -1,4 +1,4 @@
-<form [formGroup]="form">
+<form [formGroup]="form" *ngIf="showDropdown">
   <mat-form-field appearance="outline" class="w-96 m-3">
     <mat-select
       formControlName="selectedTeam"
@@ -31,17 +31,19 @@
   </div>
 </div>
 
-<p *ngIf="chartData.respondedUsers">
-  <b>
-    Total users responded : {{ chartData.respondedUsers }}/{{
-      chartData.totalUsers
-    }}
-  </b>
-</p>
+<div id="promptData">
+  <p *ngIf="chartData.respondedUsers">
+    <b>
+      Total users responded : {{ chartData.respondedUsers }}/{{
+        chartData.totalUsers
+      }}
+    </b>
+  </p>
 
-<br />
+  <br />
 
-<div [innerHTML]="chartData.promptData"></div>
+  <div [innerHTML]="chartData.promptData"></div>
+</div>
 
 <app-data-status-indicator
   [element]="chart"

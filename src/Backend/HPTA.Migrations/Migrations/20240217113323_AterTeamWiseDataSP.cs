@@ -24,7 +24,6 @@ WITH DistinctUsersCTE AS (
 		WHERE
 			Teams.id = @teamId
 	)
-
 	select Max(result.TeamId) As TeamId,
 		Max(result.TeamName) As TeamName,
 		Max(result.CategoryId) As CategoryId, 

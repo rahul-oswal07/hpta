@@ -2,7 +2,7 @@
 
 public class UspTeamDataReturnModel
 {
-    public int TeamId { get; set; }
+    public int? TeamId { get; set; }
 
     public string TeamName { get; set; } = string.Empty;
 
@@ -12,9 +12,9 @@ public class UspTeamDataReturnModel
 
     public double Average { get; set; }
 
-    public int RespondedUsers { get;set; }
+    public int? RespondedUsers { get;set; }
 
-    public int TotalUsers { get; set; }
+    public int? TotalUsers { get; set; }
 }
 
 public class TeamDataModel
