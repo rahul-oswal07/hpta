@@ -22,7 +22,7 @@ public class TeamService : ITeamService
     {
         var chartData = await _teamRepository.LoadChartData(teamId);
 
-        if(chartData == null)
+        if (chartData == null || chartData.Count == 0)
         {
             return new TeamDataModel();
         }
