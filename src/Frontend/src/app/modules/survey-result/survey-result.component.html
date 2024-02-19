@@ -1,6 +1,10 @@
-<form [formGroup]="form">
+<form [formGroup]="form" *ngIf="showDropdown">
   <mat-form-field appearance="outline" class="w-96 m-3">
-    <mat-select formControlName="selectedTeam" placeholder="Please select an option">
+    <mat-select
+      formControlName="selectedTeam"
+      placeholder="Please select an option"
+      panelClass="my-panel"
+    >
       <input matInput placeholder="Search" (input)="onSearchInput($event)" />
       <mat-option *ngFor="let option of filteredOptions" [value]="option.id">
         {{ option.name }}
@@ -9,9 +13,44 @@
   </mat-form-field>
 </form>
 
-<div *ngIf="chartOptions" id="chart">
-  <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [xaxis]="chartOptions.xaxis"
-    [dataLabels]="chartOptions.dataLabels" [grid]="chartOptions.grid" [stroke]="chartOptions.stroke"
-    [title]="chartOptions.title" [labels]="chartOptions.labels" [annotations]="chartOptions.annotations"
-    [fill]="chartOptions.fill"></apx-chart>
+<div #chart>
+  <div *ngIf="chartOptions" id="chart">
+    <apx-chart
+      [series]="chartOptions.series"
+      [chart]="chartOptions.chart"
+      [xaxis]="chartOptions.xaxis"
+      [dataLabels]="chartOptions.dataLabels"
+      [grid]="chartOptions.grid"
+      [stroke]="chartOptions.stroke"
+      [title]="chartOptions.title"
+      [labels]="chartOptions.labels"
+      [annotations]="chartOptions.annotations"
+      [fill]="chartOptions.fill"
+      [yaxis]="chartOptions.yaxis"
+    ></apx-chart>
+  </div>
 </div>
+
+<div id="promptData">
+  <p *ngIf="chartData.respondedUsers">
+    <b>
+      Total users responded : {{ chartData.respondedUsers }}/{{
+        chartData.totalUsers
+      }}
+    </b>
+  </p>
+  <p *ngIf="overallHPTAScore">
+    <b>
+      Overall HPTA score : {{ overallHPTAScore }}
+    </b>
+  </p>
+
+  <br />
+
+  <div [innerHTML]="chartData.promptData"></div>
+</div>
+
+<app-data-status-indicator
+  [element]="chart"
+  [initialState]="'Loading'"
+></app-data-status-indicator>

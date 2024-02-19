@@ -1,7 +1,8 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SurveyResultService } from './services/survey-result.service';
-import { ChartDataModel, ChartOptions, TeamsModel } from './models/team.model';
+import { TeamDataModel, ChartOptions, TeamsModel } from './models/team.model';
+import { DataStatusIndicator } from 'src/app/modules/data-status-indicator/data-status-indicator.component';
 
 const CATEGORY_COLORS: any = {
   'Culture': '#85b5c7',
@@ -23,22 +24,29 @@ export class SurveyResultComponent implements OnInit {
   form: FormGroup;
   teams: TeamsModel[];
   filteredOptions: TeamsModel[];
-  chartData: ChartDataModel[] = [];
+  chartData = {} as TeamDataModel;
+  showDropdown: boolean = false;
+  overallHPTAScore: string | number;
   public chartOptions: ChartOptions;
+
+  @ViewChild(DataStatusIndicator)
+  dataStatusIndicator?: DataStatusIndicator;
 
   constructor(private formBuilder: FormBuilder, private teamService: SurveyResultService) {
     this._buildForm();
     this.form.controls['selectedTeam'].valueChanges.subscribe(value => {
-      this.teamService.getChartData(value).subscribe(data => {
-        this.chartData = data;
-        this.buildChartData();
-      });
+      this._loadChartData(value);
     });
-
   }
 
+
   ngOnInit(): void {
+    this._enableDisableDropdown();
+  }
+
+  private _loadTeams() {
     this.teamService.getTeams().subscribe(teams => {
+      this.dataStatusIndicator?.setDefault();
       this.teams = this.filteredOptions = teams;
     });
   }
@@ -50,12 +58,16 @@ export class SurveyResultComponent implements OnInit {
 
   buildChartData() {
     const thisRef = this;
+    const average = this.chartData.scores.map((data) => data.average)
+    const categories = this.chartData.scores.map((data) => data.categoryName)
+    const result = (average.reduce((sum, current) => sum + current, 0) / categories.length)
+    this.overallHPTAScore = result % 1 !== 0 ? result.toFixed(2) : result;
 
     this.chartOptions = {
       series: [
         {
           name: 'Average',
-          data: this.chartData.map((data) => data.average),
+          data: average,
         },
       ],
       fill: {
@@ -72,28 +84,38 @@ export class SurveyResultComponent implements OnInit {
         }
       },
       title: {
-        text: 'Survey report',
+        text: 'High Performing Team Report',
       },
       dataLabels: {
-        enabled: false
+        enabled: true,
+        style: {
+          fontSize: '14px',
+          fontFamily: 'Times New Roman',
+          fontWeight: 'bold',
+          colors: ['#333']
+        },
       },
       xaxis: {
-        categories: this.chartData.map((data) => data.categoryName),
+        categories: categories,
         axisTicks: {
-          show: false
+          show: true
         },
         title: {
           text: undefined,
         },
         labels: {
-          show: false,
+          show: true
         },
+      },
+      yaxis: {
+        show: true,
+        min: 0,
+        max: 5
       },
       annotations: {},
       grid: {},
       labels: [],
       stroke: {},
-
     };
   }
 
@@ -105,5 +127,31 @@ export class SurveyResultComponent implements OnInit {
     this.form = this.formBuilder.group({
       selectedTeam: ['']
     })
+  }
+
+  private _loadChartData(teamId: number) {
+    this.dataStatusIndicator?.setLoading();
+
+    this.teamService.getChartData(teamId).subscribe(data => {
+
+      if (data.scores) {
+        this.dataStatusIndicator?.setDefault();
+        this.chartData = data;
+        this.buildChartData();
+      }
+      else {
+        this.dataStatusIndicator?.setNoData();
+      }
+    });
+  }
+
+  private _enableDisableDropdown() {
+    this.showDropdown = true; //TODO: Compute the logic based on role
+    if (!this.showDropdown) {
+      this._loadChartData(170);
+    }
+    else {
+      this._loadTeams();
+    }
   }
 }

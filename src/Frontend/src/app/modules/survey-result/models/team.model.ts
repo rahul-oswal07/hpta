@@ -9,6 +9,7 @@ import {
     ApexGrid,
     ApexAnnotations,
     ApexFill,
+    ApexYAxis,
 } from 'ng-apexcharts';
 
 export interface TeamsModel {
@@ -16,13 +17,20 @@ export interface TeamsModel {
     name: string;
 }
 
-export interface ChartDataModel {
+export interface ScoreModel {
+    categoryId: number;
+    categoryName: string ;
+    average: number;
+  }
+  
+  export interface TeamDataModel {
     teamId: number;
     teamName: string;
-    categoryId: number;
-    categoryName: string;
-    average: number;
-}
+    scores: ScoreModel[];
+    promptData: string;
+    totalUsers: number;
+    respondedUsers: number;
+  }
 
 export interface ChartOptions {
     series: ApexAxisChartSeries;
@@ -34,5 +42,6 @@ export interface ChartOptions {
     labels: string[];
     stroke: ApexStroke;
     title: ApexTitleSubtitle;
-    fill : ApexFill
+    fill : ApexFill;
+    yaxis: ApexYAxis;
 };

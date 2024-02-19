@@ -4,6 +4,7 @@ using HPTA.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HPTA.Migrations.Migrations
 {
     [DbContext(typeof(HPTADbContext))]
-    partial class HPTADbContextModelSnapshot : ModelSnapshot
+    [Migration("20240217113323_AterTeamWiseDataSP")]
+    partial class AterTeamWiseDataSP
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,17 +37,17 @@ namespace HPTA.Migrations.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("RespondedUsers")
+                    b.Property<int>("RespondedUsers")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TeamId")
+                    b.Property<int>("TeamId")
                         .HasColumnType("int");
 
                     b.Property<string>("TeamName")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("TotalUsers")
+                    b.Property<int>("TotalUsers")
                         .HasColumnType("int");
 
                     b.ToTable("UspTeamDataReturnModels");
