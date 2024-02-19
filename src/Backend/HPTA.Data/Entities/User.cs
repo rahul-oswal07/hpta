@@ -28,4 +28,7 @@ public partial class User
     public DateTime UpdatedOn { get; set; }
     #endregion
 
+    #region Navigation Properties
+    public ICollection<UserTeam> Teams { get; set; }
+    #endregion
 }

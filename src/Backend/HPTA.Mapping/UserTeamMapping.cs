@@ -9,7 +9,8 @@ namespace HPTA.Mapping
         public UserTeamMapping()
         {
             CreateMap<DevCentralTeamsResponse, UserTeam>()
-                .ForMember(dst => dst.User, opt => opt.MapFrom(src => src.Employee));
+                .ForMember(dst => dst.User, opt => opt.Ignore())
+                .ForMember(dst => dst.Team, opt => opt.Ignore());
         }
     }
 }

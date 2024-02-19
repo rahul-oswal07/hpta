@@ -1,7 +1,9 @@
-﻿using HPTA.Common;
+﻿using HPTA.Api.Controllers;
 using HPTA.Services.Contracts;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
 
 namespace HPTA.Services
 {
@@ -19,7 +21,7 @@ namespace HPTA.Services
         public string GetEmail()
         {
             var emailClaims = _httpContextAccessor.HttpContext.User.Claims
-               .FirstOrDefault(c => c.Type == ClaimTypes.Email);
+               .FirstOrDefault(c => c.Type == "preferred_username");
 
             return emailClaims?.Value;
         }
@@ -28,7 +30,7 @@ namespace HPTA.Services
         public string GetId()
         {
             var idClaims = _httpContextAccessor.HttpContext.User.Claims
-                .FirstOrDefault(c => c.Type == AzureAdClaimTypes.ObjectId);
+                .FirstOrDefault(c => c.Type == "oid");
 
             return idClaims?.Value;
         }
@@ -39,6 +41,27 @@ namespace HPTA.Services
                 .FirstOrDefault(c => c.Type == ClaimTypes.Name);
 
             return nameClaims?.Value;
+        }
+
+        public string GetEmployeeCode()
+        {
+            var idClaims = _httpContextAccessor.HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type == "employeeCode");
+
+            return idClaims?.Value;
+        }
+
+        public List<TeamRoles> GetTeamRoles()
+        {
+            var idClaims = _httpContextAccessor.HttpContext.User.Claims
+                .FirstOrDefault(c => c.Type == "customRoles");
+
+            if (idClaims.Value != null)
+            {
+                var json = Encoding.UTF8.GetString(Convert.FromBase64String(idClaims.Value));
+                return JsonSerializer.Deserialize<List<TeamRoles>>(json);
+            }
+            return [];
         }
     }
 }

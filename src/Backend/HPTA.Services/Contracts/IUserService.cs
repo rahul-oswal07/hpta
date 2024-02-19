@@ -1,7 +1,11 @@
-﻿namespace HPTA.Services.Contracts
+﻿using HPTA.Api.Controllers;
+
+namespace HPTA.Services.Contracts
 {
     public interface IUserService
     {
-        Task ImportFromDevCentral();
+        Task<CustomClaimsDTO> GetCustomClaims(string email);
+
+        Task SyncAllUsersAsync();
     }
 }

@@ -11,5 +11,15 @@ namespace HPTA.Repositories
         {
             return await _hptaDbContext.Users.Where(u => u.AzureAdUserId == azureAdUserId).Select(u => u.Id).FirstOrDefaultAsync();
         }
+
+        public async Task<string> GetUserIdByEmailAsync(string email)
+        {
+            return await _hptaDbContext.Users.Where(u => u.Email == email).Select(u => u.Id).FirstOrDefaultAsync();
+        }
+
+        public IQueryable<User> GetUserInfoWithClaims(string email)
+        {
+            return _hptaDbContext.Users.Include(u => u.Teams).Where(u => u.Email == email);
+        }
     }
 }

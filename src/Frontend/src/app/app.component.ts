@@ -48,17 +48,18 @@ export class AppComponent implements OnInit, OnDestroy {
     // Listen for successful login or token acquisition
     this.msalBroadcastService.msalSubject$
       .pipe(
-        filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS
-          || msg.eventType === EventType.ACQUIRE_TOKEN_SUCCESS
+        filter((msg: EventMessage) =>
+          //  msg.eventType === EventType.LOGIN_SUCCESS ||
+          msg.eventType === EventType.ACQUIRE_TOKEN_SUCCESS
           || msg.eventType === EventType.ACCOUNT_ADDED
           || msg.eventType === EventType.ACCOUNT_REMOVED),
         takeUntil(this._destroying$)
       )
       .subscribe((result: EventMessage) => {
-        console.log('msalEvent', result);
-        if (result.eventType === EventType.LOGIN_SUCCESS) {
-          this.registerUser();
-        }
+        // console.log('msalEvent', result);
+        // if (result.eventType === EventType.LOGIN_SUCCESS) {
+        //   this.registerUser();
+        // }
         if (this.authService.instance.getAllAccounts().length > 0) {
           this.setLoginDisplay();
         }
@@ -75,11 +76,11 @@ export class AppComponent implements OnInit, OnDestroy {
       })
   }
 
-  registerUser() {
-    this.userConfigService.getUserConfig().subscribe(r => {
+  // registerUser() {
+  //   this.userConfigService.getUserConfig().subscribe(r => {
 
-    });
-  }
+  //   });
+  // }
   setLoginDisplay() {
     this.loginDisplay = this.authService.instance.getAllAccounts().length === 0;
   }
