@@ -1,6 +1,11 @@
 import { HttpBackend, HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { BrowserCacheLocation, Configuration, LogLevel, PublicClientApplication } from '@azure/msal-browser';
 import { map } from 'rxjs';
+
+const isIE =
+  window.navigator.userAgent.indexOf('MSIE ') > -1 ||
+  window.navigator.userAgent.indexOf('Trident/') > -1;
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +13,7 @@ import { map } from 'rxjs';
 export class MsalConfigService {
   private settings: any;
   private http: HttpClient;
-  constructor(private readonly httpHandler: HttpBackend) {
+  constructor(httpHandler: HttpBackend) {
     this.http = new HttpClient(httpHandler);
   }
 
@@ -24,7 +29,32 @@ export class MsalConfigService {
           });
     });
   }
-
+  getClientApplication() {
+    const msalConfig: Configuration = {
+      auth: {
+        clientId: this.getSettings('clientId'),
+        authority: this.getSettings('authority'),
+        redirectUri: this.getSettings('redirectUri'),
+        postLogoutRedirectUri: '/',
+        navigateToLoginRequestUrl: true
+      },
+      cache: {
+        cacheLocation: BrowserCacheLocation.LocalStorage, // Configures cache location. "sessionStorage" is more secure, but "localStorage" gives you SSO between tabs.
+        storeAuthStateInCookie: isIE, // Set this to "true" if you are having issues on IE11 or Edge
+      },
+      system: {
+        allowNativeBroker: false, // Disables WAM Broker
+        loggerOptions: {
+          loggerCallback(logLevel: LogLevel, message: string) {
+            // console.log(message);
+          },
+          logLevel: LogLevel.Verbose,
+          piiLoggingEnabled: false,
+        },
+      },
+    };
+    return new PublicClientApplication(msalConfig);
+  }
   getSettings(key?: string | Array<string>): any {
     if (!key || (Array.isArray(key) && !key[0])) {
       return this.settings;
