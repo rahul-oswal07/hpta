@@ -48,62 +48,6 @@ export const APP_MONTH_YEAR_FORMATS = {
   }
 };
 
-export function loggerCallback(logLevel: LogLevel, message: string) {
-  console.log(message);
-}
-
-export function MSALInstanceFactory(): IPublicClientApplication {
-  return new PublicClientApplication({
-    auth: {
-      clientId: environment.msalConfig.auth.clientId,
-      authority: environment.msalConfig.auth.authority,
-      navigateToLoginRequestUrl: true,
-      redirectUri: '/',
-      postLogoutRedirectUri: '/',
-
-    },
-    cache: {
-      cacheLocation: BrowserCacheLocation.LocalStorage,
-      storeAuthStateInCookie: true
-    },
-    system: {
-      allowNativeBroker: false, // Disables WAM Broker
-      loggerOptions: {
-        loggerCallback,
-        logLevel: LogLevel.Info,
-        piiLoggingEnabled: false
-      }
-    }
-  });
-}
-
-export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
-  const protectedResourceMap = new Map<string, Array<string>>();
-  // protectedResourceMap.set(environment.apiConfig.uri, environment.apiConfig.scopes);
-  protectedResourceMap.set(
-    'api/*',
-    ['https://devonhpta.onmicrosoft.com/14d3b6e3-2d3c-40cc-9099-fd81b654394f/Survey.Read']
-  );
-  protectedResourceMap.set(
-    'https://graph.microsoft.com/v1.0/me',
-    ['User.Read', 'User.ReadBasic.All']
-  );
-
-  return {
-    interactionType: InteractionType.Popup,
-    protectedResourceMap
-  };
-}
-
-export function MSALGuardConfigFactory(): MsalGuardConfiguration {
-  return {
-    interactionType: InteractionType.Redirect,
-    authRequest: {
-      // scopes: [...environment.apiConfig.scopes]
-    },
-    loginFailedRoute: '/login-failed'
-  };
-}
 
 @NgModule({
   declarations: [
@@ -120,7 +64,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
     BrowserAnimationsModule,
     HttpClientModule,
     SharedModule,
-    // MsalApplicationModule.forRoot('config.json'),
+    MsalApplicationModule.forRoot('config.json'),
     MatToolbarModule,
     MatMenuModule,
     MsalModule,
@@ -140,25 +84,8 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: MsalInterceptor,
-      multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
       useClass: ErrorHandlerInterceptor,
       multi: true
-    },
-    {
-      provide: MSAL_INSTANCE,
-      useFactory: MSALInstanceFactory
-    },
-    {
-      provide: MSAL_GUARD_CONFIG,
-      useFactory: MSALGuardConfigFactory
-    },
-    {
-      provide: MSAL_INTERCEPTOR_CONFIG,
-      useFactory: MSALInterceptorConfigFactory
     },
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline', subscriptSizing: 'dynamic' } },
     MsalService,

@@ -1,103 +1,121 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using DevCentralClient.Contracts;
+using HPTA.Api.Controllers;
 using HPTA.Data.Entities;
 using HPTA.DTO;
 using HPTA.Repositories.Contracts;
 using HPTA.Services.Contracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace HPTA.Services
 {
-    public class UserService(IDevCentralClientService devCentralClientService, IIdentityService identityService, IUserRepository userRepository, ITeamRepository teamRepository, IUserTeamRepository userTeamRepository, IMapper mapper) : IUserService
+    public class UserService(IDevCentralClientService devCentralClientService, IUserRepository userRepository, ITeamRepository teamRepository, IUserTeamRepository userTeamRepository, IMapper mapper) : IUserService
     {
         private readonly IDevCentralClientService _devCentralClientService = devCentralClientService;
-        private readonly IIdentityService _identityService = identityService;
         private readonly IUserRepository _userRepository = userRepository;
         private readonly ITeamRepository _teamRepository = teamRepository;
         private readonly IUserTeamRepository _userTeamRepository = userTeamRepository;
         private readonly IMapper _mapper = mapper;
 
-        public async Task ImportFromDevCentral()
+        public async Task<CustomClaimsDTO> GetCustomClaims(string email)
         {
-            var email = _identityService.GetEmail();
-            var azureAdUserId = _identityService.GetId();
-            if (email == null || azureAdUserId == null)
+            if (email == null)
                 throw new Exception("Invalid identity.");
-            var existingUser = (await _userRepository.GetByAsync(e => e.Email == email)).FirstOrDefault();
-            if (existingUser == null || existingUser.AzureAdUserId == null)
+            var existingUser = await _userRepository.GetUserInfoWithClaims(email).ProjectTo<CustomClaimsDTO>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+            if (existingUser == null)
             {
                 var data = await _devCentralClientService.GetTeamsInfo(email);
                 if (data.Any(d => d.Employee.Email == email)) //Devon user
                 {
-                    var employeeIds = data.Select(d => d.EmpId).ToList();
-                    var existingUsers = await _userRepository.GetByAsync(u => employeeIds.Contains(u.EmployeeCode));
-                    var teamId = data.Select(d => d.TeamId).FirstOrDefault();
-                    if (await _teamRepository.AnyAsync(t => t.Id == teamId))
-                    {
-                        await AddTeamMembersIfNotExist(azureAdUserId, email, data, existingUsers);
-                    }
-                    else //No team available. Create team and add users to the team.
-                    {
-                        await CreateNewTeam(azureAdUserId, email, data, existingUsers);
-                    }
+                    await SyncDevCentralData(data);
+                    existingUser = data.Select(d => new CustomClaimsDTO { EmployeeCode = d.EmpId }).FirstOrDefault();
+                    existingUser.TeamRoles = data.GroupBy(d => d.TeamId).Select(r => new TeamRoles { TeamId = r.Key, Roles = r.Select(tr => tr.RoleId).Distinct().ToList() }).ToList();
                 }
                 else //Anonymous user
                 {
-                    if (existingUser == null) //Doesn't have user account. Create one.
-                    {
-                        var newUser = new User { Id = Guid.NewGuid().ToString("N"), AzureAdUserId = azureAdUserId, Email = email, Name = _identityService.GetName() };
-                        _userRepository.Add(newUser);
-                    }
-                    else //Has user account. But doesn't have AD user Id
-                    {
-                        existingUser.AzureAdUserId = azureAdUserId;
-                        _userRepository.Update(existingUser);
-                    }
-                    await _userRepository.SaveAsync();
+                    throw new Exception("External users are not allowed.");
                 }
             }
+            return existingUser;
         }
 
-        private async Task CreateNewTeam(string azureAdUserId, string email, List<DevCentralTeamsResponse> team, List<User> existingUsers)
+        public async Task SyncAllUsersAsync()
         {
-            var newTeam = _mapper.Map<Team>(team.FirstOrDefault().Team);
-            newTeam.TeamUsers = new List<UserTeam>();
-            foreach (var item in team)
+            var data = await _devCentralClientService.GetAllTeamsInfo();
+            await SyncDevCentralData(data);
+        }
+
+        private async Task SyncDevCentralData(List<DevCentralTeamsResponse> data)
+        {
+            await SaveTeams(data);
+            Dictionary<string, string> userIdCache = await SaveUsers(data);
+            await SaveUserTeams(data, userIdCache);
+        }
+
+        private async Task SaveTeams(List<DevCentralTeamsResponse> data)
+        {
+            var teams = data.GroupBy(d => d.TeamId).Select(d => d.Select(t => t.Team).First());
+            foreach (var team in teams)
             {
-                var newTeamMember = CreateUserTeam(azureAdUserId, email, existingUsers, item);
-                if (!existingUsers.Any(u => u.EmployeeCode == item.EmpId))
-                    existingUsers.Add(newTeamMember.User);
-                newTeam.TeamUsers.Add(newTeamMember);
+                if (!await _teamRepository.AnyAsync(t => t.Id == team.Id))
+                {
+                    _teamRepository.Add(_mapper.Map<Team>(team));
+                }
             }
-            _teamRepository.Add(newTeam);
             await _teamRepository.SaveAsync();
         }
 
-        private UserTeam CreateUserTeam(string azureAdUserId, string email, List<User> existingUsers, DevCentralTeamsResponse item)
+        private async Task<Dictionary<string, string>> SaveUsers(List<DevCentralTeamsResponse> data)
         {
-            var newTeamMember = _mapper.Map<UserTeam>(item);
-            newTeamMember.TeamId = item.TeamId;
-            newTeamMember.Team = null;
-            var user = existingUsers.FirstOrDefault(u => u.EmployeeCode == item.EmpId);
-            if (user != null) //User record already exists. Associate with the team.
-                newTeamMember.User = user;
-            if (newTeamMember.User.Id == null)
-                newTeamMember.User.Id = Guid.NewGuid().ToString("N");
-            if (newTeamMember.User.Email == email)
-                newTeamMember.User.AzureAdUserId = azureAdUserId;
-            return newTeamMember;
+            Dictionary<string, string> userIdCache = [];
+            var employees = data.GroupBy(d => d.EmpId).Select(d => d.Select(e => e.Employee).First());
+            foreach (var employee in employees)
+            {
+                if (employee.Email == null) //Ignore visitor
+                    continue;
+                try
+                {
+                    if (!userIdCache.ContainsKey(employee.Email) && !await _userRepository.AnyAsync(u => u.Email == employee.Email))
+                    {
+                        var user = _mapper.Map<User>(employee);
+                        user.Id = Guid.NewGuid().ToString("N");
+                        _userRepository.Add(user);
+                        userIdCache[employee.Email] = user.Id;
+                    }
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+            }
+            await _userRepository.SaveAsync();
+            return userIdCache;
         }
 
-        private async Task AddTeamMembersIfNotExist(string azureAdUserId, string email, List<DevCentralTeamsResponse> team, List<User> existingUsers)
+        private async Task SaveUserTeams(List<DevCentralTeamsResponse> data, Dictionary<string, string> userIdCache)
         {
-            foreach (var member in team)
+            var tmp = data.Distinct();
+            foreach (var member in data.Distinct())
             {
-                if (!await _userTeamRepository.AnyAsync(t => t.User.EmployeeCode == member.EmpId && t.TeamId == member.TeamId && t.RoleId == member.RoleId && t.StartDate == member.StartDate))
+                if (member.Employee.Email == null) //Ignore visitor
+                    continue;
+                try
                 {
-                    var newTeamMember = CreateUserTeam(azureAdUserId, email, existingUsers, member);
-                    _userTeamRepository.Add(newTeamMember);
+                    if (!await _userTeamRepository.AnyAsync(ut => ut.User.EmployeeCode == member.EmpId && ut.TeamId == member.TeamId && ut.RoleId == member.RoleId && ut.StartDate == member.StartDate))
+                    {
+                        var teamMember = _mapper.Map<UserTeam>(member);
+                        if (!userIdCache.ContainsKey(member.Employee.Email))
+                            userIdCache[member.Employee.Email] = await _userRepository.GetUserIdByEmailAsync(member.Employee.Email);
+                        teamMember.UserId = userIdCache[member.Employee.Email];
+                        _userTeamRepository.Add(teamMember);
+                    }
+                }
+                catch (Exception)
+                {
 
-                    if (!existingUsers.Any(u => u.EmployeeCode == member.EmpId))
-                        existingUsers.Add(newTeamMember.User);
+                    throw;
                 }
             }
             await _userTeamRepository.SaveAsync();

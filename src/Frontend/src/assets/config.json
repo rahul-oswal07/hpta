@@ -1,17 +1,16 @@
 {
-  "clientID": "fdc10356-3e76-479f-9aa3-1485050dd9e4",
-  "authority": "https://devonhpta.b2clogin.com/tfp",
-  "redirectUri": "http://localhost:4200/",
+  "clientId": "99d90717-3f13-4dbe-9c5c-513efe4616b1",
+  "authority": "https://login.microsoftonline.com/06d4deb7-52b0-440b-ac6a-321edda39fc9",
+  "redirectUri": "/",
   "cacheLocation": "localStorage",
-  "protectedResourceMap": [
-    [
-      "http://localhost:4200",
-      [
-        "https://devonhpta.onmicrosoft.com/surveys/api/survey.read",
-        "https://devonhpta.onmicrosoft.com/surveys/api/survey.write",
-        "https://devonhpta.onmicrosoft.com/surveys/api/category.read",
-        "https://devonhpta.onmicrosoft.com/surveys/api/category.write"
-      ]
+  "scopes": [
+    "User.Read",
+    "User.ReadBasic.All",
+    "api://99d90717-3f13-4dbe-9c5c-513efe4616b1/Survey.Read"
+  ],
+  "protectedResourceMap": {
+    "api/*": [
+      "api://99d90717-3f13-4dbe-9c5c-513efe4616b1/Survey.Read"
     ]
-  ]
+  }
 }

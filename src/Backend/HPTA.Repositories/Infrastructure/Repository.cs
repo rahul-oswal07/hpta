@@ -110,7 +110,7 @@ namespace HPTA.Repositories.Infrastructure
         /// <returns>Either true or false as per the match.</returns>
         public bool Any(Expression<Func<T, bool>> predicate)
         {
-            return this.AnyAsync(predicate).Result;
+            return this.dbset.AsNoTracking().Any(this.ApplyFilters(predicate));
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace HPTA.Repositories.Infrastructure
         /// <returns>Either true or false as per the match.</returns>
         public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)
         {
-            return await this.dbset.AnyAsync(this.ApplyFilters(predicate)).ConfigureAwait(false);
+            return await this.dbset.AsNoTracking().AnyAsync(this.ApplyFilters(predicate));
         }
 
         /// <summary>

@@ -5,5 +5,6 @@ namespace DevCentralClient.Contracts
     public interface IDevCentralClientService
     {
         Task<List<DevCentralTeamsResponse>> GetTeamsInfo(string email);
+        Task<List<DevCentralTeamsResponse>> GetAllTeamsInfo();
     }
 }

@@ -9,6 +9,19 @@ namespace DevCentralClient
     {
         private readonly DevCentralConfig _config = config;
 
+        public async Task<List<DevCentralTeamsResponse>> GetAllTeamsInfo()
+        {
+            try
+            {
+                return await FetchDataAsync<List<DevCentralTeamsResponse>>($"GetTeams?code={_config.TeamsRequestCode}");
+
+            }
+            catch (Exception)
+            {
+                return [];
+            }
+        }
+
         public async Task<List<DevCentralTeamsResponse>> GetTeamsInfo(string email)
         {
             try
