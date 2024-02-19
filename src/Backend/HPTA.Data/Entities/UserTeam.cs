@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using HPTA.Common;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HPTA.Data.Entities
 {
@@ -10,7 +11,7 @@ namespace HPTA.Data.Entities
         public DateTime? EndDate { get; set; }
         public bool IsCoreMember { get; set; }
         public bool IsBillable { get; set; }
-        public int RoleId { get; set; }
+        public Roles RoleId { get; set; }
 
         #region Navigation Properties
         [ForeignKey(nameof(User))]

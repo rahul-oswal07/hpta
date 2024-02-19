@@ -9,18 +9,17 @@ namespace HPTA.Services.Tests
 {
     public class UserServiceTests
     {
-        private readonly Mock<IDevCentralClientService> _mockDevCentralClientService = new Mock<IDevCentralClientService>();
-        private readonly Mock<IIdentityService> _mockIdentityService = new Mock<IIdentityService>();
-        private readonly Mock<IUserRepository> _mockUserRepository = new Mock<IUserRepository>();
-        private readonly Mock<ITeamRepository> _mockTeamRepository = new Mock<ITeamRepository>();
-        private readonly Mock<IUserTeamRepository> _mockUserTeamRepository = new Mock<IUserTeamRepository>();
-        private readonly Mock<IMapper> _mockMapper = new Mock<IMapper>();
+        private readonly Mock<IDevCentralClientService> _mockDevCentralClientService = new();
+        private readonly Mock<IIdentityService> _mockIdentityService = new();
+        private readonly Mock<IUserRepository> _mockUserRepository = new();
+        private readonly Mock<ITeamRepository> _mockTeamRepository = new();
+        private readonly Mock<IUserTeamRepository> _mockUserTeamRepository = new();
+        private readonly Mock<IMapper> _mockMapper = new();
 
         private UserService CreateUserService()
         {
             return new UserService(
                 _mockDevCentralClientService.Object,
-                _mockIdentityService.Object,
                 _mockUserRepository.Object,
                 _mockTeamRepository.Object,
                 _mockUserTeamRepository.Object,
@@ -40,7 +39,7 @@ namespace HPTA.Services.Tests
             var userService = CreateUserService();
 
             // Act
-            await userService.ImportFromDevCentral();
+            await userService.GetCustomClaims(email, azureAdUserId);
 
             // Assert
             //_mockUserRepository.Verify(x => x.Add(It.IsAny<User>()), Times.Once);

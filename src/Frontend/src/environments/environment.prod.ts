@@ -3,17 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,
-  msalConfig: {
-    auth: {
-      clientId: '53662eb5-c96e-4534-a057-3c0679367c74',
-      authority: 'https://login.microsoftonline.com/devonhpta.onmicrosoft.com'
-    }
-  },
-  // apiConfig: {
-  //   scopes: ['user.read'],
-  //   uri: 'https://graph.microsoft.com/v1.0'
-  // }
+  production: true
 };
 
 /*

@@ -9,22 +9,9 @@
   </div>
 </nav>
 <ng-template #rightSection>
-  <!-- <button
-    mat-icon-button
-    *ngIf="notificationCount || -1 as notifications"
-    [routerLink]="['notifications', 'alerts']"
-    [matBadge]="notifications"
-    [matBadgeHidden]="notifications <= 0"
-    [matBadgeOverlap]="true"
-    matBadgeColor="warn"
-  >
-    <mat-icon>
-      {{ notifications <= 0 ? "notifications_none" : "notifications_active" }}
-    </mat-icon>
-  </button> -->
   <button *ngIf="loginDisplay" mat-button (click)="login()">Login</button>
   <button *ngIf="!loginDisplay && loggedInUser" [matMenuTriggerFor]="userMenu" class="flex flex-row items-center gap-1">
-    <img *ngIf="avatarUrl" [src]="avatarUrl" width="48" height="48" />
+    <img class="profile-picture" *ngIf="avatarUrl" [src]="avatarUrl" width="48" height="48" />
     <div *ngIf="!isMobile" class="flex flex-col items-start">
       <div>{{ loggedInUser.name }}</div>
       <small>{{loggedInUser.username}}</small>
