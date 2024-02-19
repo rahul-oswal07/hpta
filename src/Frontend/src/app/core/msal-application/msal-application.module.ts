@@ -4,13 +4,11 @@ import {
   MsalService, MsalModule, MsalInterceptor, MSAL_INSTANCE, MsalInterceptorConfiguration, MsalGuardConfiguration, MSAL_GUARD_CONFIG, MSAL_INTERCEPTOR_CONFIG, MsalGuard, MsalBroadcastService
 } from '@azure/msal-angular';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { BrowserCacheLocation, Configuration, IPublicClientApplication, InteractionType, LogLevel, PublicClientApplication } from '@azure/msal-browser';
+import { IPublicClientApplication, InteractionType } from '@azure/msal-browser';
 
 const GRAPH_ENDPOINT = 'https://graph.microsoft.com/v1.0/me';
 const AUTH_CONFIG_URL_TOKEN = new InjectionToken<string>('AUTH_CONFIG_URL');
-const isIE =
-  window.navigator.userAgent.indexOf('MSIE ') > -1 ||
-  window.navigator.userAgent.indexOf('Trident/') > -1;
+
 
 /**
 * Scopes you add here will be prompted for user consent during sign-in.
@@ -26,7 +24,7 @@ export function initializerFactory(env: MsalConfigService, configUrl: string): a
   // APP_INITIALIZER, except a function return which will return a promise
   // APP_INITIALIZER, angular doesnt starts application untill it completes
   const promise = env.init(configUrl).then(() => {
-    console.log(env.getSettings('clientId'));
+    // console.log(env.getSettings('clientId'));
   });
   return () => promise;
 }
@@ -37,31 +35,9 @@ export function initializerFactory(env: MsalConfigService, configUrl: string): a
  */
 
 export function MSALInstanceFactory(config: MsalConfigService): IPublicClientApplication {
-  const msalConfig: Configuration = {
-    auth: {
-      clientId: config.getSettings('clientId'),
-      authority: config.getSettings('authority'),
-      // knownAuthorities: [b2cPolicies.authorityDomain], // Mark your B2C tenant's domain as trusted.
-      redirectUri: config.getSettings('redirectUri'),
-      postLogoutRedirectUri: '/',
-      navigateToLoginRequestUrl: true
-    },
-    cache: {
-      cacheLocation: BrowserCacheLocation.LocalStorage, // Configures cache location. "sessionStorage" is more secure, but "localStorage" gives you SSO between tabs.
-      storeAuthStateInCookie: isIE, // Set this to "true" if you are having issues on IE11 or Edge
-    },
-    system: {
-      allowNativeBroker: false, // Disables WAM Broker
-      loggerOptions: {
-        loggerCallback(logLevel: LogLevel, message: string) {
-          console.log(message);
-        },
-        logLevel: LogLevel.Verbose,
-        piiLoggingEnabled: false,
-      },
-    },
-  };
-  return new PublicClientApplication(msalConfig);
+  const app = config.getClientApplication();
+  console.log('AllAccounts', app.getAllAccounts());
+  return app;
 }
 
 /**

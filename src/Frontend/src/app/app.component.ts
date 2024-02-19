@@ -2,11 +2,9 @@ import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService } from '@azure/msal-angular';
-import { AccountInfo, AuthenticationResult, EventMessage, EventType, IPublicClientApplication, InteractionStatus, InteractionType, PopupRequest, PublicClientApplication, RedirectRequest } from '@azure/msal-browser';
-import { Observable, Subject, filter, map, of, takeUntil } from 'rxjs';
-import { MenuItem } from 'src/app/core/models/menu-item';
+import { AccountInfo, AuthenticationResult, EventMessage, EventType, InteractionStatus, PopupRequest, PublicClientApplication, RedirectRequest } from '@azure/msal-browser';
+import { Subject, filter, takeUntil } from 'rxjs';
 import { MenuService } from 'src/app/core/services/menu.service';
-import { UserConfigService } from 'src/app/core/services/user-config.service';
 import { UserProfileService } from 'src/app/core/services/user-profile.service';
 
 @Component({
@@ -25,7 +23,6 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(@Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
     private authService: MsalService,
     private msalBroadcastService: MsalBroadcastService,
-    private userConfigService: UserConfigService,
     private readonly renderer: Renderer2,
     private profileService: UserProfileService,
     private menuService: MenuService,
