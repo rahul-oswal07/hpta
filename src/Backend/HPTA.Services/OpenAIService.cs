@@ -8,8 +8,8 @@ namespace HPTA.Services;
 
 public class OpenAIService : IOpenAIService
 {
-    private readonly ConnectionStrings _connectionStrings;
-    public OpenAIService(ConnectionStrings connectionStrings)
+    private readonly ApplicationSettings _connectionStrings;
+    public OpenAIService(ApplicationSettings connectionStrings)
     {
         _connectionStrings = connectionStrings;
     }

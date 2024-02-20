@@ -1,6 +1,5 @@
 using Azure.Identity;
 using DevCentralClient.Infrastructure;
-using DevCentralClient.Models;
 using HPTA.Api.AuthorizationPolicies;
 using HPTA.Api.Infrastructure;
 using HPTA.Common.Configurations;
@@ -17,20 +16,17 @@ if (builder.Environment.IsProduction())
         new Uri($"https://{builder.Configuration["KeyVaultName"]}.vault.azure.net/"),
         new DefaultAzureCredential());
 }
-var configRoot = new
-{
-    ConnectionStrings = new ConnectionStrings(),
-    DevCentralConfig = new DevCentralConfig()
-};
+var appSettings = new ApplicationSettings();
 
-builder.Configuration.Bind(configRoot);
+builder.Configuration.Bind(appSettings);
+appSettings.MasterDbConnectionString = builder.Configuration.GetConnectionString("MasterDbConnectionString");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddMicrosoftIdentityWebApi(builder.Configuration);
 
 // Add services to the container.
-builder.Services.RegisterDependency(configRoot.ConnectionStrings);
-builder.Services.RegisterDevCentralClient(configRoot.DevCentralConfig);
+builder.Services.RegisterDependency(appSettings);
+builder.Services.RegisterDevCentralClient(appSettings);
 builder.Services.RegisterMappingProfiles();
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -51,7 +47,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 //Scheduler
-builder.Services.RegisterScheduler(configRoot.ConnectionStrings);
+builder.Services.RegisterScheduler(appSettings);
 
 var app = builder.Build();
 

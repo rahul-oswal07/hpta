@@ -1,4 +1,4 @@
-﻿namespace DevCentralClient.Models
+﻿namespace HPTA.Common.Models
 {
     public class DevCentralConfig
     {

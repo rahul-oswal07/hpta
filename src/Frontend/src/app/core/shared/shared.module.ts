@@ -28,6 +28,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FilterService } from 'src/app/core/shared/services/filter.service';
 import { AnswerTypePipe } from 'src/app/core/pipes/answer-type.pipe';
+import { NoSelectionComponent } from 'src/app/core/shared/components/no-selection/no-selection.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { AnswerTypePipe } from 'src/app/core/pipes/answer-type.pipe';
     FilterNumberFormComponent,
     FilterSelectFormComponent,
     FilterStringFormComponent,
+    NoSelectionComponent,
     AnswerTypePipe
   ],
   imports: [
@@ -61,6 +63,7 @@ import { AnswerTypePipe } from 'src/app/core/pipes/answer-type.pipe';
     TableControlBarComponent,
     FilterListComponent,
     FilterMenuComponent,
+    NoSelectionComponent,
     AnswerTypePipe
   ],
   providers: [

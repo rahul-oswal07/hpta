@@ -7,7 +7,7 @@ namespace HPTA.Services.Infrastructure;
 
 public static class ServiceDependencyRegistry
 {
-    public static void RegisterServices(this IServiceCollection services, ConnectionStrings appSettings)
+    public static void RegisterServices(this IServiceCollection services, ApplicationSettings appSettings)
     {
         RepositoryDependencyRegistry.RetisterRepositories(services, appSettings);
         services.AddScoped<IIdentityService, AzureAdIdentityService>();

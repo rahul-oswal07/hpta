@@ -4,7 +4,7 @@ import { SubCategoriesComponent } from './sub-categories.component';
 import { RouterModule, Routes } from '@angular/router';
 import { EditSubCategoryComponent } from './edit-sub-category/edit-sub-category.component';
 import { UnsavedChangesGuard } from 'src/app/core/guards/unsaved-changes.guard';
-import { NoSelectionComponent } from './no-selection/no-selection.component';
+import { NoSelectionComponent } from '../../core/shared/components/no-selection/no-selection.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';

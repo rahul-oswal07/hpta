@@ -20,8 +20,8 @@ public class AnswerService : IAnswerService
 
     public async Task AddAnswers(int surveyId, List<SurveyAnswerModel> answers)
     {
-        var azureAdUserId = _identityService.GetId();
-        var userId = await _userRepository.GetUserIdByAzureAdUserIdAsync(azureAdUserId);
+        var email = _identityService.GetEmail();
+        var userId = await _userRepository.GetUserIdByEmailAsync(email);
         var existingAnswers = await _answerRepository.GetByAsync(a => a.SurveyId == surveyId && a.UserId == userId);
         foreach (var answer in answers)
         {

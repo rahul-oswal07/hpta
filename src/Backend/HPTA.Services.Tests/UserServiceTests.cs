@@ -39,7 +39,7 @@ namespace HPTA.Services.Tests
             var userService = CreateUserService();
 
             // Act
-            await userService.GetCustomClaims(email, azureAdUserId);
+            await userService.GetCustomClaims(email);
 
             // Assert
             //_mockUserRepository.Verify(x => x.Add(It.IsAny<User>()), Times.Once);

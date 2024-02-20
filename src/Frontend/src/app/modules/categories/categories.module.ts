@@ -13,9 +13,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { UnsavedChangesGuard } from 'src/app/core/guards/unsaved-changes.guard';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { NoSelectionComponent } from './no-selection/no-selection.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NoSelectionComponent } from 'src/app/core/shared/components/no-selection/no-selection.component';
 
 const CATEGORIES_ROUTES: Routes = [
   {
@@ -45,6 +45,6 @@ const CATEGORIES_ROUTES: Routes = [
     MatProgressSpinnerModule,
     RouterModule.forChild(CATEGORIES_ROUTES)
   ],
-  declarations: [CategoriesComponent, EditCategoryComponent, NoSelectionComponent]
+  declarations: [CategoriesComponent, EditCategoryComponent]
 })
 export class CategoriesModule { }

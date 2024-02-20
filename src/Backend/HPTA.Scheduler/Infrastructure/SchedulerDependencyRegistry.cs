@@ -8,7 +8,7 @@ namespace HPTA.Scheduler.Infrastructure
 {
     public static class SchedulerDependencyRegistry
     {
-        public static void RegisterScheduler(this IServiceCollection services, ConnectionStrings appSettings)
+        public static void RegisterScheduler(this IServiceCollection services, ApplicationSettings appSettings)
         {
             services.AddHangfire(configuration => configuration
         .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
