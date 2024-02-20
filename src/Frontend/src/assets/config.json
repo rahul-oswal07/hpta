@@ -1,16 +1,16 @@
 {
-  "clientId": "99d90717-3f13-4dbe-9c5c-513efe4616b1",
-  "authority": "https://login.microsoftonline.com/06d4deb7-52b0-440b-ac6a-321edda39fc9",
+  "clientId": "c7c8b9e9-3583-486e-8a21-4f977b9b5fdc",
+  "authority": "https://login.microsoftonline.com/24b080cd-5874-44ab-9862-8d7e0e0781ab",
   "redirectUri": "/",
   "cacheLocation": "localStorage",
   "scopes": [
     "User.Read",
     "User.ReadBasic.All",
-    "api://99d90717-3f13-4dbe-9c5c-513efe4616b1/Survey.Read"
+    "api://c7c8b9e9-3583-486e-8a21-4f977b9b5fdc/Survey.Read"
   ],
   "protectedResourceMap": {
     "api/*": [
-      "api://99d90717-3f13-4dbe-9c5c-513efe4616b1/Survey.Read"
+      "api://c7c8b9e9-3583-486e-8a21-4f977b9b5fdc/Survey.Read"
     ]
   }
 }

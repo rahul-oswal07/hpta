@@ -1,5 +1,5 @@
 ﻿using DevCentralClient.Contracts;
-using DevCentralClient.Models;
+using HPTA.Common.Models;
 using HPTA.DTO;
 using System.Text.Json;
 

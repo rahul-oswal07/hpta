@@ -7,7 +7,7 @@ namespace HPTA.Repositories.Infrastructure;
 
 public static class RepositoryDependencyRegistry
 {
-    public static void RetisterRepositories(this IServiceCollection services, ConnectionStrings appSettings)
+    public static void RetisterRepositories(this IServiceCollection services, ApplicationSettings appSettings)
     {
         services.AddDbContext<HPTADbContext>(options =>
         {

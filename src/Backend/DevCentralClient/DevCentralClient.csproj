@@ -15,4 +15,8 @@
     <ProjectReference Include="..\HPTA.DTO\HPTA.DTO.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>

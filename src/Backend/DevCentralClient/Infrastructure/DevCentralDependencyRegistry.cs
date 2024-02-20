@@ -1,16 +1,16 @@
 ﻿using DevCentralClient.Contracts;
-using DevCentralClient.Models;
+using HPTA.Common.Configurations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DevCentralClient.Infrastructure
 {
     public static class DevCentralDependencyRegistry
     {
-        public static void RegisterDevCentralClient(this IServiceCollection services, DevCentralConfig config)
+        public static void RegisterDevCentralClient(this IServiceCollection services, ApplicationSettings applicationSettings)
         {
             services.AddSingleton<IDevCentralClientService, DevCentralClientService>((serviceProvider) =>
             {
-                return new DevCentralClientService(config);
+                return new DevCentralClientService(applicationSettings.DevCentralConfig);
             });
         }
     }
