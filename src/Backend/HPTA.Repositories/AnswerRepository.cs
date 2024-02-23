@@ -13,8 +13,8 @@ public class AnswerRepository : Repository<Answer>, IAnswerRepository
         _hPTADbContext = hPTADbContext;
     }
 
-    public IQueryable<RatingAnswer> ListAnswersByUserId(string userId)
+    public IQueryable<RatingAnswer> ListAnswersByUser(string email)
     {
-        return _hPTADbContext.Answers.OfType<RatingAnswer>().AsNoTracking().Include(a => a.Question).ThenInclude(q => q.Question).ThenInclude(q => q.SubCategory).ThenInclude(s => s.Category).Where(a => a.UserId == userId);
+        return _hPTADbContext.Answers.OfType<RatingAnswer>().AsNoTracking().Include(a => a.Question).ThenInclude(q => q.Question).ThenInclude(q => q.SubCategory).ThenInclude(s => s.Category).Where(a => a.User.Email == email);
     }
 }

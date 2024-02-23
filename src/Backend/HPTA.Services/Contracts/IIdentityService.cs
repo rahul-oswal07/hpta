@@ -4,10 +4,9 @@
     {
         bool IsAuthenticated();
         string GetEmail();
-        string GetId();
 
-        string GetName();
+        //string GetName();
 
-        int? GetCoreTeamId();
+        //int? GetCoreTeamId();
     }
 }
