@@ -30,7 +30,11 @@ namespace HPTA.Services
                 {
                     await SyncDevCentralData(data);
                     existingUser = data.Select(d => new CustomClaimsDTO { EmployeeCode = d.EmpId }).FirstOrDefault();
-                    existingUser.TeamRoles = data.GroupBy(d => d.TeamId).Select(r => new TeamRoles { TeamId = r.Key, Roles = r.Select(tr => tr.RoleId).Distinct().ToList() }).ToList();
+                    existingUser.IsSuperUser = data.Any(t => t.RoleId >= Common.Roles.CDL);
+                    existingUser.CoreTeamId = data
+                .Where(t => t.IsCoreMember && t.StartDate <= DateTime.Today && t.EndDate >= DateTime.Today)
+                .Select(t => t.TeamId)
+                .FirstOrDefault();
                 }
                 else //Anonymous user
                 {

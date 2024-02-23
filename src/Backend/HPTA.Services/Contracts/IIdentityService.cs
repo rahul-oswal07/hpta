@@ -7,5 +7,7 @@
         string GetId();
 
         string GetName();
+
+        int? GetCoreTeamId();
     }
 }

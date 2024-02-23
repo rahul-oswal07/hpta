@@ -19,5 +19,8 @@ public static class ServiceDependencyRegistry
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<ITeamService, TeamService>();
         services.AddTransient<IOpenAIService, OpenAIService>();
+
+        services.AddTransient<IOtpService, OtpService>();
+        services.AddSingleton<IJwtTokenService, JwtTokenService>();
     }
 }

@@ -22,4 +22,6 @@ public partial class HPTADbContext
     public DbSet<Team> Teams { get; set; }
 
     public DbSet<UserTeam> UserTeams { get; set; }
+
+    public DbSet<OTPRequest> OTPRequests { get; set; }
 }

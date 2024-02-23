@@ -11,10 +11,11 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
 import { MatInputModule } from "@angular/material/input";
 import { NgApexchartsModule } from 'ng-apexcharts';
+import { SurveyResultDetailsComponent } from "src/app/modules/survey-result/survey-result-details/survey-result-details.component";
 
 @NgModule({
   declarations: [
-    SurveyResultComponent
+    SurveyResultComponent, SurveyResultDetailsComponent
   ],
   imports: [
     CommonModule,

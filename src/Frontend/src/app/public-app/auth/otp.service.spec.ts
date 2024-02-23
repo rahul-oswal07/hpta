@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { MsalConfigService } from './msal-config.service';
+import { OtpService } from './otp.service';
 
-describe('MsalConfigService', () => {
-  let service: MsalConfigService;
+describe('OtpService', () => {
+  let service: OtpService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(MsalConfigService);
+    service = TestBed.inject(OtpService);
   });
 
   it('should be created', () => {

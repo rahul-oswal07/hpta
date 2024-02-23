@@ -7,7 +7,7 @@ import { SurveyQuestion } from 'src/app/modules/survey/survey-question';
   providedIn: 'root'
 })
 export class SurveyService extends DataService {
-  override path = 'survey';
+  override path = 'anonymous/survey';
 
   constructor(injector: Injector) {
     super(injector);

@@ -4,12 +4,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { MsalApplicationModule } from 'src/app/core/msal-application/msal-application.module';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { HomeComponent } from './home/home.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
-import { MsalBroadcastService, MsalGuard, MsalModule, MsalRedirectComponent, MsalService } from '@azure/msal-angular';
+import { MsalBroadcastService, MsalGuard, MsalInterceptor, MsalModule, MsalRedirectComponent, MsalService } from '@azure/msal-angular';
 import { FailedLoginComponent } from './failed-login/failed-login.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SidebarComponent } from 'src/app/core/sidebar/sidebar.component';
@@ -36,7 +35,6 @@ import { SharedModule } from 'src/app/core/shared/shared.module';
     BrowserAnimationsModule,
     HttpClientModule,
     SharedModule,
-    MsalApplicationModule.forRoot('config.json'),
     MatToolbarModule,
     MatMenuModule,
     MsalModule,
@@ -48,6 +46,11 @@ import { SharedModule } from 'src/app/core/shared/shared.module';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorHandlerInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: MsalInterceptor,
       multi: true
     },
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline', subscriptSizing: 'dynamic' } },

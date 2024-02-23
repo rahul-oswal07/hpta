@@ -1,10 +1,12 @@
 ﻿using HPTA.Services.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HPTA.Api.Controllers;
 
-[Route("api/[controller]")]
-public class SurveyController : BaseController
+[Route("api/anonymous/[controller]")]
+[AllowAnonymous]
+public class SurveyController : Controller
 {
     private readonly ISurveyService _surveyService;
 

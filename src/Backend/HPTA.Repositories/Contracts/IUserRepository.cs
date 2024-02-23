@@ -7,5 +7,7 @@ namespace HPTA.Repositories.Contracts
         Task<string> GetUserIdByEmailAsync(string email);
 
         IQueryable<User> GetUserInfoWithClaims(string email);
+
+        Task<User> AddAnonymousUserIfNotExists(string name, string email);
     }
 }

@@ -169,6 +169,37 @@ namespace HPTA.Migrations.Migrations
                         });
                 });
 
+            modelBuilder.Entity("HPTA.Data.Entities.OTPRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedOnUTC")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("ExpiresOnUTC")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OTP")
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
+
+                    b.ToTable("OTPRequests");
+                });
+
             modelBuilder.Entity("HPTA.Data.Entities.Question", b =>
                 {
                     b.Property<int>("Id")
@@ -1192,7 +1223,7 @@ namespace HPTA.Migrations.Migrations
                         .IsRequired();
 
                     b.HasOne("HPTA.Data.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("Teams")
                         .HasForeignKey("UserId");
 
                     b.Navigation("Team");
@@ -1225,6 +1256,11 @@ namespace HPTA.Migrations.Migrations
             modelBuilder.Entity("HPTA.Data.Entities.Team", b =>
                 {
                     b.Navigation("TeamUsers");
+                });
+
+            modelBuilder.Entity("HPTA.Data.Entities.User", b =>
+                {
+                    b.Navigation("Teams");
                 });
 #pragma warning restore 612, 618
         }
