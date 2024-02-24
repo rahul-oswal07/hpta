@@ -13,11 +13,23 @@ public class TeamController : BaseController
         _teamService = teamService;
     }
 
-    [HttpGet("{teamId}")]
-    public async Task<ActionResult> LoadChartData(int teamId)
-        => Ok(await _teamService.LoadChartData(teamId));
+    [HttpGet("team-chart/{teamId}")]
+    public async Task<ActionResult> LoadTeamChartData(int teamId)
+        => Ok(await _teamService.LoadChartData(teamId: teamId, userId: string.Empty));
+
+    [HttpGet("user-chart/{userId}")]
+    public async Task<ActionResult> LoadUserChartData(string userId)
+        => Ok(await _teamService.LoadChartData(teamId: 0, userId: userId));
 
     [HttpGet]
     public async Task<ActionResult> GetAllTeams()
          => Ok(await _teamService.GetAllTeams());
+
+    [HttpGet("category-chart/{teamId}/{categoryId}")]
+    public async Task<ActionResult> LoadCategoryChartData(int teamId, int categoryId)
+        => Ok(await _teamService.LoadCategoryChartData(teamId: teamId, categoryId: categoryId, userId: string.Empty));
+
+    [HttpGet("user-category-chart/{userId}/{categoryId}")]
+    public async Task<ActionResult> LoadUserCategoryChartData(string userId, int categoryId)
+    => Ok(await _teamService.LoadCategoryChartData(teamId: 0, categoryId, userId: userId));
 }

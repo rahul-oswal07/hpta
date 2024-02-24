@@ -1,11 +1,21 @@
-<form [formGroup]="form" *ngIf="showDropdown">
-  <mat-form-field appearance="outline" class="w-96 m-3">
+<form [formGroup]="form">
+  <mat-form-field appearance="outline" class="w-96 m-3" *ngIf="showDropdown">
     <mat-select
-      formControlName="selectedTeam"
       placeholder="Please select an option"
+      #singleSelect
+      formControlName="selectedTeam"
       panelClass="my-panel"
+      [disabled]="disableDropdown"
     >
-      <input matInput placeholder="Search" (input)="onSearchInput($event)" />
+      <mat-option>
+        <ngx-mat-select-search
+          formControlName="searchedInput"
+          placeholderLabel="Find team..."
+          noEntriesFoundLabel="No data"
+        >
+        </ngx-mat-select-search>
+      </mat-option>
+
       <mat-option *ngFor="let option of filteredOptions" [value]="option.id">
         {{ option.name }}
       </mat-option>
@@ -13,20 +23,38 @@
   </mat-form-field>
 </form>
 
-<div #chart>
-  <div *ngIf="chartOptions" id="chart">
+<div class="chart-container">
+  <div #chart class="chart">
+    <div *ngIf="chartOptions">
+      <apx-chart
+        [series]="chartOptions.series"
+        [chart]="chartOptions.chart"
+        [xaxis]="chartOptions.xaxis"
+        [dataLabels]="chartOptions.dataLabels"
+        [grid]="chartOptions.grid"
+        [stroke]="chartOptions.stroke"
+        [title]="chartOptions.title"
+        [labels]="chartOptions.labels"
+        [annotations]="chartOptions.annotations"
+        [fill]="chartOptions.fill"
+        [yaxis]="chartOptions.yaxis"
+      ></apx-chart>
+    </div>
+  </div>
+
+  <div *ngIf="categoryChartOptions" class="chart">
     <apx-chart
-      [series]="chartOptions.series"
-      [chart]="chartOptions.chart"
-      [xaxis]="chartOptions.xaxis"
-      [dataLabels]="chartOptions.dataLabels"
-      [grid]="chartOptions.grid"
-      [stroke]="chartOptions.stroke"
-      [title]="chartOptions.title"
-      [labels]="chartOptions.labels"
-      [annotations]="chartOptions.annotations"
-      [fill]="chartOptions.fill"
-      [yaxis]="chartOptions.yaxis"
+      [series]="categoryChartOptions.series"
+      [chart]="categoryChartOptions.chart"
+      [xaxis]="categoryChartOptions.xaxis"
+      [dataLabels]="categoryChartOptions.dataLabels"
+      [grid]="categoryChartOptions.grid"
+      [stroke]="categoryChartOptions.stroke"
+      [title]="categoryChartOptions.title"
+      [labels]="categoryChartOptions.labels"
+      [annotations]="categoryChartOptions.annotations"
+      [fill]="categoryChartOptions.fill"
+      [yaxis]="categoryChartOptions.yaxis"
     ></apx-chart>
   </div>
 </div>
@@ -40,9 +68,7 @@
     </b>
   </p>
   <p *ngIf="overallHPTAScore">
-    <b>
-      Overall HPTA score : {{ overallHPTAScore }}
-    </b>
+    <b> Overall HPTA score : {{ overallHPTAScore }} </b>
   </p>
 
   <br />

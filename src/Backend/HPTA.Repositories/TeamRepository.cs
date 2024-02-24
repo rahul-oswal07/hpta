@@ -15,5 +15,28 @@ namespace HPTA.Repositories
             var teamData = await hptaDbContext.UspTeamDataReturnModels.FromSqlRaw("exec Usp_GetTeamWiseData @p0", teamIdParam).ToListAsync();
             return teamData;
         }
+
+        public async Task<List<UspTeamDataReturnModel>> LoadCategoryChartData(int teamId, int categoryId)
+        {
+            var teamIdParam = new SqlParameter("@p0", teamId);
+            var categoryIdParam = new SqlParameter("@p1", categoryId);
+            var teamData = await hptaDbContext.UspTeamDataReturnModels.FromSqlRaw("exec Usp_GetCategoryWiseData @p0,@p1", teamIdParam, categoryIdParam).ToListAsync();
+            return teamData;
+        }
+
+        public async Task<List<UspTeamDataReturnModel>> LoadUserChartData(string userId)
+        {
+            var userIdParam = new SqlParameter("@p0", userId);
+            var teamData = await hptaDbContext.UspTeamDataReturnModels.FromSqlRaw("exec Usp_GetUserChartData @p0", userIdParam).ToListAsync();
+            return teamData;
+        }
+
+        public async Task<List<UspTeamDataReturnModel>> LoadCategoryChartDataForUser(string userId, int categoryId)
+        {
+            var userIdParam = new SqlParameter("@p0", userId);
+            var categoryIdParam = new SqlParameter("@p1", categoryId);
+            var teamData = await hptaDbContext.UspTeamDataReturnModels.FromSqlRaw("exec Usp_GetCategoryWiseDataForUser @p0,@p1", userIdParam, categoryIdParam).ToListAsync();
+            return teamData;
+        }
     }
 }

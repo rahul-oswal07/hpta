@@ -18,9 +18,18 @@ public class TeamService : ITeamService
         _openAIService = openAIService;
     }
 
-    public async Task<TeamDataModel> LoadChartData(int teamId)
+    public async Task<TeamDataModel> LoadChartData(int teamId, string userId)
     {
-        var chartData = await _teamRepository.LoadChartData(teamId);
+        List<UspTeamDataReturnModel> chartData = null;
+
+        if (teamId > 0)
+        {
+            chartData = await _teamRepository.LoadChartData(teamId);
+        }
+        else if (!string.IsNullOrWhiteSpace(userId))
+        {
+            chartData = await _teamRepository.LoadUserChartData(userId);
+        }
 
         if (chartData == null || chartData.Count == 0)
         {
@@ -37,8 +46,29 @@ public class TeamService : ITeamService
 
     public async Task<List<TeamModel>> GetAllTeams()
     {
-        var teams = await _teamRepository.GetByAsync(x => x.IsActive);
+        var teams = (await _teamRepository.GetByAsync(x => x.IsActive)).OrderBy(x => x.Name);
         return _mapper.Map<List<TeamModel>>(teams);
     }
 
+    public async Task<TeamDataModel> LoadCategoryChartData(int teamId, int categoryId, string userId)
+    {
+        List<UspTeamDataReturnModel> chartData = null;
+
+        if (teamId > 0)
+        {
+            chartData = await _teamRepository.LoadCategoryChartData(teamId, categoryId);
+        }
+        else if (!string.IsNullOrWhiteSpace(userId))
+        {
+            chartData = await _teamRepository.LoadCategoryChartDataForUser(userId, categoryId);
+        }
+
+        if (chartData == null || chartData.Count == 0)
+        {
+            return new TeamDataModel();
+        }
+        var teamData = _mapper.Map<TeamDataModel>(chartData);
+
+        return teamData;
+    }
 }

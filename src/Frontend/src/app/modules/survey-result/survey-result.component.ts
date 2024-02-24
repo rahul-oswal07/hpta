@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SurveyResultService } from './services/survey-result.service';
 import { TeamDataModel, ChartOptions, TeamsModel } from './models/team.model';
@@ -25,49 +25,67 @@ export class SurveyResultComponent implements OnInit {
   teams: TeamsModel[];
   filteredOptions: TeamsModel[];
   chartData = {} as TeamDataModel;
-  showDropdown: boolean = false;
+  disableDropdown: boolean = false;
   overallHPTAScore: string | number;
-  public chartOptions: ChartOptions;
+  teamId: number;
+  userId: string;
+  showDropdown: boolean;
+  chartOptions: ChartOptions;
+  categoryChartOptions: ChartOptions;
+  isAnonymousUser: boolean
 
   @ViewChild(DataStatusIndicator)
   dataStatusIndicator?: DataStatusIndicator;
 
-  constructor(private formBuilder: FormBuilder, private teamService: SurveyResultService) {
+  constructor(private formBuilder: FormBuilder, private teamService: SurveyResultService, private cd: ChangeDetectorRef) {
     this._buildForm();
+
     this.form.controls['selectedTeam'].valueChanges.subscribe(value => {
+      this.teamId = value;
+      this.categoryChartOptions = {} as ChartOptions;
       this._loadChartData(value);
     });
+
+    this.form.controls['searchedInput'].valueChanges
+      .subscribe(searchValue => {
+        this.filteredOptions = this.teams.filter(team => team.name.toLowerCase().includes(searchValue));
+      });
   }
 
 
   ngOnInit(): void {
-    this._enableDisableDropdown();
+    this._loadTeams();
   }
 
   private _loadTeams() {
-    this.teamService.getTeams().subscribe(teams => {
-      this.dataStatusIndicator?.setDefault();
-      this.teams = this.filteredOptions = teams;
-    });
+    if (false) { TODO: //anonymous 
+      this.isAnonymousUser = true;
+      this.showDropdown = false;
+      this.userId = '925b9ce499d44b818d390f26b04db51f';
+      this._loadUserChartData(this.userId)
+    }
+    else {
+      this.teamService.getTeams().subscribe(teams => {
+        this.showDropdown = true;
+        this.dataStatusIndicator?.setDefault();
+        this.teams = this.filteredOptions = teams;
+        if (false) { // TODO: not a super user
+          this.disableDropdown = true;
+          this.form.patchValue({ 'selectedTeam': this.teamId })
+        }
+      });
+    }
   }
 
-  onSearchInput(event: any): void {
-    const searchValue = event.target.value.toLowerCase();
-    this.filteredOptions = this.teams.filter(team => team.name.toLowerCase().includes(searchValue));
-  }
 
-  buildChartData() {
+  buildChartData(chartData: TeamDataModel, title: string) {
     const thisRef = this;
-    const average = this.chartData.scores.map((data) => data.average)
-    const categories = this.chartData.scores.map((data) => data.categoryName)
-    const result = (average.reduce((sum, current) => sum + current, 0) / categories.length)
-    this.overallHPTAScore = result % 1 !== 0 ? result.toFixed(2) : result;
 
-    this.chartOptions = {
+    const chartOptions: ChartOptions = {
       series: [
         {
           name: 'Average',
-          data: average,
+          data: chartData.scores.map((data) => data.average),
         },
       ],
       fill: {
@@ -81,10 +99,17 @@ export class SurveyResultComponent implements OnInit {
         type: 'bar',
         toolbar: {
           show: false
+        },
+        events: {
+          dataPointSelection: (event, chartContext, config) => {
+            const category = config.w.globals.labels[config.dataPointIndex] as string;
+            this._loadCategoryChartData(this.teamId, category);;
+            return;
+          }
         }
       },
       title: {
-        text: 'High Performing Team Report',
+        text: title,
       },
       dataLabels: {
         enabled: true,
@@ -96,7 +121,7 @@ export class SurveyResultComponent implements OnInit {
         },
       },
       xaxis: {
-        categories: categories,
+        categories: chartData.scores.map((data) => data.categoryName),
         axisTicks: {
           show: true
         },
@@ -117,41 +142,73 @@ export class SurveyResultComponent implements OnInit {
       labels: [],
       stroke: {},
     };
+
+    return chartOptions;
   }
 
   getColorCode(category: string): string {
-    return CATEGORY_COLORS[category] || '#FFFFFF';
+    return CATEGORY_COLORS[category] || "hsl(" + Math.random() * 360 + ", 100%, 75%)";
   }
 
   private _buildForm() {
     this.form = this.formBuilder.group({
-      selectedTeam: ['']
+      selectedTeam: [''],
+      searchedInput: ['']
     })
   }
 
   private _loadChartData(teamId: number) {
     this.dataStatusIndicator?.setLoading();
 
-    this.teamService.getChartData(teamId).subscribe(data => {
-
-      if (data.scores) {
-        this.dataStatusIndicator?.setDefault();
-        this.chartData = data;
-        this.buildChartData();
-      }
-      else {
-        this.dataStatusIndicator?.setNoData();
-      }
+    this.teamService.getTeamChartData(teamId).subscribe(data => {
+      this.populateChart(data);
     });
   }
 
-  private _enableDisableDropdown() {
-    this.showDropdown = true; //TODO: Compute the logic based on role
-    if (!this.showDropdown) {
-      this._loadChartData(170);
+  private _loadCategoryChartData(teamId: number, categoryName: string) {
+    const categoryId = Number(this.chartData.scores.find((data) => data.categoryName == categoryName)?.categoryId)
+
+    if (categoryId) {
+      this.categoryChartOptions = {} as ChartOptions;
+      if (!this.isAnonymousUser) {
+        this.teamService.getCategoryChartData(teamId, categoryId).subscribe(data => {
+          this.categoryChartOptions = this.buildChartData(data, `Report for Category : ${categoryName}`);
+          this.cd.detectChanges();
+        });
+      }
+      else {
+        this.teamService.getCategoryChartDataForUser(this.userId, categoryId).subscribe(data => {
+          this.categoryChartOptions = this.buildChartData(data, `Report for Category : ${categoryName}`);
+          this.cd.detectChanges();
+        });
+      }
+    }
+  }
+
+  private _loadUserChartData(userId: string) {
+    this.dataStatusIndicator?.setLoading();
+
+    this.teamService.getUserChartData(userId).subscribe(data => {
+      this.populateChart(data);
+    });
+  }
+
+  private populateChart(data: TeamDataModel) {
+    if (data.scores) {
+      this.dataStatusIndicator?.setDefault();
+      this.chartData = data;
+      this.chartOptions = this.buildChartData(this.chartData, 'High Performing Team Report');
+
+      const average = this.chartData.scores.map((data) => data.average);
+      const categories = this.chartData.scores.map((data) => data.categoryName);
+      const result = (average.reduce((sum, current) => sum + current, 0) / categories.length);
+      this.overallHPTAScore = result % 1 !== 0 ? result.toFixed(2) : result;
     }
     else {
-      this._loadTeams();
+      this.overallHPTAScore = 0;
+      this.chartOptions = {} as ChartOptions;
+      this.chartData = {} as TeamDataModel;
+      this.dataStatusIndicator?.setNoData();
     }
   }
 }

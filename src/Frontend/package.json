@@ -21,9 +21,10 @@
     "@angular/router": "^16.2.0",
     "@azure/msal-angular": "^3.0.4",
     "@azure/msal-browser": "^3.1.0",
-    "luxon": "^3.4.4",
     "apexcharts": "^3.45.2",
+    "luxon": "^3.4.4",
     "ng-apexcharts": "^1.8.0",
+    "ngx-mat-select-search": "^7.0.5",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"

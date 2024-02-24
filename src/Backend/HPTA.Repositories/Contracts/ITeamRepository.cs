@@ -6,5 +6,8 @@ namespace HPTA.Repositories.Contracts
     public interface ITeamRepository : IRepository<Team>
     {
         Task<List<UspTeamDataReturnModel>> LoadChartData(int teamId);
+        Task<List<UspTeamDataReturnModel>> LoadCategoryChartData(int teamId, int categoryId);
+        Task<List<UspTeamDataReturnModel>> LoadUserChartData(string userId);
+        Task<List<UspTeamDataReturnModel>> LoadCategoryChartDataForUser(string userId, int categoryId);
     }
 }
