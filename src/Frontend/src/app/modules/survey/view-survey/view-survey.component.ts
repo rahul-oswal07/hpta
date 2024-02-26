@@ -66,7 +66,7 @@ export class ViewSurveyComponent implements OnInit {
       // Create a FormGroup for the question and add it to the FormArray
       const questionFormGroup = new FormGroup({
         questionNumber: new FormControl(questionNumber),
-        rating: new FormControl(null, Validators.required)
+        rating: new FormControl('', Validators.required)
       });
       const questionsArray = (this.form.get([category, subCategory, 'questions']) as FormArray);
       questionsArray.push(questionFormGroup);

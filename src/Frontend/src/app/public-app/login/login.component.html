@@ -1,0 +1,43 @@
+<h1 matDialogTitle>Login to HPTA with OTP</h1>
+<form [formGroup]="form" (ngSubmit)="verifyOtp()">
+
+  <mat-dialog-content>
+    <div class="flex flex-col w-96">
+
+      <div class="flex gap-2 items-center mb-2">
+
+        <mat-form-field class="flex-auto">
+          <mat-label>Your Name</mat-label>
+          <input matInput formControlName="name" placeholder="Your Name">
+          <mat-error *ngIf="nameControl?.errors?.['required']">Please enter your name</mat-error>
+          <mat-error *ngIf="nameControl?.errors?.['minLength']">Please enter valid name</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="flex gap-2 items-center mb-2">
+
+        <mat-form-field class="flex-auto">
+          <mat-label>Your Email</mat-label>
+          <input matInput formControlName="email" placeholder="Your Email">
+          <mat-error *ngIf="emailControl?.errors?.['required']">Email is required</mat-error>
+          <mat-error *ngIf="emailControl?.errors?.['email']">Please enter a valid email</mat-error>
+        </mat-form-field>
+        <button mat-stroked-button color="primary" type="button" (click)="sendOtp()"
+          [disabled]="!emailControl?.valid || isLoading">Send OTP</button>
+      </div>
+      <div class="flex gap-2 items-center mb-2">
+        <mat-form-field class="flex-auto">
+          <mat-label>Enter the OTP received</mat-label>
+          <input matInput formControlName="otp" placeholder="Enter the OTP received">
+          <mat-error *ngIf="otpControl?.errors?.['required']">OTP is required</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button type="button" mat-stroked-button color="warn" matDialogClose>Cancel</button>
+    <div class="flex-auto"></div>
+    <button mat-raised-button color="primary" type="submit" [disabled]="!form.valid || isLoading">Submit</button>
+
+  </mat-dialog-actions>
+</form>

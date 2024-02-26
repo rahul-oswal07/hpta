@@ -9,4 +9,6 @@ public class ApplicationSettings
     public string OpenAIUrl { get; set; } = null!;
 
     public DevCentralConfig DevCentralConfig { get; set; }
+
+    public EmailClientConfig EmailClientConfig { get; set; }
 }

@@ -47,10 +47,15 @@ export class SurveyResultDetailsComponent implements OnInit {
       error: (e: Error) => {
       }
     });
+
   }
 
   buildChartData(chartData: TeamDataModel, title: string) {
     const thisRef = this;
+    const average = this.chartData.scores.map((data) => data.average)
+    const categories = this.chartData.scores.map((data) => data.categoryName)
+    const result = (average.reduce((sum, current) => sum + current, 0) / categories.length)
+    this.overallHPTAScore = result % 1 !== 0 ? result.toFixed(2) : result;
 
     const chartOptions: ChartOptions = {
       series: [
@@ -128,7 +133,12 @@ export class SurveyResultDetailsComponent implements OnInit {
 
     this.surveyResultService.getChartData(teamId).subscribe(data => {
       this.populateChart(data);
-    });
+    }, err => {
+      this.dataStatusIndicator?.setError("Error while loading the data!");
+      this.overallHPTAScore = 0;
+      this.chartOptions = {} as ChartOptions;
+      this.chartData = {} as TeamDataModel;
+    })
   }
 
   private _loadCategoryChartData(teamId: number, categoryName: string) {

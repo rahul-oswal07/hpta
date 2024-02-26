@@ -1,18 +1,10 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SurveyResultService } from './services/survey-result.service';
 import { TeamsModel } from './models/team.model';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { RoutingHelperService } from 'src/app/core/services/routing-helper.service';
 
-const CATEGORY_COLORS: any = {
-  'Culture': '#85b5c7',
-  'Growth Mindset': '#b3ccff',
-  'Ownership': '#ff9f80',
-  'Safe Environment': '#80aaff',
-  'Strategic Alignment': '#ffb366',
-  'Ways of Working': '#ff8080',
-};
 
 @Component({
   selector: 'app-survey-result',
@@ -21,7 +13,7 @@ const CATEGORY_COLORS: any = {
   encapsulation: ViewEncapsulation.None
 })
 
-export class SurveyResultComponent implements OnInit {
+export class SurveyResultComponent implements OnInit, OnDestroy {
   form: FormGroup;
   teams: TeamsModel[];
   filteredOptions: TeamsModel[];
@@ -41,8 +33,8 @@ export class SurveyResultComponent implements OnInit {
       });
 
     this.routingHelper.parameterChange().subscribe(params => {
-      this._loadTeams();
-      if (params) {
+      console.log('a');
+      if (params && !this.teamId) {
         this.teamId = parseInt(params['id']);
       }
     });
@@ -68,5 +60,9 @@ export class SurveyResultComponent implements OnInit {
       selectedTeam: [''],
       searchedInput: ['']
     })
+  }
+
+  ngOnDestroy(): void {
+    
   }
 }

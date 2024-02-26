@@ -17,7 +17,7 @@ import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 
 @NgModule({
   declarations: [
-    SurveyResultComponent
+    SurveyResultComponent, SurveyResultDetailsComponent
   ],
   imports: [
     CommonModule,

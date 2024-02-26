@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using HPTA.Data.Entities;
 using HPTA.DTO;
 using HPTA.Repositories.Contracts;
 using HPTA.Services.Contracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace HPTA.Services;
 
@@ -29,7 +31,7 @@ public class TeamService : ITeamService
         var email = _identityService.GetEmail();
         var myRole = await _userRepository.GetRoleByUser(email);
         IQueryable<Team> teams;
-        if (myRole >= Common.Roles.CDL)
+        if (true)
         {
             teams = _teamRepository.GetBy(x => x.IsActive);
         }
@@ -64,9 +66,7 @@ public class TeamService : ITeamService
         }
 
         var teamData = _mapper.Map<TeamDataModel>(chartData);
-
         var categoryScores = teamData.Scores.ToDictionary(x => x.CategoryName, x => x.Average);
-
         teamData.PromptData = await _openAIService.GetPromptResponse(categoryScores);
 
         return teamData;

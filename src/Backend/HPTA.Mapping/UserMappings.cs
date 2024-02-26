@@ -11,7 +11,15 @@ namespace HPTA.Mapping
         {
             CreateMap<DevCentralTeamsResponse.EmployeeInfo, User>();
             CreateMap<User, CustomClaimsDTO>()
-                .ForMember(dst => dst.TeamRoles, opt => opt.MapFrom(src => src.Teams.GroupBy(t => t.TeamId).Select(t => new TeamRoles { TeamId = t.Key, Roles = t.Select(tr => tr.RoleId).ToList() })));
+                .ForMember(dst => dst.HPTAUserId,
+                opt => opt.MapFrom(src => src.Id))
+                .ForMember(dst => dst.IsSuperUser,
+                opt => opt.MapFrom(src => src.Teams.Any(t => t.RoleId >= Common.Roles.CDL)))
+                .ForMember(dst => dst.CoreTeamId,
+                opt => opt.MapFrom(src => src.Teams
+                .Where(t => t.IsCoreMember && t.StartDate <= DateTime.Today && t.EndDate >= DateTime.Today)
+                .Select(t => t.TeamId)
+                .FirstOrDefault()));
         }
     }
 }
