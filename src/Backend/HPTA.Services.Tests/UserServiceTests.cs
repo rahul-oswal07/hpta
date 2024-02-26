@@ -31,9 +31,8 @@ namespace HPTA.Services.Tests
         {
             // Arrange
             string email = "external@example.com";
-            string azureAdUserId = "unique-azure-ad-user-id";
             _mockIdentityService.Setup(x => x.GetEmail()).Returns(email);
-            _mockIdentityService.Setup(x => x.GetId()).Returns(azureAdUserId);
+            //_mockIdentityService.Setup(x => x.GetId()).Returns(azureAdUserId);
             _mockDevCentralClientService.Setup(x => x.GetTeamsInfo(email)).ReturnsAsync(new List<DevCentralTeamsResponse>());
 
             var userService = CreateUserService();

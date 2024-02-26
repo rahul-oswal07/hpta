@@ -29,6 +29,6 @@ public partial class User
     #endregion
 
     #region Navigation Properties
-    public ICollection<UserTeam> Teams { get; set; }
+    public ICollection<UserTeam> Teams { get; set; } = new List<UserTeam>();
     #endregion
 }

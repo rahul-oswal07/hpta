@@ -40,9 +40,16 @@ public class OpenAIService : IOpenAIService
 
     private async Task<string> GetAIResponse(string json)
     {
-        using var client = new HttpClient();
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        var response = await client.PostAsync(_connectionStrings.OpenAIUrl, content);
-        return await response.Content.ReadAsStringAsync();
+        try
+        {
+            using var client = new HttpClient();
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync(_connectionStrings.OpenAIUrl, content);
+            return await response.Content.ReadAsStringAsync();
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 }

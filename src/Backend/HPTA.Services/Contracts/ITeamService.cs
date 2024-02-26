@@ -4,7 +4,7 @@ namespace HPTA.Services.Contracts;
 
 public interface ITeamService
 {
-    Task<TeamDataModel> LoadChartData(int teamId);
+    Task<SurveyResultDataModel> LoadChartData(int? teamId);
 
     Task<List<TeamModel>> GetAllTeams();
 }

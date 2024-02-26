@@ -1,9 +1,6 @@
-﻿using HPTA.Api.Controllers;
-using HPTA.Services.Contracts;
+﻿using HPTA.Services.Contracts;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
 
 namespace HPTA.Services
 {
@@ -18,50 +15,37 @@ namespace HPTA.Services
         }
 
         // Returns the principal user login (ie. principal account mail)
-        public string GetEmail()
-        {
-            var emailClaims = _httpContextAccessor.HttpContext.User.Claims
-               .FirstOrDefault(c => c.Type == "preferred_username");
-
-            return emailClaims?.Value;
-        }
+        public string GetEmail() => GetClaimValueByType("preferred_username")?.Value;
 
         // Returns the id of the user in Azure AD (GUID format)
-        public string GetId()
-        {
-            var idClaims = _httpContextAccessor.HttpContext.User.Claims
-                .FirstOrDefault(c => c.Type == "oid");
+        public string GetId() => GetClaimValueByType("oid")?.Value;
 
-            return idClaims?.Value;
+        public string GetName() => GetClaimValueByType(ClaimTypes.Name)?.Value;
+
+        public string GetEmployeeCode() => GetClaimValueByType("employeeCode")?.Value;
+
+        public string GetHPTAUserId() => GetClaimValueByType("hptaUserId")?.Value;
+
+        public int? GetCoreTeamId()
+        {
+            var result = GetClaimValueByType("coreTeamId")?.Value;
+            if (result == null)
+                return null;
+            return Convert.ToInt32(result);
         }
 
-        public string GetName()
+        public bool IsSuperUser()
         {
-            var nameClaims = _httpContextAccessor.HttpContext.User.Claims
-                .FirstOrDefault(c => c.Type == ClaimTypes.Name);
-
-            return nameClaims?.Value;
+            var result = GetClaimValueByType("isSuperUser")?.Value;
+            if (result == null)
+                return false;
+            return Convert.ToBoolean(result);
         }
 
-        public string GetEmployeeCode()
+        private Claim GetClaimValueByType(string type)
         {
-            var idClaims = _httpContextAccessor.HttpContext.User.Claims
-                .FirstOrDefault(c => c.Type == "employeeCode");
-
-            return idClaims?.Value;
-        }
-
-        public List<TeamRoles> GetTeamRoles()
-        {
-            var idClaims = _httpContextAccessor.HttpContext.User.Claims
-                .FirstOrDefault(c => c.Type == "customRoles");
-
-            if (idClaims.Value != null)
-            {
-                var json = Encoding.UTF8.GetString(Convert.FromBase64String(idClaims.Value));
-                return JsonSerializer.Deserialize<List<TeamRoles>>(json);
-            }
-            return [];
+            return _httpContextAccessor.HttpContext.User.Claims
+                            .FirstOrDefault(c => c.Type == type);
         }
     }
 }

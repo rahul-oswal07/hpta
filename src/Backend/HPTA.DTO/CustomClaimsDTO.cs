@@ -1,38 +1,17 @@
-﻿using HPTA.Common;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace HPTA.Api.Controllers
 {
     public class CustomClaimsDTO
     {
-        private List<TeamRoles> _teamRoles;
-        private string _customRoles;
-
+        [JsonPropertyName("employeeCode")]
         public string EmployeeCode { get; set; }
 
-        [JsonIgnore]
-        public List<TeamRoles> TeamRoles
-        {
-            get => _teamRoles; set
-            {
-                _teamRoles = value;
-                string json = JsonSerializer.Serialize(value);
-                _customRoles = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
-            }
-        }
+        [JsonPropertyName("hptaUserId")]
+        public string HPTAUserId { get; set; }
 
-        public string CustomRoles => _customRoles;
-        public CustomClaimsDTO()
-        {
-            TeamRoles = [];
-        }
-    }
+        public int? CoreTeamId { get; set; }
 
-    public class TeamRoles
-    {
-        public int TeamId { get; set; }
-        public List<Roles> Roles { get; set; }
+        public bool IsSuperUser { get; set; }
     }
 }

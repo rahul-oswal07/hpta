@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DevCentralClient\DevCentralClient.csproj" />
+    <ProjectReference Include="..\EmailClient\EmailClient.csproj" />
     <ProjectReference Include="..\HPTA.Mapping\HPTA.Mapping.csproj" />
     <ProjectReference Include="..\HPTA.Scheduler\HPTA.Scheduler.csproj" />
     <ProjectReference Include="..\HPTA.Services\HPTA.Services.csproj" />

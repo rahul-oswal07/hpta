@@ -1,16 +1,42 @@
 {
-  "clientId": "c7c8b9e9-3583-486e-8a21-4f977b9b5fdc",
-  "authority": "https://login.microsoftonline.com/24b080cd-5874-44ab-9862-8d7e0e0781ab",
-  "redirectUri": "/",
-  "cacheLocation": "localStorage",
-  "scopes": [
-    "User.Read",
-    "User.ReadBasic.All",
-    "api://c7c8b9e9-3583-486e-8a21-4f977b9b5fdc/Survey.Read"
-  ],
-  "protectedResourceMap": {
-    "api/*": [
-      "api://c7c8b9e9-3583-486e-8a21-4f977b9b5fdc/Survey.Read"
+  "msal": {
+    "auth": {
+      "clientId": "c7c8b9e9-3583-486e-8a21-4f977b9b5fdc",
+      "authority": "https://login.microsoftonline.com/24b080cd-5874-44ab-9862-8d7e0e0781ab/",
+      "navigateToLoginRequestUrl": true
+    },
+    "cache": {
+      "cacheLocation": "localStorage",
+      "storeAuthStateInCookie": true
+    }
+  },
+  "guard": {
+    "interactionType": "redirect",
+    "authRequest": {
+      "scopes": [
+        "User.Read",
+        "User.ReadBasic.All",
+        "api://c7c8b9e9-3583-486e-8a21-4f977b9b5fdc/Survey.Read"
+      ]
+    },
+    "loginFailedRoute": "/login-failed"
+  },
+  "interceptor": {
+    "interactionType": "redirect",
+    "protectedResourceMap": [
+      [
+        "https://graph.microsoft.com/v1.0/me",
+        [
+          "user.read",
+          "user.readbasic.all"
+        ]
+      ],
+      [
+        "api/*",
+        [
+          "api://c7c8b9e9-3583-486e-8a21-4f977b9b5fdc/Survey.Read"
+        ]
+      ]
     ]
   }
 }

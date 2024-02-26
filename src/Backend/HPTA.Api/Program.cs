@@ -1,11 +1,13 @@
 using Azure.Identity;
 using DevCentralClient.Infrastructure;
+using EmailClient.Infrastructure;
+using HPTA.Api;
 using HPTA.Api.AuthorizationPolicies;
 using HPTA.Api.Infrastructure;
 using HPTA.Common.Configurations;
 using HPTA.Mapping.Infrastructure;
 using HPTA.Scheduler.Infrastructure;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Identity.Web;
 using System.Text.Json;
 
@@ -21,13 +23,20 @@ var appSettings = new ApplicationSettings();
 builder.Configuration.Bind(appSettings);
 appSettings.MasterDbConnectionString = builder.Configuration.GetConnectionString("MasterDbConnectionString");
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(options =>
+{
+    // This is your default authentication scheme
+    options.DefaultScheme = AuthenticationSchemes.AzureAD; // Or AuthenticationSchemes.CustomJwt based on your primary auth method
+    options.DefaultChallengeScheme = AuthenticationSchemes.AzureAD;
+})
+.AddScheme<AuthenticationSchemeOptions, CustomJwtHandler>(AuthenticationSchemes.CustomJwt, options => { })
 .AddMicrosoftIdentityWebApi(builder.Configuration);
 
 // Add services to the container.
 builder.Services.RegisterDependency(appSettings);
 builder.Services.RegisterDevCentralClient(appSettings);
 builder.Services.RegisterMappingProfiles();
+builder.Services.RegisterEmailClient(builder.Environment.ContentRootFileProvider, appSettings);
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString;
