@@ -1,7 +1,6 @@
 ﻿using HPTA.Services.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace HPTA.Api.Controllers;
 
@@ -20,15 +19,14 @@ public class TeamController : BaseController
          => Ok(await _teamService.GetAllTeams());
 
 
-
-
     [HttpGet("result/{teamId?}")]
     [Authorize(AuthenticationSchemes = $"{AuthenticationSchemes.CustomJwt},{AuthenticationSchemes.AzureAD}")]
     public async Task<ActionResult> LoadChartData(int? teamId)
         => Ok(await _teamService.LoadChartData(teamId));
 
-    [HttpGet("result-category/{teamId?}/{categoryId}")]
-    public async Task<ActionResult> LoadCategoryChartData(int? teamId, int categoryId)
+    [HttpGet("result-category/{categoryId}/{teamId?}")]
+    [Authorize(AuthenticationSchemes = $"{AuthenticationSchemes.CustomJwt},{AuthenticationSchemes.AzureAD}")]
+    public async Task<ActionResult> LoadCategoryChartData(int categoryId, int? teamId)
             => Ok(await _teamService.LoadCategoryChartData(teamId: teamId, categoryId: categoryId));
 
 }

@@ -97,7 +97,7 @@ END";
 
 
             var userChart = @" CREATE PROCEDURE [dbo].[Usp_GetUserChartData]
-	@userId Nvarchar(50)
+	@email Nvarchar(50)
 AS
 BEGIN
 	select NULL AS TeamId,
@@ -115,7 +115,7 @@ from (
 		inner join Questions on Questions.Id = SurveyQuestions.QuestionId
 		inner join SubCategories on SubCategories.Id = Questions.SubCategoryId
 		inner join Categories on Categories.Id = SubCategories.CategoryId
-		where Users.Id=@userId
+		where Users.Email=@email
 		group by Categories.Name, Categories.Id,Questions.Id
 	) As result
 		group by result.CategoryId
@@ -124,7 +124,7 @@ END";
 
 
             var categoryChart = @" CREATE PROCEDURE [dbo].[Usp_GetCategoryWiseDataForUser] 
-	@userId Nvarchar(50),
+	@email Nvarchar(50),
 	@categoryId int
 AS
 BEGIN
@@ -135,7 +135,6 @@ BEGIN
 		CAST(FORMAT(ROUND(CAST(Sum(TotalRating) AS DECIMAL(10, 2)) / Count(TotalQuestions),1), 'N1') as float) As Average,
 		NULL As RespondedUsers,
 		NULL AS TotalUsers
-
 		FROM (
 				select SubCategories.Name As CategoryName,SubCategories.Id As CategoryId,COUNT(Questions.Id) As TotalQuestions, Sum(Answers.rating) As TotalRating
 				from Users
@@ -144,8 +143,7 @@ BEGIN
 				inner join Questions on Questions.Id = SurveyQuestions.QuestionId
 				inner join SubCategories on SubCategories.Id = Questions.SubCategoryId
 				inner join Categories on Categories.Id = SubCategories.CategoryId
-
-				where Users.id= @userId and Categories.Id=@categoryId
+				where Users.Email= @email and Categories.Id=@categoryId
 				group by SubCategories.Name, SubCategories.Id,Questions.Id 
 			) As result
 		group by result.CategoryId
