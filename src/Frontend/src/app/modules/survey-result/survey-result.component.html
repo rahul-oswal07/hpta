@@ -1,11 +1,10 @@
 <form [formGroup]="form">
-  <mat-form-field appearance="outline" class="w-96 m-3" *ngIf="showDropdown">
+  <mat-form-field appearance="outline" class="w-96 m-3">
     <mat-select
       placeholder="Please select an option"
       #singleSelect
       formControlName="selectedTeam"
       panelClass="my-panel"
-      [disabled]="disableDropdown"
     >
       <mat-option>
         <ngx-mat-select-search
@@ -22,61 +21,4 @@
     </mat-select>
   </mat-form-field>
 </form>
-
-<div class="chart-container">
-  <div #chart class="chart">
-    <div *ngIf="chartOptions">
-      <apx-chart
-        [series]="chartOptions.series"
-        [chart]="chartOptions.chart"
-        [xaxis]="chartOptions.xaxis"
-        [dataLabels]="chartOptions.dataLabels"
-        [grid]="chartOptions.grid"
-        [stroke]="chartOptions.stroke"
-        [title]="chartOptions.title"
-        [labels]="chartOptions.labels"
-        [annotations]="chartOptions.annotations"
-        [fill]="chartOptions.fill"
-        [yaxis]="chartOptions.yaxis"
-      ></apx-chart>
-    </div>
-  </div>
-
-  <div *ngIf="categoryChartOptions" class="chart">
-    <apx-chart
-      [series]="categoryChartOptions.series"
-      [chart]="categoryChartOptions.chart"
-      [xaxis]="categoryChartOptions.xaxis"
-      [dataLabels]="categoryChartOptions.dataLabels"
-      [grid]="categoryChartOptions.grid"
-      [stroke]="categoryChartOptions.stroke"
-      [title]="categoryChartOptions.title"
-      [labels]="categoryChartOptions.labels"
-      [annotations]="categoryChartOptions.annotations"
-      [fill]="categoryChartOptions.fill"
-      [yaxis]="categoryChartOptions.yaxis"
-    ></apx-chart>
-  </div>
-</div>
-
-<div id="promptData">
-  <p *ngIf="chartData.respondedUsers">
-    <b>
-      Total users responded : {{ chartData.respondedUsers }}/{{
-        chartData.totalUsers
-      }}
-    </b>
-  </p>
-  <p *ngIf="overallHPTAScore">
-    <b> Overall HPTA score : {{ overallHPTAScore }} </b>
-  </p>
-
-  <br />
-
-  <div [innerHTML]="chartData.promptData"></div>
-</div>
-
-<app-data-status-indicator
-  [element]="chart"
-  [initialState]="'Loading'"
-></app-data-status-indicator>
+<router-outlet></router-outlet>

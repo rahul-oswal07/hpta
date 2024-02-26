@@ -29,7 +29,13 @@ public class TeamController : BaseController
     public async Task<ActionResult> LoadCategoryChartData(int teamId, int categoryId)
         => Ok(await _teamService.LoadCategoryChartData(teamId: teamId, categoryId: categoryId, userId: string.Empty));
 
-    [HttpGet("user-category-chart/{userId}/{categoryId}")]
-    public async Task<ActionResult> LoadUserCategoryChartData(string userId, int categoryId)
-    => Ok(await _teamService.LoadCategoryChartData(teamId: 0, categoryId, userId: userId));
+    [HttpGet("result/{teamId?}")]
+    [Authorize(AuthenticationSchemes = $"{AuthenticationSchemes.CustomJwt},{AuthenticationSchemes.AzureAD}")]
+    public async Task<ActionResult> LoadChartData(int? teamId)
+        => Ok(await _teamService.LoadChartData(teamId));
+
+
+    [HttpGet("result-category/{teamId?}/{categoryId}")]
+    public async Task<ActionResult> LoadCategoryChartData(int? teamId, int categoryId)
+            => Ok(await _teamService.LoadCategoryChartData(teamId: teamId, categoryId: categoryId));
 }

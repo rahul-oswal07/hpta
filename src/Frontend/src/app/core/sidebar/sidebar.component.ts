@@ -47,11 +47,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
   activateSubMenu() {
     this.activatedRoute.url.subscribe(r => {
       const url = this.router.url;
-      console.log('url:', url);
       this.mainMenu?.forEach(m => {
         if (m.subMenu) {
           m.isSubMenuActive = m.subMenu.some(s => s.route && url === ((s.route.startsWith('/') ? '' : '/') + s.route));
-          console.log(m);
         }
       })
     })

@@ -38,5 +38,10 @@ namespace HPTA.Repositories
             var teamData = await hptaDbContext.UspTeamDataReturnModels.FromSqlRaw("exec Usp_GetCategoryWiseDataForUser @p0,@p1", userIdParam, categoryIdParam).ToListAsync();
             return teamData;
         }
+
+        public IQueryable<Team> ListByUser(string email)
+        {
+            return _hptaDbContext.UserTeams.AsNoTracking().Include(u => u.Team).Where(t => t.User.IsActive && t.User.Email == email && t.IsCoreMember && t.StartDate <= DateTime.Today && t.EndDate >= DateTime.Today).Select(ut => ut.Team);
+        }
     }
 }
