@@ -6,6 +6,6 @@ namespace HPTA.Repositories.Contracts
     {
         Task AddOrUpdateOTPAsync(OTPRequest otpRequest);
 
-        Task<bool> ValidateOTP(string email, string otp);
+        Task<string> GetOTPHashByEmail(string email);
     }
 }

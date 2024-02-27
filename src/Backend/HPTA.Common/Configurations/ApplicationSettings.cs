@@ -11,4 +11,8 @@ public class ApplicationSettings
     public DevCentralConfig DevCentralConfig { get; set; }
 
     public EmailClientConfig EmailClientConfig { get; set; }
+
+    public CustomJwtConfig JwtConfig { get; set; }
+
+    public OTPConfig OTPConfig { get; set; }
 }

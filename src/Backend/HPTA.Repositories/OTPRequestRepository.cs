@@ -19,21 +19,16 @@ namespace HPTA.Repositories
                 await _dbContext.OTPRequests.AddAsync(otpRequest);
             else
             {
-                existing.OTP = otpRequest.OTP;
+                existing.OTPHash = otpRequest.OTPHash;
                 existing.CreatedOnUTC = otpRequest.CreatedOnUTC;
                 existing.ExpiresOnUTC = otpRequest.ExpiresOnUTC;
             }
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<OTPRequest> GetOTPByEmail(string email)
+        public async Task<string> GetOTPHashByEmail(string email)
         {
-            return await _dbContext.OTPRequests.AsNoTracking().Where(r => r.Email == email).FirstOrDefaultAsync();
-        }
-
-        public async Task<bool> ValidateOTP(string email, string otp)
-        {
-            return await _dbContext.OTPRequests.AnyAsync(o => o.Email == email && o.OTP == otp && o.CreatedOnUTC < DateTime.UtcNow && o.ExpiresOnUTC > DateTime.UtcNow);
+            return await _dbContext.OTPRequests.Where(o => o.Email == email && o.CreatedOnUTC < DateTime.UtcNow && o.ExpiresOnUTC > DateTime.UtcNow).Select(o=>o.OTPHash).FirstOrDefaultAsync();
         }
     }
 }

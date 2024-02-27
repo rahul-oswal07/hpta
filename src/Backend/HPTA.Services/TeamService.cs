@@ -30,15 +30,7 @@ public class TeamService : ITeamService
         //ToDo: These values should be resolved using user id. Once custom claims are enabled in azure, this needs to be modified accordingly.
         var email = _identityService.GetEmail();
         var myRole = await _userRepository.GetRoleByUser(email);
-        IQueryable<Team> teams;
-        if (true)
-        {
-            teams = _teamRepository.GetBy(x => x.IsActive);
-        }
-        else
-        {
-            teams = _teamRepository.ListByUser(email);
-        }
+        IQueryable<Team> teams = _teamRepository.GetBy(x => x.IsActive);
         return await teams.ProjectTo<TeamModel>(_mapper.ConfigurationProvider).OrderBy(team => team.Name).ToListAsync();
     }
 

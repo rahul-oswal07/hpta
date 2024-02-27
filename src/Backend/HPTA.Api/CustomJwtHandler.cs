@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using HPTA.Common.Configurations;
+using HPTA.Common.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,16 +12,15 @@ namespace HPTA.Api
 {
     public class CustomJwtHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        private readonly string _secretKey;
+        private readonly CustomJwtConfig _config;
         public CustomJwtHandler(
-            IConfiguration configuration,
+            ApplicationSettings applicationSettings,
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
-            UrlEncoder encoder,
-            ISystemClock clock)
-            : base(options, logger, encoder, clock)
+            UrlEncoder encoder)
+            : base(options, logger, encoder)
         {
-            _secretKey = configuration["JwtConfig:Secret"];
+            _config = applicationSettings.JwtConfig;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -51,7 +52,7 @@ namespace HPTA.Api
         public ClaimsPrincipal GetPrincipalFromToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_secretKey);
+            var key = Encoding.ASCII.GetBytes(_config.Secret);
             try
             {
                 var tokenValidationParameters = new TokenValidationParameters
