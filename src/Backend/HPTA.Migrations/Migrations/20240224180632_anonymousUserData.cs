@@ -10,7 +10,7 @@ namespace HPTA.Migrations.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            var categoryWise = @"ALTER PROCEDURE [dbo].[Usp_GetCategoryWiseData] 
+            var categoryWise = @"CREATE PROCEDURE [dbo].[Usp_GetCategoryWiseData] 
 	@teamId int,
 	@categoryId int
 AS
