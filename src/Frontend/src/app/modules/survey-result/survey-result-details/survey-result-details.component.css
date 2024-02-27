@@ -1,9 +1,21 @@
-#chart {
+.chart-container {
+  display: flex;
+}
+
+.chart {
+  flex: 1;
+  margin: 10px;
   max-width: 800px;
   margin: 35px auto;
 }
 
-
+.my-panel {
+  background: orange;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 350px !important;
+}
 
 #promptData {
   padding: 10px 35px;

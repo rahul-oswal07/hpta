@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
 import { DataStatusIndicator } from 'src/app/modules/data-status-indicator/data-status-indicator.component';
-import { ChartOptions, TeamDataModel } from 'src/app/modules/survey-result/models/team.model';
+import { ChartOptions, TeamDataModel, TeamsModel } from 'src/app/modules/survey-result/models/team.model';
 import { SurveyResultService } from 'src/app/modules/survey-result/services/survey-result.service';
 
 
@@ -22,19 +22,26 @@ const CATEGORY_COLORS: any = {
 })
 export class SurveyResultDetailsComponent implements OnInit {
 
+  teams: TeamsModel[];
+  filteredOptions: TeamsModel[];
   chartData = {} as TeamDataModel;
   overallHPTAScore: string | number;
-  public chartOptions: ChartOptions;
+  teamId: number;
+  chartOptions: ChartOptions;
+  categoryChartOptions: ChartOptions;
 
   @ViewChild(DataStatusIndicator)
   dataStatusIndicator?: DataStatusIndicator;
-  constructor(private surveyResultService: SurveyResultService, private activatedRoute: ActivatedRoute) { }
+
+  constructor(private surveyResultService: SurveyResultService, private activatedRoute: ActivatedRoute, private cd: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.activatedRoute.params.pipe(
       map(params => params['id'])
     ).subscribe({
       next: value => {
+        this.categoryChartOptions = this.chartOptions = {} as ChartOptions;
+        this.teamId = value;
         this._loadChartData(value);
       },
       error: (e: Error) => {
@@ -42,33 +49,19 @@ export class SurveyResultDetailsComponent implements OnInit {
     });
 
   }
-  private _loadChartData(teamId?: number) {
-    this.dataStatusIndicator?.setLoading();
 
-    this.surveyResultService.getChartData(teamId).subscribe(data => {
-
-      if (data.scores) {
-        this.dataStatusIndicator?.setDefault();
-        this.chartData = data;
-        this.buildChartData();
-      }
-      else {
-        this.dataStatusIndicator?.setNoData();
-      }
-    });
-  }
-  buildChartData() {
+  buildChartData(chartData: TeamDataModel, title: string) {
     const thisRef = this;
     const average = this.chartData.scores.map((data) => data.average)
     const categories = this.chartData.scores.map((data) => data.categoryName)
     const result = (average.reduce((sum, current) => sum + current, 0) / categories.length)
     this.overallHPTAScore = result % 1 !== 0 ? result.toFixed(2) : result;
 
-    this.chartOptions = {
+    const chartOptions: ChartOptions = {
       series: [
         {
           name: 'Average',
-          data: average,
+          data: chartData.scores.map((data) => data.average),
         },
       ],
       fill: {
@@ -82,10 +75,19 @@ export class SurveyResultDetailsComponent implements OnInit {
         type: 'bar',
         toolbar: {
           show: false
+        },
+        events: {
+          dataPointSelection: (event, chartContext, config) => {
+            const category = config.w.globals.labels[config.dataPointIndex] as string;
+            console.log(this.teamId);
+
+            this._loadCategoryChartData(this.teamId, category);;
+            return;
+          }
         }
       },
       title: {
-        text: 'High Performing Team Report',
+        text: title,
       },
       dataLabels: {
         enabled: true,
@@ -97,7 +99,7 @@ export class SurveyResultDetailsComponent implements OnInit {
         },
       },
       xaxis: {
-        categories: categories,
+        categories: chartData.scores.map((data) => data.categoryName),
         axisTicks: {
           show: true
         },
@@ -118,9 +120,55 @@ export class SurveyResultDetailsComponent implements OnInit {
       labels: [],
       stroke: {},
     };
+
+    return chartOptions;
   }
 
   getColorCode(category: string): string {
-    return CATEGORY_COLORS[category] || '#FFFFFF';
+    return CATEGORY_COLORS[category] || "hsl(" + Math.random() * 360 + ", 100%, 75%)";
+  }
+
+  private _loadChartData(teamId: number) {
+    this.dataStatusIndicator?.setLoading();
+
+    this.surveyResultService.getChartData(teamId).subscribe(data => {
+      this.populateChart(data);
+    }, err => {
+      this.dataStatusIndicator?.setError("Error while loading the data!");
+      this.overallHPTAScore = 0;
+      this.chartOptions = {} as ChartOptions;
+      this.chartData = {} as TeamDataModel;
+    })
+  }
+
+  private _loadCategoryChartData(teamId: number, categoryName: string) {
+    const categoryId = Number(this.chartData.scores.find((data) => data.categoryName == categoryName)?.categoryId)
+
+    if (categoryId) {
+      this.categoryChartOptions = {} as ChartOptions;
+      this.surveyResultService.getCategoryChartData(categoryId, teamId).subscribe(data => {
+        this.categoryChartOptions = this.buildChartData(data, `Report for Category : ${categoryName}`);
+        this.cd.detectChanges();
+      });
+    }
+  }
+
+  private populateChart(data: TeamDataModel) {
+    if (data.scores) {
+      this.dataStatusIndicator?.setDefault();
+      this.chartData = data;
+      this.chartOptions = this.buildChartData(this.chartData, 'High Performing Team Report');
+
+      const average = this.chartData.scores.map((data) => data.average);
+      const categories = this.chartData.scores.map((data) => data.categoryName);
+      const result = (average.reduce((sum, current) => sum + current, 0) / categories.length);
+      this.overallHPTAScore = result % 1 !== 0 ? result.toFixed(2) : result;
+    }
+    else {
+      this.overallHPTAScore = 0;
+      this.chartOptions = {} as ChartOptions;
+      this.chartData = {} as TeamDataModel;
+      this.dataStatusIndicator?.setNoData();
+    }
   }
 }

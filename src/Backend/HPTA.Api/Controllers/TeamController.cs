@@ -23,4 +23,10 @@ public class TeamController : BaseController
     [Authorize(AuthenticationSchemes = $"{AuthenticationSchemes.CustomJwt},{AuthenticationSchemes.AzureAD}")]
     public async Task<ActionResult> LoadChartData(int? teamId)
         => Ok(await _teamService.LoadChartData(teamId));
+
+    [HttpGet("result-category/{categoryId}/{teamId?}")]
+    [Authorize(AuthenticationSchemes = $"{AuthenticationSchemes.CustomJwt},{AuthenticationSchemes.AzureAD}")]
+    public async Task<ActionResult> LoadCategoryChartData(int categoryId, int? teamId)
+            => Ok(await _teamService.LoadCategoryChartData(teamId: teamId, categoryId: categoryId));
+
 }

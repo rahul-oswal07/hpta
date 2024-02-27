@@ -22,7 +22,7 @@ namespace HPTA.Services
             var claims = new[]
             {
             new Claim(JwtRegisteredClaimNames.Sub, Guid.NewGuid().ToString("N")),
-            new Claim(JwtRegisteredClaimNames.Email, email),
+            new Claim("preferred_username", email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             // Add more claims as needed
         };

@@ -19,7 +19,7 @@ export interface TeamsModel {
 
 export interface ScoreModel {
     categoryId: number;
-    categoryName: string ;
+    categoryName: string;
     average: number;
   }
   
@@ -45,3 +45,8 @@ export interface ChartOptions {
     fill : ApexFill;
     yaxis: ApexYAxis;
 };
+
+export interface KeyValue {
+  key: string;
+  value: string;
+}

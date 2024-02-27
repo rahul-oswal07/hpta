@@ -25,6 +25,7 @@
     "apexcharts": "^3.45.2",
     "luxon": "^3.4.4",
     "ng-apexcharts": "^1.8.0",
+    "ngx-mat-select-search": "^7.0.5",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"

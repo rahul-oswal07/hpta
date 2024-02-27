@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { SurveyResultComponent } from "./survey-result.component";
-import { ReactiveFormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MatStepperModule } from "@angular/material/stepper";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatButtonModule } from "@angular/material/button";
@@ -12,6 +12,8 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatInputModule } from "@angular/material/input";
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { SurveyResultDetailsComponent } from "src/app/modules/survey-result/survey-result-details/survey-result-details.component";
+import { MatIconModule } from "@angular/material/icon";
+import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 
 @NgModule({
   declarations: [
@@ -19,6 +21,7 @@ import { SurveyResultDetailsComponent } from "src/app/modules/survey-result/surv
   ],
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     MatStepperModule,
     MatExpansionModule,
@@ -29,6 +32,8 @@ import { SurveyResultDetailsComponent } from "src/app/modules/survey-result/surv
     DataStatusIndicatorModule,
     SurveyResultRoutingModule,
     NgApexchartsModule,
+    MatIconModule,
+    NgxMatSelectSearchModule
   ]
 })
 export class SurveyResultModule { }

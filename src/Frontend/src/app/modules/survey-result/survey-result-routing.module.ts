@@ -21,10 +21,6 @@ const defaultRoutes: Routes = [
     component: SurveyResultComponent,
     children: [
       {
-        path: 'view',
-        component: SurveyResultDetailsComponent
-      },
-      {
         path: 'team/:id',
         component: SurveyResultDetailsComponent
       }

@@ -1,10 +1,20 @@
-<form [formGroup]="form" *ngIf="showDropdown">
+<form [formGroup]="form">
   <mat-form-field appearance="outline" class="w-96 m-3">
-    <mat-label>Select a Team</mat-label>
-    <mat-select formControlName="selectedTeam" placeholder="Select a Team" panelClass="my-panel">
-      <div class="p-2 flex justify-stretch">
-        <input placeholder="Search" class="w-full p-2" (input)="onSearchInput($event)" />
-      </div>
+    <mat-select
+      placeholder="Please select an option"
+      #singleSelect
+      formControlName="selectedTeam"
+      panelClass="my-panel"
+    >
+      <mat-option>
+        <ngx-mat-select-search
+          formControlName="searchedInput"
+          placeholderLabel="Find team..."
+          noEntriesFoundLabel="No data"
+        >
+        </ngx-mat-select-search>
+      </mat-option>
+
       <mat-option *ngFor="let option of filteredOptions" [value]="option.id">
         {{ option.name }}
       </mat-option>

@@ -1,9 +1,9 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SurveyResultService } from './services/survey-result.service';
-import { TeamDataModel, ChartOptions, TeamsModel } from './models/team.model';
-import { DataStatusIndicator } from 'src/app/modules/data-status-indicator/data-status-indicator.component';
+import { TeamsModel } from './models/team.model';
 import { ActivatedRoute, Route, Router } from '@angular/router';
+import { RoutingHelperService } from 'src/app/core/services/routing-helper.service';
 
 
 @Component({
@@ -13,53 +13,56 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
   encapsulation: ViewEncapsulation.None
 })
 
-export class SurveyResultComponent implements OnInit {
+export class SurveyResultComponent implements OnInit, OnDestroy {
   form: FormGroup;
   teams: TeamsModel[];
   filteredOptions: TeamsModel[];
+  teamId: number;
 
-  showDropdown: boolean = false;
-  constructor(private formBuilder: FormBuilder, private teamService: SurveyResultService, private router: Router, private route: ActivatedRoute) {
+  constructor(private formBuilder: FormBuilder, private teamService: SurveyResultService, private router: Router, private route: ActivatedRoute
+    , private routingHelper: RoutingHelperService) {
     this._buildForm();
+
     this.form.controls['selectedTeam'].valueChanges.subscribe(value => {
       this.router.navigate(['team', value], { relativeTo: this.route })
+    });
+
+    this.form.controls['searchedInput'].valueChanges
+      .subscribe(searchValue => {
+        this.filteredOptions = this.teams.filter(team => team.name.toLowerCase().includes(searchValue));
+      });
+
+    this.routingHelper.parameterChange().subscribe(params => {
+      console.log('a');
+      if (params && !this.teamId) {
+        this.teamId = parseInt(params['id']);
+      }
     });
   }
 
 
   ngOnInit(): void {
-    this._enableDisableDropdown();
+    this._loadTeams();
   }
 
   private _loadTeams() {
     this.teamService.getTeams().subscribe(teams => {
       this.teams = this.filteredOptions = teams;
+      if (!this.teamId) {
+        this.teamId = this.teams[0].id
+      }
+      this.form.patchValue({ 'selectedTeam': this.teamId })
     });
   }
 
-  onSearchInput(event: any): void {
-    event.stopPropagation();
-    const searchValue = event.target.value.toLowerCase();
-    this.filteredOptions = this.teams.filter(team => team.name.toLowerCase().includes(searchValue));
-  }
-
-
-
   private _buildForm() {
     this.form = this.formBuilder.group({
-      selectedTeam: ['']
+      selectedTeam: [''],
+      searchedInput: ['']
     })
   }
 
-
-
-  private _enableDisableDropdown() {
-    this.showDropdown = true; //TODO: Compute the logic based on role
-    if (!this.showDropdown) {
-      this.router.navigate(['view'], { relativeTo: this.route })
-    }
-    else {
-      this._loadTeams();
-    }
+  ngOnDestroy(): void {
+    
   }
 }

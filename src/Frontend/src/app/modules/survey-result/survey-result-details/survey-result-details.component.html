@@ -1,9 +1,36 @@
-<div #chart>
-  <div *ngIf="chartOptions" id="chart">
-    <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [xaxis]="chartOptions.xaxis"
-      [dataLabels]="chartOptions.dataLabels" [grid]="chartOptions.grid" [stroke]="chartOptions.stroke"
-      [title]="chartOptions.title" [labels]="chartOptions.labels" [annotations]="chartOptions.annotations"
-      [fill]="chartOptions.fill" [yaxis]="chartOptions.yaxis"></apx-chart>
+<div class="chart-container">
+  <div #chart class="chart">
+    <div *ngIf="chartOptions?.series">
+      <apx-chart
+        [series]="chartOptions.series"
+        [chart]="chartOptions.chart"
+        [xaxis]="chartOptions.xaxis"
+        [dataLabels]="chartOptions.dataLabels"
+        [grid]="chartOptions.grid"
+        [stroke]="chartOptions.stroke"
+        [title]="chartOptions.title"
+        [labels]="chartOptions.labels"
+        [annotations]="chartOptions.annotations"
+        [fill]="chartOptions.fill"
+        [yaxis]="chartOptions.yaxis"
+      ></apx-chart>
+    </div>
+  </div>
+
+  <div *ngIf="categoryChartOptions?.series" class="chart">
+    <apx-chart
+      [series]="categoryChartOptions.series"
+      [chart]="categoryChartOptions.chart"
+      [xaxis]="categoryChartOptions.xaxis"
+      [dataLabels]="categoryChartOptions.dataLabels"
+      [grid]="categoryChartOptions.grid"
+      [stroke]="categoryChartOptions.stroke"
+      [title]="categoryChartOptions.title"
+      [labels]="categoryChartOptions.labels"
+      [annotations]="categoryChartOptions.annotations"
+      [fill]="categoryChartOptions.fill"
+      [yaxis]="categoryChartOptions.yaxis"
+    ></apx-chart>
   </div>
 </div>
 

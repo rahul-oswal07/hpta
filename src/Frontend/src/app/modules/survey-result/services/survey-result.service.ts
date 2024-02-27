@@ -12,14 +12,21 @@ export class SurveyResultService extends DataService {
     super(injector);
   }
 
+  getTeams() {
+    return this.getList<TeamsModel>();
+  }
+
   getChartData(teamId?: number) {
     if (!!teamId) {
-      return this.getSingle<TeamDataModel>(['result', teamId?.toString()]);
+      return this.getSingle<TeamDataModel>(['result', teamId.toString()]);
     }
     return this.getSingle<TeamDataModel>(['result']);
   }
 
-  getTeams() {
-    return this.getList<TeamsModel>();
+  getCategoryChartData(categoryId: number, teamId?: number) {
+    if (!!teamId) {
+      return this.getSingle<TeamDataModel>(['result-category', teamId.toString(), categoryId.toString()]);
+    }
+    return this.getSingle<TeamDataModel>(['result-category', categoryId.toString()]);
   }
 }
