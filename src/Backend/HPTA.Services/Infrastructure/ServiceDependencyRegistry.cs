@@ -1,4 +1,5 @@
 ﻿using HPTA.Common.Configurations;
+using HPTA.Repositories.Contracts;
 using HPTA.Repositories.Infrastructure;
 using HPTA.Services.Contracts;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +21,17 @@ public static class ServiceDependencyRegistry
         services.AddTransient<ITeamService, TeamService>();
         services.AddTransient<IOpenAIService, OpenAIService>();
 
-        services.AddTransient<IOtpService, OtpService>();
-        services.AddSingleton<IJwtTokenService, JwtTokenService>();
+        services.AddSingleton<IHashingService, HashingService>((services) =>
+        {
+            return new HashingService(appSettings.OTPConfig.Secret);
+        });
+        services.AddTransient<IOtpService, OtpService>(services =>
+        {
+            return new OtpService(services.GetRequiredService<IOTPRequestRepository>(), services.GetRequiredService<IUserRepository>(), services.GetRequiredService<IHashingService>(), appSettings.OTPConfig.ValidityInMinutes);
+        });
+        services.AddSingleton<IJwtTokenService, JwtTokenService>(services =>
+        {
+            return new JwtTokenService(appSettings.JwtConfig);
+        });
     }
 }

@@ -17,7 +17,7 @@ namespace HPTA.Repositories
         public async Task<List<UspTeamDataReturnModel>> LoadChartData(int teamId)
         {
             var teamIdParam = new SqlParameter("@p0", teamId);
-            var teamData = await hptaDbContext.UspTeamDataReturnModels.FromSqlRaw("exec Usp_GetTeamWiseData @p0", teamIdParam).ToListAsync();
+            var teamData = await _hptaDbContext.UspTeamDataReturnModels.FromSqlRaw("exec Usp_GetTeamWiseData @p0", teamIdParam).ToListAsync();
             return teamData;
         }
 
@@ -25,14 +25,14 @@ namespace HPTA.Repositories
         {
             var teamIdParam = new SqlParameter("@p0", teamId);
             var categoryIdParam = new SqlParameter("@p1", categoryId);
-            var teamData = await hptaDbContext.UspTeamDataReturnModels.FromSqlRaw("exec Usp_GetCategoryWiseData @p0,@p1", teamIdParam, categoryIdParam).ToListAsync();
+            var teamData = await _hptaDbContext.UspTeamDataReturnModels.FromSqlRaw("exec Usp_GetCategoryWiseData @p0,@p1", teamIdParam, categoryIdParam).ToListAsync();
             return teamData;
         }
 
         public async Task<List<UspTeamDataReturnModel>> LoadUserChartData(string userId)
         {
             var userIdParam = new SqlParameter("@p0", userId);
-            var teamData = await hptaDbContext.UspTeamDataReturnModels.FromSqlRaw("exec Usp_GetUserChartData @p0", userIdParam).ToListAsync();
+            var teamData = await _hptaDbContext.UspTeamDataReturnModels.FromSqlRaw("exec Usp_GetUserChartData @p0", userIdParam).ToListAsync();
             return teamData;
         }
 
@@ -40,7 +40,7 @@ namespace HPTA.Repositories
         {
             var userIdParam = new SqlParameter("@p0", userId);
             var categoryIdParam = new SqlParameter("@p1", categoryId);
-            var teamData = await hptaDbContext.UspTeamDataReturnModels.FromSqlRaw("exec Usp_GetCategoryWiseDataForUser @p0,@p1", userIdParam, categoryIdParam).ToListAsync();
+            var teamData = await _hptaDbContext.UspTeamDataReturnModels.FromSqlRaw("exec Usp_GetCategoryWiseDataForUser @p0,@p1", userIdParam, categoryIdParam).ToListAsync();
             return teamData;
         }
     }

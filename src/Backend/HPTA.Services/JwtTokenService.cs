@@ -1,4 +1,5 @@
-﻿using HPTA.Services.Contracts;
+﻿using HPTA.Common.Models;
+using HPTA.Services.Contracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -7,16 +8,13 @@ using System.Text;
 
 namespace HPTA.Services
 {
-    public class JwtTokenService(IConfiguration configuration) : IJwtTokenService
+    public class JwtTokenService(CustomJwtConfig config) : IJwtTokenService
     {
-        private readonly string _secret = configuration["JwtConfig:Secret"];
-        private readonly string _issuer = configuration["JwtConfig:Issuer"];
-        private readonly string _audience = configuration["JwtConfig:Audience"];
-        private readonly double _expiryDurationInMinutes = Convert.ToDouble(configuration["JwtConfig:ExpiryDurationInMinutes"]);
+        private readonly CustomJwtConfig _config = config;
 
         public string GenerateToken(string email)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.Secret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
@@ -28,10 +26,10 @@ namespace HPTA.Services
         };
 
             var token = new JwtSecurityToken(
-                issuer: _issuer,
-                audience: _audience,
+                issuer: _config.Issuer,
+                audience: _config.Audience,
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(_expiryDurationInMinutes),
+                expires: DateTime.Now.AddMinutes(_config.ExpiryDurationInMinutes),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
