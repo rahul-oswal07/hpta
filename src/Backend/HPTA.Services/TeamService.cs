@@ -30,7 +30,11 @@ public class TeamService : ITeamService
         //ToDo: These values should be resolved using user id. Once custom claims are enabled in azure, this needs to be modified accordingly.
         var email = _identityService.GetEmail();
         var myRole = await _userRepository.GetRoleByUser(email);
-        IQueryable<Team> teams = _teamRepository.GetBy(x => x.IsActive);
+        IQueryable<Team> teams;
+        if (myRole >= Common.Roles.CDL)
+            teams = _teamRepository.GetBy(t => t.IsActive);
+        else
+            teams = _teamRepository.ListByUser(email);
         return await teams.ProjectTo<TeamModel>(_mapper.ConfigurationProvider).OrderBy(team => team.Name).ToListAsync();
     }
 
@@ -90,5 +94,10 @@ public class TeamService : ITeamService
         var teamData = _mapper.Map<TeamDataModel>(chartData);
 
         return teamData;
+    }
+
+    public async Task<List<string>> ListTeamMembers(int teamId)
+    {
+        return await _userRepository.GetByTeamId(teamId).Select(u => u.Name).ToListAsync();
     }
 }

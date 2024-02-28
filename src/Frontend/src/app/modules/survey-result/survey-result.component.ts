@@ -4,6 +4,7 @@ import { SurveyResultService } from './services/survey-result.service';
 import { TeamsModel } from './models/team.model';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { RoutingHelperService } from 'src/app/core/services/routing-helper.service';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -18,6 +19,7 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
   teams: TeamsModel[];
   filteredOptions: TeamsModel[];
   teamId: number;
+  teamMembers$: Observable<string[]>;
 
   constructor(private formBuilder: FormBuilder, private teamService: SurveyResultService, private router: Router, private route: ActivatedRoute
     , private routingHelper: RoutingHelperService) {
@@ -51,7 +53,8 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
       if (!this.teamId) {
         this.teamId = this.teams[0].id
       }
-      this.form.patchValue({ 'selectedTeam': this.teamId })
+      this.form.patchValue({ 'selectedTeam': this.teamId });
+      this.teamMembers$ = this.teamService.listMembers(this.teamId);
     });
   }
 
@@ -63,6 +66,6 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    
+
   }
 }

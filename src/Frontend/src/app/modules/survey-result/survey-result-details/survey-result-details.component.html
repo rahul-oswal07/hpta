@@ -1,54 +1,52 @@
-<div class="chart-container">
-  <div #chart class="chart">
-    <div *ngIf="chartOptions?.series">
-      <apx-chart
-        [series]="chartOptions.series"
-        [chart]="chartOptions.chart"
-        [xaxis]="chartOptions.xaxis"
-        [dataLabels]="chartOptions.dataLabels"
-        [grid]="chartOptions.grid"
-        [stroke]="chartOptions.stroke"
-        [title]="chartOptions.title"
-        [labels]="chartOptions.labels"
-        [annotations]="chartOptions.annotations"
-        [fill]="chartOptions.fill"
-        [yaxis]="chartOptions.yaxis"
-      ></apx-chart>
-    </div>
+<div style="text-align: center;">
+
+  <div #chart class="chart mat-elevation-z8 pt-2" style="width: calc(50% - 10px);"
+    [ngStyle]="{display: categoryChartOptions.series ? 'inline-block' : 'block', margin: categoryChartOptions.series ? '0 5px' : '0 auto'}">
+    <apx-chart *ngIf="chartOptions?.series" [series]="chartOptions.series" [chart]="chartOptions.chart"
+      [xaxis]="chartOptions.xaxis" [dataLabels]="chartOptions.dataLabels" [grid]="chartOptions.grid"
+      [stroke]="chartOptions.stroke" [title]="chartOptions.title" [labels]="chartOptions.labels"
+      [annotations]="chartOptions.annotations" [fill]="chartOptions.fill" [yaxis]="chartOptions.yaxis"></apx-chart>
   </div>
 
-  <div *ngIf="categoryChartOptions?.series" class="chart">
-    <apx-chart
-      [series]="categoryChartOptions.series"
-      [chart]="categoryChartOptions.chart"
-      [xaxis]="categoryChartOptions.xaxis"
-      [dataLabels]="categoryChartOptions.dataLabels"
-      [grid]="categoryChartOptions.grid"
-      [stroke]="categoryChartOptions.stroke"
-      [title]="categoryChartOptions.title"
-      [labels]="categoryChartOptions.labels"
-      [annotations]="categoryChartOptions.annotations"
-      [fill]="categoryChartOptions.fill"
-      [yaxis]="categoryChartOptions.yaxis"
-    ></apx-chart>
+  <div [@expandShrink]="categoryChartOptions.series ? 'expand' : 'shrink'" class="chart mat-elevation-z8 pt-2"
+    style="margin: 0 5px; display:inline-block">
+    <apx-chart *ngIf="categoryChartOptions?.series" [series]="categoryChartOptions.series"
+      [chart]="categoryChartOptions.chart" [xaxis]="categoryChartOptions.xaxis"
+      [dataLabels]="categoryChartOptions.dataLabels" [grid]="categoryChartOptions.grid"
+      [stroke]="categoryChartOptions.stroke" [title]="categoryChartOptions.title" [labels]="categoryChartOptions.labels"
+      [annotations]="categoryChartOptions.annotations" [fill]="categoryChartOptions.fill"
+      [yaxis]="categoryChartOptions.yaxis"></apx-chart>
+  </div>
+</div>
+<div class="flex items-center justify-center">
+
+  <div *ngIf="chartData.respondedUsers" class="rating-card w-full">
+    <div class="flex items-center">
+      <div class="flex-auto">
+
+        <div class="response-summary mt-2">
+          Total Users Responded: <strong>{{ chartData.respondedUsers }} out of {{chartData.totalUsers}}</strong>
+          <div class="progress-bar">
+            <div class="progress"
+              [ngStyle]="{width: (chartData.respondedUsers/(chartData.totalUsers || 1)) * 100 + '%'}">
+            </div>
+          </div>
+        </div>
+        <div class="rating-summary mt-2">
+          Overall HPTA Score: <strong>{{ overallHPTAScore | number: '1.0-2' }}</strong>
+
+          <div class="progress-bar">
+            <div class="progress" [ngStyle]="{width: (overallHPTAScore/5) * 100 + '%'}"></div>
+          </div>
+        </div>
+      </div>
+      <app-rating-view [value]="overallHPTAScore"></app-rating-view>
+    </div>
   </div>
 </div>
 
 <div id="promptData">
-  <p *ngIf="chartData.respondedUsers">
-    <b>
-      Total users responded : {{ chartData.respondedUsers }}/{{
-      chartData.totalUsers
-      }}
-    </b>
-  </p>
-  <p *ngIf="overallHPTAScore">
-    <b>
-      Overall HPTA score : {{ overallHPTAScore }}
-    </b>
-  </p>
 
-  <br />
 
   <div [innerHTML]="chartData.promptData"></div>
 </div>

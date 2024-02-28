@@ -20,6 +20,11 @@ namespace HPTA.Repositories
             return user;
         }
 
+        public IQueryable<User> GetByTeamId(int teamId)
+        {
+            return _hptaDbContext.UserTeams.Include(ut => ut.User).AsNoTracking().Where(ut => ut.TeamId == teamId && ut.User.IsActive && ut.IsCoreMember && ut.StartDate <= DateTime.Today && ut.EndDate >= DateTime.Today).Select(ut => ut.User);
+        }
+
         public async Task<Roles> GetRoleByUser(string email)
         {
             return await _hptaDbContext.UserTeams.Where(ut => ut.User.Email == email && ut.User.IsActive && ut.StartDate <= DateTime.Today && ut.EndDate >= DateTime.Today).Select(ut => ut.RoleId).OrderByDescending(r => r).FirstOrDefaultAsync();

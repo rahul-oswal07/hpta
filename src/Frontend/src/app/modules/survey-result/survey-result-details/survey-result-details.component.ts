@@ -1,3 +1,4 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
@@ -18,14 +19,22 @@ const CATEGORY_COLORS: any = {
 @Component({
   selector: 'app-survey-result-details',
   templateUrl: './survey-result-details.component.html',
-  styleUrls: ['./survey-result-details.component.css']
+  styleUrls: ['./survey-result-details.component.css'],
+  animations: [
+    trigger('expandShrink', [
+      state('expand', style({ width: 'calc(50% - 10px)', opacity: 1 })),
+      state('shrink', style({ width: '0', opacity: 0 })),
+      transition('shrink => expand', animate('300ms ease-out')),
+      transition('expand => shrink', animate('300ms ease-in'))
+    ])
+  ]
 })
 export class SurveyResultDetailsComponent implements OnInit {
 
   teams: TeamsModel[];
   filteredOptions: TeamsModel[];
   chartData = {} as TeamDataModel;
-  overallHPTAScore: string | number;
+  overallHPTAScore: number;
   teamId: number;
   chartOptions: ChartOptions;
   categoryChartOptions: ChartOptions;
@@ -55,7 +64,7 @@ export class SurveyResultDetailsComponent implements OnInit {
     const average = this.chartData.scores.map((data) => data.average)
     const categories = this.chartData.scores.map((data) => data.categoryName)
     const result = (average.reduce((sum, current) => sum + current, 0) / categories.length)
-    this.overallHPTAScore = result % 1 !== 0 ? result.toFixed(2) : result;
+    this.overallHPTAScore = result;
 
     const chartOptions: ChartOptions = {
       series: [
@@ -93,7 +102,7 @@ export class SurveyResultDetailsComponent implements OnInit {
         enabled: true,
         style: {
           fontSize: '14px',
-          fontFamily: 'Times New Roman',
+          // fontFamily: 'Times New Roman',
           fontWeight: 'bold',
           colors: ['#333']
         },
@@ -162,7 +171,7 @@ export class SurveyResultDetailsComponent implements OnInit {
       const average = this.chartData.scores.map((data) => data.average);
       const categories = this.chartData.scores.map((data) => data.categoryName);
       const result = (average.reduce((sum, current) => sum + current, 0) / categories.length);
-      this.overallHPTAScore = result % 1 !== 0 ? result.toFixed(2) : result;
+      this.overallHPTAScore = result;
     }
     else {
       this.overallHPTAScore = 0;

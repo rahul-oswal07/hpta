@@ -14,7 +14,6 @@ import { ProfileComponent } from './profile/profile.component';
 import { SidebarComponent } from 'src/app/core/sidebar/sidebar.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { NavbarComponent } from 'src/app/core/navbar/navbar.component';
 import { DialogModule } from 'src/app/modules/dialog/dialog.module';
 import { ErrorHandlerInterceptor } from 'src/app/core/interceptors/error-handler.interceptor';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
@@ -27,7 +26,6 @@ import { SharedModule } from 'src/app/core/shared/shared.module';
     FailedLoginComponent,
     ProfileComponent,
     SidebarComponent,
-    NavbarComponent
   ],
   imports: [
     BrowserModule,

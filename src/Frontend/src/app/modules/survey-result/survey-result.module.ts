@@ -14,6 +14,8 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { SurveyResultDetailsComponent } from "src/app/modules/survey-result/survey-result-details/survey-result-details.component";
 import { MatIconModule } from "@angular/material/icon";
 import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
+import { MatChipsModule } from "@angular/material/chips";
+import { RatingModule } from "src/app/modules/rating/rating.module";
 
 @NgModule({
   declarations: [
@@ -33,6 +35,8 @@ import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
     SurveyResultRoutingModule,
     NgApexchartsModule,
     MatIconModule,
+    MatChipsModule,
+    RatingModule,
     NgxMatSelectSearchModule
   ]
 })

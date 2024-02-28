@@ -29,6 +29,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { FilterService } from 'src/app/core/shared/services/filter.service';
 import { AnswerTypePipe } from 'src/app/core/pipes/answer-type.pipe';
 import { NoSelectionComponent } from 'src/app/core/shared/components/no-selection/no-selection.component';
+import { NavbarComponent } from 'src/app/core/navbar/navbar.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -42,7 +44,8 @@ import { NoSelectionComponent } from 'src/app/core/shared/components/no-selectio
     FilterSelectFormComponent,
     FilterStringFormComponent,
     NoSelectionComponent,
-    AnswerTypePipe
+    AnswerTypePipe,
+    NavbarComponent
   ],
   imports: [
     CommonModule,
@@ -57,14 +60,16 @@ import { NoSelectionComponent } from 'src/app/core/shared/components/no-selectio
     MatSelectModule,
     MatInputModule,
     ReactiveFormsModule,
-    MatDialogModule
+    MatDialogModule,
+    RouterModule
   ],
   exports: [
     TableControlBarComponent,
     FilterListComponent,
     FilterMenuComponent,
     NoSelectionComponent,
-    AnswerTypePipe
+    AnswerTypePipe,
+    NavbarComponent
   ],
   providers: [
     FilterService
