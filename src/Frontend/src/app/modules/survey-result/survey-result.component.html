@@ -1,24 +1,35 @@
-<form [formGroup]="form">
-  <mat-form-field appearance="outline" class="w-96 m-3">
-    <mat-select
-      placeholder="Please select an option"
-      #singleSelect
-      formControlName="selectedTeam"
-      panelClass="my-panel"
-    >
-      <mat-option>
-        <ngx-mat-select-search
-          formControlName="searchedInput"
-          placeholderLabel="Find team..."
-          noEntriesFoundLabel="No data"
-        >
-        </ngx-mat-select-search>
-      </mat-option>
+<div class="content-body">
+  <div class="flex gap-2">
 
-      <mat-option *ngFor="let option of filteredOptions" [value]="option.id">
-        {{ option.name }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
-</form>
-<router-outlet></router-outlet>
+    <div class="p-3 w-96">
+      <form [formGroup]="form">
+        <mat-form-field class="w-full">
+          <mat-select placeholder="Please select an option" #singleSelect formControlName="selectedTeam"
+            panelClass="my-panel">
+            <mat-option>
+              <ngx-mat-select-search formControlName="searchedInput" placeholderLabel="Find team..."
+                noEntriesFoundLabel="No data">
+              </ngx-mat-select-search>
+            </mat-option>
+
+            <mat-option *ngFor="let option of filteredOptions" [value]="option.id">
+              {{ option.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+
+    </div>
+    <div class="flex items-center">
+      <mat-chip-listbox>
+        <mat-chip *ngFor="let member of teamMembers">
+          <mat-chip-avatar>
+            <img class="profile-picture" src="assets/avatar-placeholder.svg" />
+          </mat-chip-avatar>
+          {{member}}
+        </mat-chip>
+      </mat-chip-listbox>
+    </div>
+  </div>
+  <router-outlet></router-outlet>
+</div>

@@ -13,7 +13,7 @@
                   <div class="flex flex-col gap-2" formArrayName="questions">
                     <div *ngFor="let question of groupedQuestions[category][subCategory]; let qIndex = index"
                       [formGroupName]="qIndex">
-                      <p>{{question.questionNumber}}. {{ question.question }}</p>
+                      <h3 class="text-blue-500">{{question.questionNumber}}. {{ question.question }}</h3>
                       <div class="pl-2">
                         <input type="hidden" formControlName="questionNumber">
                         <app-rating formControlName="rating"></app-rating>
@@ -23,15 +23,15 @@
                 </div>
               </mat-expansion-panel>
             </mat-accordion>
-          </div>
-          <div class="flex pt-2 pb-2">
-            <button type="button" mat-raised-button matStepperPrevious *ngIf="i > 0">Previous</button>
-            <div class="flex-auto">
+            <div class="flex pt-2 pb-2">
+              <button type="button" mat-raised-button color="primary" matStepperPrevious *ngIf="i > 0">Previous</button>
+              <div class="flex-auto">
+              </div>
+              <button type="button" matStepperNext mat-raised-button color="primary"
+                [disabled]="!form.get(category)?.valid" *ngIf="i < categories.length - 1">Next</button>
+              <button type="submit" mat-raised-button color="primary" *ngIf="i === categories.length - 1"
+                [disabled]="!form.valid || submitting">Submit</button>
             </div>
-            <button type="button" matStepperNext mat-raised-button [disabled]="!form.get(category)?.valid"
-              *ngIf="i < categories.length - 1">Next</button>
-            <button type="submit" mat-raised-button color="primary" *ngIf="i === categories.length - 1"
-              [disabled]="!form.valid || submitting">Submit</button>
           </div>
         </ng-template>
       </mat-step>

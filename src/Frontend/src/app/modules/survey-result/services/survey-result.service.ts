@@ -25,8 +25,12 @@ export class SurveyResultService extends DataService {
 
   getCategoryChartData(categoryId: number, teamId?: number) {
     if (!!teamId) {
-      return this.getSingle<TeamDataModel>(['result-category', teamId.toString(), categoryId.toString()]);
+      return this.getSingle<TeamDataModel>(['result-category', categoryId.toString(), teamId.toString()]);
     }
     return this.getSingle<TeamDataModel>(['result-category', categoryId.toString()]);
+  }
+
+  listMembers(teamId: number) {
+    return this.getList<string>([teamId.toString(), 'members']);
   }
 }

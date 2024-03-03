@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SurveyResultService } from './services/survey-result.service';
 import { TeamsModel } from './models/team.model';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RoutingHelperService } from 'src/app/core/services/routing-helper.service';
 
 
@@ -18,6 +18,7 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
   teams: TeamsModel[];
   filteredOptions: TeamsModel[];
   teamId: number;
+  teamMembers: string[];
 
   constructor(private formBuilder: FormBuilder, private teamService: SurveyResultService, private router: Router, private route: ActivatedRoute
     , private routingHelper: RoutingHelperService) {
@@ -33,9 +34,9 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
       });
 
     this.routingHelper.parameterChange().subscribe(params => {
-      console.log('a');
       if (params && !this.teamId) {
         this.teamId = parseInt(params['id']);
+        this.loadTeamMembers();
       }
     });
   }
@@ -51,10 +52,16 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
       if (!this.teamId) {
         this.teamId = this.teams[0].id
       }
-      this.form.patchValue({ 'selectedTeam': this.teamId })
+      this.form.patchValue({ 'selectedTeam': this.teamId });
+      this.loadTeamMembers();
     });
   }
-
+  loadTeamMembers() {
+    if (isNaN(this.teamId)) {
+      return;
+    }
+    this.teamService.listMembers(this.teamId).subscribe(r => this.teamMembers = r);
+  }
   private _buildForm() {
     this.form = this.formBuilder.group({
       selectedTeam: [''],
@@ -63,6 +70,6 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    
+
   }
 }

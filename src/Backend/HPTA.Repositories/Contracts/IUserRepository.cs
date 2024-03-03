@@ -11,6 +11,7 @@ namespace HPTA.Repositories.Contracts
 
         IQueryable<User> GetUserInfoWithClaims(string email);
 
+        IQueryable<User> GetByTeamId(int teamId);
         Task<User> AddAnonymousUserIfNotExists(string name, string email);
         Task<bool> ValidateTeamId(int? teamId, string email);
     }

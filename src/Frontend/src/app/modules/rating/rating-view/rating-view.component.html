@@ -1,0 +1,15 @@
+<div class="flex flex-row gap-2">
+
+  <div class="cursor-pointer p-1 flex flex-col items-center rating active">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="45" stroke-width="7" class="face" [ngClass]="'rating-' + rating.value" />
+      <circle cx="35" cy="40" r="5" class="eyes" />
+      <circle cx="65" cy="40" r="5" class="eyes" />
+      <path [attr.d]="rating.path" class="expression" stroke-width="3" fill="none" />
+    </svg>
+    <div>
+
+      {{rating.text}}
+    </div>
+  </div>
+</div>
