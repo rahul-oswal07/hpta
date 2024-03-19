@@ -25,18 +25,19 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
     this._buildForm();
 
     this.form.controls['selectedTeam'].valueChanges.subscribe(value => {
-      this.router.navigate(['team', value], { relativeTo: this.route })
+      this.teamId = value;
+      this.router.navigate(['team', value], { relativeTo: this.route });
+      this.loadTeamMembers();
     });
 
     this.form.controls['searchedInput'].valueChanges
       .subscribe(searchValue => {
-        this.filteredOptions = this.teams.filter(team => team.name.toLowerCase().includes(searchValue));
+        this.filteredOptions = this.teams.filter(team => team.name.replace(/\s/g, '').toLowerCase().includes(searchValue.toLowerCase()));
       });
 
     this.routingHelper.parameterChange().subscribe(params => {
       if (params && !this.teamId) {
         this.teamId = parseInt(params['id']);
-        this.loadTeamMembers();
       }
     });
   }
@@ -56,12 +57,14 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
       this.loadTeamMembers();
     });
   }
+
   loadTeamMembers() {
     if (isNaN(this.teamId)) {
       return;
     }
     this.teamService.listMembers(this.teamId).subscribe(r => this.teamMembers = r);
   }
+
   private _buildForm() {
     this.form = this.formBuilder.group({
       selectedTeam: [''],
