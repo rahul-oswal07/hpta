@@ -98,6 +98,6 @@ public class TeamService : ITeamService
 
     public async Task<List<string>> ListTeamMembers(int teamId)
     {
-        return await _userRepository.GetByTeamId(teamId).Select(u => u.Name).ToListAsync();
+        return await _userRepository.GetByTeamId(teamId).Select(u => u.Name).OrderBy(name => name).ToListAsync();
     }
 }
