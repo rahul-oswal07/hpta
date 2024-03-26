@@ -10,7 +10,7 @@ namespace HPTA.Repositories
 
         public IQueryable<SurveyQuestion> ListQuestionsBySurveyId(int surveyId)
         {
-            return _dbContext.SurveyQuestions.Include(q => q.Question).ThenInclude(q => q.SubCategory).ThenInclude(q => q.Category).Where(q => q.SurveyId == surveyId);
+            return _dbContext.SurveyQuestions.Include(q => q.Question).Where(q => q.SurveyId == surveyId);
         }
     }
 }
