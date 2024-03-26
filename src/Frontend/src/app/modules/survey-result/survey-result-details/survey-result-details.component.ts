@@ -1,16 +1,25 @@
-import { animate, state, style, transition, trigger } from '@angular/animations';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
 import { DataStatusIndicator } from 'src/app/modules/data-status-indicator/data-status-indicator.component';
-import { ChartOptions, TeamDataModel, TeamsModel } from 'src/app/modules/survey-result/models/team.model';
+import {
+  ChartOptions,
+  TeamDataModel,
+  TeamsModel,
+} from 'src/app/modules/survey-result/models/team.model';
 import { SurveyResultService } from 'src/app/modules/survey-result/services/survey-result.service';
 
-
 const CATEGORY_COLORS: any = {
-  'Culture': '#85b5c7',
+  Culture: '#85b5c7',
   'Growth Mindset': '#b3ccff',
-  'Ownership': '#ff9f80',
+  Ownership: '#ff9f80',
   'Safe Environment': '#80aaff',
   'Strategic Alignment': '#ffb366',
   'Ways of Working': '#ff8080',
@@ -25,12 +34,11 @@ const CATEGORY_COLORS: any = {
       state('expand', style({ width: 'calc(50% - 10px)', opacity: 1 })),
       state('shrink', style({ width: '0', opacity: 0 })),
       transition('shrink => expand', animate('300ms ease-out')),
-      transition('expand => shrink', animate('300ms ease-in'))
-    ])
-  ]
+      transition('expand => shrink', animate('300ms ease-in')),
+    ]),
+  ],
 })
 export class SurveyResultDetailsComponent implements OnInit {
-
   teams: TeamsModel[];
   filteredOptions: TeamsModel[];
   chartData = {} as TeamDataModel;
@@ -42,28 +50,29 @@ export class SurveyResultDetailsComponent implements OnInit {
   @ViewChild(DataStatusIndicator)
   dataStatusIndicator?: DataStatusIndicator;
 
-  constructor(private surveyResultService: SurveyResultService, private activatedRoute: ActivatedRoute, private cd: ChangeDetectorRef) { }
+  constructor(
+    private surveyResultService: SurveyResultService,
+    private activatedRoute: ActivatedRoute,
+    private cd: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
-    this.activatedRoute.params.pipe(
-      map(params => params['id'])
-    ).subscribe({
-      next: value => {
+    this.activatedRoute.params.pipe(map((params) => params['id'])).subscribe({
+      next: (value) => {
         this.categoryChartOptions = this.chartOptions = {} as ChartOptions;
         this.teamId = value;
         this._loadChartData(value);
       },
-      error: (e: Error) => {
-      }
+      error: (e: Error) => {},
     });
-
   }
 
   buildChartData(chartData: TeamDataModel, title: string) {
     const thisRef = this;
-    const average = this.chartData.scores.map((data) => data.average)
-    const categories = this.chartData.scores.map((data) => data.categoryName)
-    const result = (average.reduce((sum, current) => sum + current, 0) / categories.length)
+    const average = this.chartData.scores.map((data) => data.average);
+    const categories = this.chartData.scores.map((data) => data.categoryName);
+    const result =
+      average.reduce((sum, current) => sum + current, 0) / categories.length;
     this.overallHPTAScore = result;
 
     const chartOptions: ChartOptions = {
@@ -74,26 +83,30 @@ export class SurveyResultDetailsComponent implements OnInit {
         },
       ],
       fill: {
-        colors: [function (data: any) {
-          const category = data.w.globals.labels[data.dataPointIndex];
-          return thisRef.getColorCode(category);
-        }]
+        colors: [
+          function (data: any) {
+            const category = data.w.globals.labels[data.dataPointIndex];
+            return thisRef.getColorCode(category);
+          },
+        ],
       },
       chart: {
         height: 350,
         type: 'bar',
         toolbar: {
-          show: false
+          show: false,
         },
         events: {
           dataPointSelection: (event, chartContext, config) => {
-            const category = config.w.globals.labels[config.dataPointIndex] as string;
+            const category = config.w.globals.labels[
+              config.dataPointIndex
+            ] as string;
             console.log(this.teamId);
 
-            this._loadCategoryChartData(this.teamId, category);;
+            this._loadCategoryChartData(this.teamId, category);
             return;
-          }
-        }
+          },
+        },
       },
       title: {
         text: title,
@@ -104,25 +117,25 @@ export class SurveyResultDetailsComponent implements OnInit {
           fontSize: '14px',
           // fontFamily: 'Times New Roman',
           fontWeight: 'bold',
-          colors: ['#333']
+          colors: ['#333'],
         },
       },
       xaxis: {
         categories: chartData.scores.map((data) => data.categoryName),
         axisTicks: {
-          show: true
+          show: true,
         },
         title: {
           text: undefined,
         },
         labels: {
-          show: true
+          show: true,
         },
       },
       yaxis: {
         show: true,
         min: 0,
-        max: 5
+        max: 5,
       },
       annotations: {},
       grid: {},
@@ -134,31 +147,44 @@ export class SurveyResultDetailsComponent implements OnInit {
   }
 
   getColorCode(category: string): string {
-    return CATEGORY_COLORS[category] || "hsl(" + Math.random() * 360 + ", 100%, 75%)";
+    return (
+      CATEGORY_COLORS[category] || 'hsl(' + Math.random() * 360 + ', 100%, 75%)'
+    );
   }
 
   private _loadChartData(teamId: number) {
     this.dataStatusIndicator?.setLoading();
 
-    this.surveyResultService.getChartData(teamId).subscribe(data => {
-      this.populateChart(data);
-    }, err => {
-      this.dataStatusIndicator?.setError("Error while loading the data!");
-      this.overallHPTAScore = 0;
-      this.chartOptions = {} as ChartOptions;
-      this.chartData = {} as TeamDataModel;
-    })
+    this.surveyResultService.getChartData(teamId).subscribe(
+      (data) => {
+        this.populateChart(data);
+      },
+      (err) => {
+        this.dataStatusIndicator?.setError('Error while loading the data!');
+        this.overallHPTAScore = 0;
+        this.chartOptions = {} as ChartOptions;
+        this.chartData = {} as TeamDataModel;
+      }
+    );
   }
 
   private _loadCategoryChartData(teamId: number, categoryName: string) {
-    const categoryId = Number(this.chartData.scores.find((data) => data.categoryName == categoryName)?.categoryId)
+    const categoryId = Number(
+      this.chartData.scores.find((data) => data.categoryName == categoryName)
+        ?.categoryId
+    );
 
     if (categoryId) {
       this.categoryChartOptions = {} as ChartOptions;
-      this.surveyResultService.getCategoryChartData(categoryId, teamId).subscribe(data => {
-        this.categoryChartOptions = this.buildChartData(data, `Report for Category : ${categoryName}`);
-        this.cd.detectChanges();
-      });
+      this.surveyResultService
+        .getCategoryChartData(categoryId, teamId)
+        .subscribe((data) => {
+          this.categoryChartOptions = this.buildChartData(
+            data,
+            `Report for Category : ${categoryName}`
+          );
+          this.cd.detectChanges();
+        });
     }
   }
 
@@ -166,14 +192,17 @@ export class SurveyResultDetailsComponent implements OnInit {
     if (data.scores) {
       this.dataStatusIndicator?.setDefault();
       this.chartData = data;
-      this.chartOptions = this.buildChartData(this.chartData, 'High Performing Team Report');
+      this.chartOptions = this.buildChartData(
+        this.chartData,
+        'High Performing Team Report'
+      );
 
       const average = this.chartData.scores.map((data) => data.average);
       const categories = this.chartData.scores.map((data) => data.categoryName);
-      const result = (average.reduce((sum, current) => sum + current, 0) / categories.length);
+      const result =
+        average.reduce((sum, current) => sum + current, 0) / categories.length;
       this.overallHPTAScore = result;
-    }
-    else {
+    } else {
       this.overallHPTAScore = 0;
       this.chartOptions = {} as ChartOptions;
       this.chartData = {} as TeamDataModel;

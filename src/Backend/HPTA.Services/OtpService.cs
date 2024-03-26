@@ -1,6 +1,4 @@
-﻿using HPTA.Common.Configurations;
-using HPTA.Common.Models;
-using HPTA.Data.Entities;
+﻿using HPTA.Data.Entities;
 using HPTA.DTO;
 using HPTA.Repositories.Contracts;
 using HPTA.Services.Contracts;
@@ -20,7 +18,7 @@ namespace HPTA.Services
                 Email = email,
                 CreatedOnUTC = DateTime.UtcNow,
                 ExpiresOnUTC = DateTime.UtcNow.AddMinutes(validity),
-                OTPHash =hashingService.GenerateHash(otp)
+                OTPHash = hashingService.GenerateHash(otp)
             };
             await _oTPRequestRepository.AddOrUpdateOTPAsync(request);
             return otp;

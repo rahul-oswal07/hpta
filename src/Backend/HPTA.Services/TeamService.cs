@@ -5,6 +5,8 @@ using HPTA.DTO;
 using HPTA.Repositories.Contracts;
 using HPTA.Services.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace HPTA.Services;
 
@@ -15,14 +17,16 @@ public class TeamService : ITeamService
     private readonly IIdentityService _identityService;
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
+    private readonly ILogger<TeamService> Logger;
 
-    public TeamService(ITeamRepository teamRepository, IMapper mapper, IOpenAIService openAIService, IIdentityService identityService, IUserRepository userRepository)
+    public TeamService(ITeamRepository teamRepository, IMapper mapper, IOpenAIService openAIService, IIdentityService identityService, IUserRepository userRepository, ILogger<TeamService> logger)
     {
         _teamRepository = teamRepository;
         _mapper = mapper;
         _openAIService = openAIService;
         _identityService = identityService;
         _userRepository = userRepository;
+        Logger = logger;
     }
 
     public async Task<List<TeamModel>> GetAllTeams()
@@ -63,7 +67,15 @@ public class TeamService : ITeamService
 
         var teamData = _mapper.Map<TeamDataModel>(chartData);
         var categoryScores = teamData.Scores.ToDictionary(x => x.CategoryName, x => x.Average);
-        teamData.PromptData = await _openAIService.GetPromptResponse(categoryScores);
+        try
+        {
+            teamData.TeamPerformance = JsonSerializer.Deserialize<TeamPerformance>(await _openAIService.GetPromptResponse(categoryScores), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        catch (Exception ex)
+        {
+            // TO:DO : Find a better way to handle this exception
+            Logger.LogError(ex, "Error while getting prompt response");
+        }
 
         return teamData;
     }

@@ -2,7 +2,9 @@
 using HPTA.DTO;
 using HPTA.Services.Contracts;
 using Newtonsoft.Json;
+using System.Net.Http.Json;
 using System.Text;
+using System.Text.Encodings.Web;
 
 namespace HPTA.Services;
 
@@ -19,22 +21,20 @@ public class OpenAIService : IOpenAIService
         var prompt = GetPrompt(scores);
         string json = JsonConvert.SerializeObject(new PromptModel { UserInput = prompt });
         string aiResponse = await GetAIResponse(json);
-        return aiResponse;
+        string response = ReplaceHtmlTags(aiResponse);
+
+        return response;
     }
 
     static string GetPrompt(Dictionary<string, double> scores)
     {
-        // Append the loaded scores to the prompt
-        string prompt = @"
-                At Devon, we kindly request our team members to complete the High-Performing Team Assessment Survey. The team has diligently submitted their responses, revealing the following scores per category on a scale of 1 to 5:";
-
+        string prompt = @"As an AI Agile Coach for the team, I've received their assessment scores across various categories, rated on a scale of 1 to 5. The scores are as follows:";
         foreach (var kvp in scores)
         {
             prompt += $"\n{kvp.Key}: {kvp.Value}";
         }
 
-        prompt += "\n\nAs an AI Agile Coach, your insights are invaluable. Please provide guidance on the areas the team should focus on in the upcoming months.";
-
+        prompt += @"Could you provide detailed insights for each category? The output should be in JSON format without html tags, structured as follows: " + GetStringFromJSonFile();
         return prompt;
     }
 
@@ -51,5 +51,17 @@ public class OpenAIService : IOpenAIService
         {
             return null;
         }
+    }
+
+    private static string GetStringFromJSonFile()
+    {
+        // TODO : Find a better way to create a prompt
+        var path = File.ReadAllText("prompt.json");
+        return path;
+    }
+
+    private static string ReplaceHtmlTags(string input)
+    {
+        return input.Replace("<br>", "\r\n").Replace("</br>", "\r\n");
     }
 }

@@ -21,7 +21,14 @@ public class SurveyResultDataModel
 {
     public List<ScoreModel> Scores { get; set; }
 
-    public string PromptData { get; set; }
+    public TeamPerformance TeamPerformance { get; set; }
+}
+
+public class PromptScoreDescriptionModel
+{
+    public string Description { get; set; } = string.Empty;
+
+    public List<ScoreModel> Categories { get; set; }
 }
 
 public class TeamDataModel : SurveyResultDataModel
@@ -42,4 +49,19 @@ public class ScoreModel
     public string CategoryName { get; set; } = string.Empty;
 
     public double Average { get; set; }
+
+    public string Description { get; set; } = string.Empty;
+}
+
+public class TeamPerformance
+{
+    public string Description { get; set; }
+    public List<CategoryDTO> Categories { get; set; }
+}
+
+public class CategoryDTO
+{
+    public string Category { get; set; }
+    public string Score { get; set; }
+    public string Description { get; set; }
 }

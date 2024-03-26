@@ -1,0 +1,10 @@
+{
+  "description": "Provide a brief description of the team's overall performance.",
+  "categories": [
+    {
+      "category": "name",
+      "score": "score",
+      "description": "Provide insights and observations specific to this category."
+    }
+  ]
+}

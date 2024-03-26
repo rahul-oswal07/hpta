@@ -5,9 +5,8 @@ import { Category } from 'src/app/modules/categories/category';
 import { ListItem } from 'src/app/core/models/list-item';
 import { AvailabilityCheckResult } from 'src/app/core/models/availability-check-result';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CategoriesService extends DataService {
   override path = 'category';
@@ -24,8 +23,14 @@ export class CategoriesService extends DataService {
   getCategoryById(id: number) {
     return this.getSingle<Category>(id.toString());
   }
-  checkNameAvailability(name: string, id?: number): Observable<AvailabilityCheckResult> {
-    return this.getSingle<AvailabilityCheckResult>('check-name-availability', { id, name })
+  checkNameAvailability(
+    name: string,
+    id?: number
+  ): Observable<AvailabilityCheckResult> {
+    return this.getSingle<AvailabilityCheckResult>('check-name-availability', {
+      id,
+      name,
+    });
   }
   addCategory(category: Category) {
     return this.post(category);
