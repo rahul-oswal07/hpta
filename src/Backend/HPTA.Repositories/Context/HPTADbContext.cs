@@ -24,4 +24,6 @@ public partial class HPTADbContext
     public DbSet<UserTeam> UserTeams { get; set; }
 
     public DbSet<OTPRequest> OTPRequests { get; set; }
+
+    public DbSet<AIResponse> AIResponses { get; set; }
 }

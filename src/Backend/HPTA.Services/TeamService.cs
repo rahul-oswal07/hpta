@@ -16,16 +16,20 @@ public class TeamService : ITeamService
     private readonly IOpenAIService _openAIService;
     private readonly IIdentityService _identityService;
     private readonly IUserRepository _userRepository;
+    private readonly IAIResponseRepository _aIResponseRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<TeamService> Logger;
 
-    public TeamService(ITeamRepository teamRepository, IMapper mapper, IOpenAIService openAIService, IIdentityService identityService, IUserRepository userRepository, ILogger<TeamService> logger)
+    public TeamService(ITeamRepository teamRepository, IMapper mapper, IOpenAIService openAIService, IIdentityService identityService, IUserRepository userRepository,
+IAIResponseRepository aIResponseRepository,
+ILogger<TeamService> logger)
     {
         _teamRepository = teamRepository;
         _mapper = mapper;
         _openAIService = openAIService;
         _identityService = identityService;
         _userRepository = userRepository;
+        _aIResponseRepository = aIResponseRepository;
         Logger = logger;
     }
 
@@ -46,6 +50,7 @@ public class TeamService : ITeamService
     {
         List<UspTeamDataReturnModel> chartData = null;
         var email = _identityService.GetEmail();
+        TeamPerformanceDTO performance = null;
         if (teamId.HasValue) // Devon user
         {
             //ToDo: These values should be resolved using user id. Once custom claims are enabled in azure, this needs to be modified accordingly.
@@ -54,10 +59,22 @@ public class TeamService : ITeamService
                 throw new Exception("Invalid team or the user does not have access to the team.");
             }
             chartData = await _teamRepository.LoadChartData(teamId.Value);
+            if (chartData?.Count > 0)
+            {
+                var teamPerformance = await _aIResponseRepository.GetResponseDataForTeam(teamId.Value);
+                if (teamPerformance != null)
+                    performance = _mapper.Map<TeamPerformanceDTO>(teamPerformance);
+            }
         }
         else // Anonymous user
         {
             chartData = await _teamRepository.LoadUserChartData(email);
+            if (chartData?.Count > 0)
+            {
+                var userPerformance = await _aIResponseRepository.GetResponseDataForUser(email);
+                if (userPerformance != null)
+                    performance = _mapper.Map<TeamPerformanceDTO>(userPerformance);
+            }
         }
 
         if (chartData == null || chartData.Count == 0)
@@ -69,7 +86,8 @@ public class TeamService : ITeamService
         var categoryScores = teamData.Scores.ToDictionary(x => x.CategoryName, x => x.Average);
         try
         {
-            teamData.TeamPerformance = JsonSerializer.Deserialize<TeamPerformance>(await _openAIService.GetPromptResponse(categoryScores), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            performance ??= await GetAIResponse(teamId, email, categoryScores);
+            teamData.TeamPerformance = performance;
         }
         catch (Exception ex)
         {
@@ -111,5 +129,21 @@ public class TeamService : ITeamService
     public async Task<List<string>> ListTeamMembers(int teamId)
     {
         return await _userRepository.GetByTeamId(teamId).Select(u => u.Name).OrderBy(name => name).ToListAsync();
+    }
+
+    private async Task<TeamPerformanceDTO> GetAIResponse(int? teamId, string userEmail, Dictionary<string, double> categoryScores)
+    {
+        var result = JsonSerializer.Deserialize<TeamPerformanceDTO>(await _openAIService.GetPromptResponse(categoryScores), new JsonSerializerOptions { PropertyNameCaseInsensitive = true, NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString });
+        var modelData = _mapper.Map<AIResponseData>(result);
+        if (teamId.HasValue)
+        {
+            await _aIResponseRepository.AddOrUpdateResponseDataForTeam(teamId.Value, modelData);
+        }
+        else
+        {
+            var userId = await _userRepository.GetUserIdByEmailAsync(userEmail);
+            await _aIResponseRepository.AddOrUpdateResponseDataForUser(userId, modelData);
+        }
+        return result;
     }
 }

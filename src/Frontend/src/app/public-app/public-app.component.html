@@ -1,2 +1,12 @@
-<app-navbar [loginDisplay]="false" [avatarUrl]="'assets/avatar-placeholder.svg'"></app-navbar>
-<router-outlet></router-outlet>
+<div class="site-container">
+
+  <app-navbar [loginDisplay]="false" color="primary"></app-navbar>
+  <div class="main-container">
+
+    <div class="container mx-auto">
+      <div class="content-wrapper">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+</div>

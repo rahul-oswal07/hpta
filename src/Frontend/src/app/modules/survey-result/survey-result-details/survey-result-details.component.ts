@@ -28,7 +28,7 @@ const CATEGORY_COLORS: any = {
 @Component({
   selector: 'app-survey-result-details',
   templateUrl: './survey-result-details.component.html',
-  styleUrls: ['./survey-result-details.component.css'],
+  styleUrls: ['./survey-result-details.component.scss'],
   animations: [
     trigger('expandShrink', [
       state('expand', style({ width: 'calc(50% - 10px)', opacity: 1 })),
@@ -49,12 +49,14 @@ export class SurveyResultDetailsComponent implements OnInit {
 
   @ViewChild(DataStatusIndicator)
   dataStatusIndicator?: DataStatusIndicator;
+  overviewGraphRadius = 25;
+  overviewGraphData: { da: string, color: string, offset: number }[]
 
   constructor(
     private surveyResultService: SurveyResultService,
     private activatedRoute: ActivatedRoute,
     private cd: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.activatedRoute.params.pipe(map((params) => params['id'])).subscribe({
@@ -63,7 +65,7 @@ export class SurveyResultDetailsComponent implements OnInit {
         this.teamId = value;
         this._loadChartData(value);
       },
-      error: (e: Error) => {},
+      error: (e: Error) => { },
     });
   }
 
@@ -158,6 +160,7 @@ export class SurveyResultDetailsComponent implements OnInit {
     this.surveyResultService.getChartData(teamId).subscribe(
       (data) => {
         this.populateChart(data);
+        this.updateOverviewGraph();
       },
       (err) => {
         this.dataStatusIndicator?.setError('Error while loading the data!');
@@ -167,7 +170,22 @@ export class SurveyResultDetailsComponent implements OnInit {
       }
     );
   }
-
+  private updateOverviewGraph() {
+    const circumference = 2 * Math.PI * this.overviewGraphRadius;
+    const overviewGraphData = [];
+    let _offset = 0;
+    for (const s of this.chartData.scores) {
+      const val = (s.average / (this.chartData.scores.length * 5)) * circumference;
+      const itm = {
+        da: `${val} ${circumference}`,
+        color: CATEGORY_COLORS[s.categoryName],
+        offset: _offset
+      }
+      _offset += val;
+      overviewGraphData.push(itm);
+    }
+    this.overviewGraphData = overviewGraphData;
+  }
   private _loadCategoryChartData(teamId: number, categoryName: string) {
     const categoryId = Number(
       this.chartData.scores.find((data) => data.categoryName == categoryName)
