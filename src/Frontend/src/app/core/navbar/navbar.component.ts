@@ -30,6 +30,9 @@ export class NavbarComponent implements OnInit {
   loginDisplay = false;
 
   @Input()
+  cssClass = ''
+
+  @Input()
   avatarUrl?: SafeUrl;
 
   @Output()

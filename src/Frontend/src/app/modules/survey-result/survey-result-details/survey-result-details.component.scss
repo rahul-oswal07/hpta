@@ -1,0 +1,21 @@
+.chart {
+  max-width: 800px;
+}
+
+.summary-panel {
+  background-color: #f3f0ff;
+}
+.overall-score {
+  position: absolute;
+  top: -20px;
+  right: 40px;
+}
+.placeholder {
+  font-size: larger;
+  .mat-icon {
+    opacity: 0.1;
+    font-size: 150px;
+    height: 150px;
+    width: 150px;
+  }
+}

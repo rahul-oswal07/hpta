@@ -1,14 +1,14 @@
 <div class="site-container">
 
   <app-navbar [loggedInUser]="accountInfo" [loginDisplay]="loginDisplay"
-    [avatarUrl]="avatarUrl || 'assets/avatar-placeholder.svg'" (loginClick)="loginRedirect()"
-    (logoutClick)="logout()"></app-navbar>
+    [avatarUrl]="avatarUrl || 'assets/avatar-placeholder.svg'" (loginClick)="loginRedirect()" (logoutClick)="logout()"
+    color="primary"></app-navbar>
   <div class="ux-application-container" [class.sidebar-collapsed]="sidebarCollapsed">
     <!-- Container for sidebar -->
     <app-sidebar id="sidebar-wrapper" [theme]="theme" [(collapsed)]="sidebarCollapsed"
       (onThemeSelected)="onThemeSelected($event)"></app-sidebar>
     <div class="main-container">
-      <div class="content-wrapper">
+      <div class="content-wrapper container mx-auto">
 
         <!--This is to avoid reload during acquireTokenSilent() because of hidden iframe -->
         <router-outlet *ngIf="!isIframe"></router-outlet>

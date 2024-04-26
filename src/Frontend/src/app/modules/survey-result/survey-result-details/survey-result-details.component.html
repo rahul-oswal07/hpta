@@ -1,102 +1,90 @@
-<div style="text-align: center">
-  <div
-    #chart
-    class="chart mat-elevation-z8 pt-2"
-    style="width: calc(50% - 10px)"
-    [ngStyle]="{
-      display: categoryChartOptions.series ? 'inline-block' : 'block',
-      margin: categoryChartOptions.series ? '0 5px' : '0 auto'
-    }"
-  >
-    <apx-chart
-      *ngIf="chartOptions?.series"
-      [series]="chartOptions.series"
-      [chart]="chartOptions.chart"
-      [xaxis]="chartOptions.xaxis"
-      [dataLabels]="chartOptions.dataLabels"
-      [grid]="chartOptions.grid"
-      [stroke]="chartOptions.stroke"
-      [title]="chartOptions.title"
-      [labels]="chartOptions.labels"
-      [annotations]="chartOptions.annotations"
-      [fill]="chartOptions.fill"
-      [yaxis]="chartOptions.yaxis"
-    ></apx-chart>
-  </div>
-
-  <div
-    [@expandShrink]="categoryChartOptions.series ? 'expand' : 'shrink'"
-    class="chart mat-elevation-z8 pt-2"
-    style="margin: 0 5px; display: inline-block"
-  >
-    <apx-chart
-      *ngIf="categoryChartOptions?.series"
-      [series]="categoryChartOptions.series"
-      [chart]="categoryChartOptions.chart"
-      [xaxis]="categoryChartOptions.xaxis"
-      [dataLabels]="categoryChartOptions.dataLabels"
-      [grid]="categoryChartOptions.grid"
-      [stroke]="categoryChartOptions.stroke"
-      [title]="categoryChartOptions.title"
-      [labels]="categoryChartOptions.labels"
-      [annotations]="categoryChartOptions.annotations"
-      [fill]="categoryChartOptions.fill"
-      [yaxis]="categoryChartOptions.yaxis"
-    ></apx-chart>
-  </div>
-</div>
-<div class="flex items-center justify-center">
-  <div *ngIf="chartData.respondedUsers" class="rating-card w-full">
-    <div class="flex items-center">
-      <div class="flex-auto">
-        <div class="response-summary mt-2">
-          Total Users Responded:
-          <strong
-            >{{ chartData.respondedUsers }} out of
-            {{ chartData.totalUsers }}</strong
-          >
-          <div class="progress-bar">
-            <div
-              class="progress"
-              [ngStyle]="{
-                width:
-                  (chartData.respondedUsers / (chartData.totalUsers || 1)) *
-                    100 +
-                  '%'
-              }"
-            ></div>
-          </div>
-        </div>
-        <div class="rating-summary mt-2">
-          Overall HPTA Score:
-          <strong>{{ overallHPTAScore | number : "1.0-2" }}</strong>
-
-          <div class="progress-bar">
-            <div
-              class="progress"
-              [ngStyle]="{ width: (overallHPTAScore / 5) * 100 + '%' }"
-            ></div>
-          </div>
-        </div>
+<div #chart>
+  <div class="bg-white m-5 p-5 mat-elevation-z2 relative">
+    <div class="w-full flex justify-between gap-2">
+      <div class="flex-1">
+        <apx-chart *ngIf="chartOptions?.series" [series]="chartOptions.series" [chart]="chartOptions.chart"
+          [xaxis]="chartOptions.xaxis" [dataLabels]="chartOptions.dataLabels" [grid]="chartOptions.grid"
+          [stroke]="chartOptions.stroke" [title]="chartOptions.title" [labels]="chartOptions.labels"
+          [annotations]="chartOptions.annotations" [fill]="chartOptions.fill" [yaxis]="chartOptions.yaxis"></apx-chart>
       </div>
-      <app-rating-view [value]="overallHPTAScore"></app-rating-view>
+
+      <div class="flex-1">
+        <apx-chart *ngIf="categoryChartOptions?.series else selectCategory" [series]="categoryChartOptions.series"
+          [chart]="categoryChartOptions.chart" [xaxis]="categoryChartOptions.xaxis"
+          [dataLabels]="categoryChartOptions.dataLabels" [grid]="categoryChartOptions.grid"
+          [stroke]="categoryChartOptions.stroke" [title]="categoryChartOptions.title"
+          [labels]="categoryChartOptions.labels" [annotations]="categoryChartOptions.annotations"
+          [fill]="categoryChartOptions.fill" [yaxis]="categoryChartOptions.yaxis"></apx-chart>
+        <ng-template #selectCategory>
+          <div class="h-full w-full flex items-center justify-center border border-gray-200; rounded-md italic">
+            <div class="placeholder flex flex-col items-center justify-center">
+              <mat-icon>bar_chart</mat-icon>
+              Select a category from the chart to view sub-category wise scores
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+    <div class="overall-score bg-white mat-elevation-z8">
+
+      <div class="text-center">Scores</div>
+      <div class="block relative p-1">
+        <ng-template [ngTemplateOutlet]="overallGraph"
+          [ngTemplateOutletContext]="{r: overviewGraphRadius, sw: 5}"></ng-template>
+
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="chartData.teamPerformance" class="mx-5 mat-elevation-z8 mt-5">
+    <div class="summary-panel p-5">
+      <h3>TEAM PERFORMANCE SUMMARY</h3>
+      {{chartData.teamPerformance.description}}
+    </div>
+    <div class="bg-white p-5">
+      <h3>AI SUGGESTIONS</h3>
+      <div class="grid grid-cols-3 gap-5">
+        <mat-card *ngFor="let item of chartData.teamPerformance.categories" appearance="outlined">
+          <mat-card-header>
+            <div class="px-5 flex items-center w-full">
+
+              <mat-card-title>{{ item.category }}
+              </mat-card-title>
+              <div class="flex-auto">
+
+              </div>
+              <div class="me-3">
+
+                <mat-icon [ngStyle]="{color: getColorCode(item.category)}">trip_origin</mat-icon>
+              </div>
+            </div>
+          </mat-card-header>
+          <mat-card-content>
+            <p class="p-5">
+
+              {{ item.description }}
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </div>
     </div>
   </div>
 </div>
 
-<div *ngIf="chartData.teamPerformance">
-  <div [innerHTML]="chartData.teamPerformance.description"></div>
-  <div>
-    <mat-card *ngFor="let item of chartData.teamPerformance.categories">
-      <mat-card-title> </mat-card-title>
-      <mat-card-content
-        >{{ item.category }}: {{ item.description }}</mat-card-content
-      >
-    </mat-card>
-  </div>
-</div>
+<app-data-status-indicator [element]="chart" [initialState]="'Loading'"></app-data-status-indicator>
 
-<app-data-status-indicator
-  [element]="chart"
-  [initialState]="'Loading'"
-></app-data-status-indicator>
+<ng-template #overallGraph let-r="r" let-sw="sw">
+  <svg [attr.width]="r * 3" [attr.height]="r * 3"
+    [attr.viewBox]="(r - sw) + ' ' + (r - sw) + ' ' + ((r * 2) + (sw*2)) + ' ' + ((r * 2) + (sw*2))"
+    xmlns="http://www.w3.org/2000/svg">
+    <!-- Background circle -->
+    <circle [attr.cx]="r * 2" [attr.cy]="r * 2" [attr.r]="r - 3" fill="white" stroke="#ccc" stroke-width="5" />
+    <!-- Text in the middle -->
+    <text [attr.x]="r * 2" [attr.y]="r * 2" font-family="Arial" font-size="10" fill="#333" text-anchor="middle">{{
+      overallHPTAScore | number : "1.0-2" }}</text>
+    <!-- Percentage circles -->
+    <circle *ngFor="let data of overviewGraphData" [attr.cx]="r * 2" [attr.cy]="r * 2" [attr.r]="r" fill="transparent"
+      [attr.stroke]="data.color" stroke-width="10" [attr.stroke-dasharray]="data.da"
+      [attr.stroke-dashoffset]="data.offset" />
+  </svg>
+</ng-template>

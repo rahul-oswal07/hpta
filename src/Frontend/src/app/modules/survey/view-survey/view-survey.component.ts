@@ -19,7 +19,7 @@ import { SurveyService } from 'src/app/modules/survey/survey.service';
 @Component({
   selector: 'app-view-survey',
   templateUrl: './view-survey.component.html',
-  styleUrls: ['./view-survey.component.css'],
+  styleUrls: ['./view-survey.component.scss'],
 })
 export class ViewSurveyComponent implements OnInit {
   groupedQuestions: SurveyQuestion[][] = [];
@@ -39,7 +39,7 @@ export class ViewSurveyComponent implements OnInit {
     private surveyService: SurveyService,
     private answerService: AnswerService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadData();

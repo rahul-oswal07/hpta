@@ -21,7 +21,7 @@ public class SurveyResultDataModel
 {
     public List<ScoreModel> Scores { get; set; }
 
-    public TeamPerformance TeamPerformance { get; set; }
+    public TeamPerformanceDTO TeamPerformance { get; set; }
 }
 
 public class PromptScoreDescriptionModel
@@ -53,7 +53,7 @@ public class ScoreModel
     public string Description { get; set; } = string.Empty;
 }
 
-public class TeamPerformance
+public class TeamPerformanceDTO
 {
     public string Description { get; set; }
     public List<CategoryDTO> Categories { get; set; }
@@ -62,6 +62,6 @@ public class TeamPerformance
 public class CategoryDTO
 {
     public string Category { get; set; }
-    public string Score { get; set; }
+    public decimal Score { get; set; }
     public string Description { get; set; }
 }

@@ -16,7 +16,7 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$cms-primary: mat.define-palette(mat.$blue-palette);
+$cms-primary: mat.define-palette(mat.$indigo-palette, 900);
 $cms-accent: mat.define-palette(mat.$deep-orange-palette, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
@@ -143,6 +143,7 @@ body {
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #e1dfea;
 }
 
 .site-container {
@@ -375,4 +376,12 @@ table {
   width: 100%;
   align-items: center;
   justify-content: center;
+}
+.mat-stepper-vertical,
+.mat-stepper-horizontal {
+  background-color: transparent !important;
+  .mat-step-icon:not(.mat-step-icon-selected) {
+    background-color: transparent;
+    color: #000000;
+  }
 }

@@ -1,28 +1,36 @@
 <div #survey>
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <mat-stepper orientation="horizontal" *ngIf="groupedQuestions.length > 0" [linear]="true">
-      <mat-step formGroupName="questionGroups" *ngFor="let category of groupedQuestions; let i=index" [completed]="questionGroups.at(i).valid">
+      <mat-step formGroupName="questionGroups" *ngFor="let category of groupedQuestions; let i=index"
+        [completed]="questionGroups.at(i).valid">
         <ng-template matStepContent>
-          <div class="pt-2" [formArrayName]="i">
-            <div class="flex flex-col gap-2" formArrayName="questions">
-              <div class="mb-2 bg-slate-100 p-2 rounded-md" *ngFor="let question of category; let qIndex = index"
+          <div class="bg-white relative pb-5" [formArrayName]="i">
+            <div class="flex flex-col" formArrayName="questions">
+              <div class="m-5 py-6 bg-slate-100 relative" *ngFor="let question of category; let qIndex = index"
                 [formGroupName]="qIndex">
-                <h2>{{question.questionNumber}}. {{ question.question }}</h2>
-                <div class="pl-10 justify-end">
+                <div class="question-number">{{question.questionNumber}}</div>
+                <h4 class="text-center">{{ question.question }}</h4>
+                <div class="text-center">
                   <input type="hidden" formControlName="questionNumber">
-                  <app-rating formControlName="rating"></app-rating>
+                  <div class="m-auto w-fit">
+                    <app-rating formControlName="rating"></app-rating>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="flex pt-2 pb-2">
-            <button type="button" mat-raised-button matStepperPrevious *ngIf="i > 0">Previous</button>
-            <div class="flex-auto">
+            <div class="button-container">
+              <div class="flex justify-between">
+                <button type="button"
+                  class="bg-slate-200 hover:bg-slate-400 disabled:bg-slate-50 text-blue-600 disabled:text-gray-400 text-sm px-4 py-2  border rounded-full w-28"
+                  matStepperPrevious [disabled]="i === 0">Previous</button>
+                <button type="button" matStepperNext
+                  class="bg-red-600 hover:bg-red-700 disabled:bg-red-50 text-white disabled:text-gray-400 text-sm px-4 py-2  border rounded-full w-28"
+                  [disabled]="!questionGroups.at(i).valid" *ngIf="i < groupedQuestions.length - 1">Next</button>
+                <button type="submit"
+                  class="bg-red-600 hover:bg-red-700 disabled:bg-red-50 text-white disabled:text-gray-400 text-sm px-4 py-2  border rounded-full w-28"
+                  *ngIf="i === groupedQuestions.length - 1" [disabled]="!form.valid || submitting">Submit</button>
+              </div>
             </div>
-            <button type="button" matStepperNext mat-raised-button [disabled]="!questionGroups.at(i).valid"
-              *ngIf="i < groupedQuestions.length - 1">Next</button>
-            <button type="submit" mat-raised-button color="primary" *ngIf="i === groupedQuestions.length - 1"
-              [disabled]="!form.valid || submitting">Submit</button>
           </div>
         </ng-template>
       </mat-step>

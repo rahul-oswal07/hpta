@@ -13,23 +13,23 @@
   $foreground: map.get($color-config, "foreground");
   $background: map.get($color-config, "background");
   .dvn-navbar {
-    background-color: mat.get-color-from-palette($background, card);
+    background-color: mat.get-color-from-palette($background, card); //#000140
     $border_color: mat.get-color-from-palette($foreground, divider);
     border-bottom: solid 1px $border_color;
     &.mat-primary {
-      $background-color: mat.get-color-from-palette($primary-palette, 500);
+      $background-color: mat.get-color-from-palette($primary-palette);
       background-color: $background-color;
       color: if(is-light-color($background-color), map.get($foreground, "text"), white);
     }
 
     &.mat-accent {
-      $background-color: mat.get-color-from-palette($accent-palette, 500);
+      $background-color: mat.get-color-from-palette($accent-palette);
       background-color: $background-color;
       color: if(is-light-color($background-color), map.get($foreground, "text"), white);
     }
 
     &.mat-warn {
-      $background-color: mat.get-color-from-palette($warn-palette, 500);
+      $background-color: mat.get-color-from-palette($warn-palette);
       background-color: $background-color;
       color: if(is-light-color($background-color), map.get($foreground, "text"), white);
     }
