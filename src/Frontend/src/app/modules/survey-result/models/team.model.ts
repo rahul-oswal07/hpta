@@ -1,15 +1,14 @@
 import {
-  ChartComponent,
   ApexAxisChartSeries,
   ApexChart,
-  ApexXAxis,
   ApexDataLabels,
-  ApexTitleSubtitle,
-  ApexStroke,
-  ApexGrid,
-  ApexAnnotations,
   ApexFill,
-  ApexYAxis,
+  ApexLegend,
+  ApexPlotOptions,
+  ApexStroke,
+  ApexTitleSubtitle,
+  ApexXAxis,
+  ApexYAxis
 } from 'ng-apexcharts';
 
 export interface TeamsModel {
@@ -45,16 +44,15 @@ export interface CategoryPerformanceModel {
 
 export interface ChartOptions {
   series: ApexAxisChartSeries;
-  annotations: ApexAnnotations;
   chart: ApexChart;
   xaxis: ApexXAxis;
   dataLabels: ApexDataLabels;
-  grid: ApexGrid;
-  labels: string[];
   stroke: ApexStroke;
   title: ApexTitleSubtitle;
   fill: ApexFill;
   yaxis: ApexYAxis;
+  plotOptions: ApexPlotOptions;
+  legend: ApexLegend;
 }
 
 export interface KeyValue {

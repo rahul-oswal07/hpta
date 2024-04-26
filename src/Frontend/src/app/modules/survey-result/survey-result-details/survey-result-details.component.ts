@@ -7,10 +7,12 @@ import {
 } from '@angular/animations';
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ApexAxisChartSeries } from 'ng-apexcharts';
 import { map } from 'rxjs';
 import { DataStatusIndicator } from 'src/app/modules/data-status-indicator/data-status-indicator.component';
 import {
   ChartOptions,
+  ScoreModel,
   TeamDataModel,
   TeamsModel,
 } from 'src/app/modules/survey-result/models/team.model';
@@ -68,81 +70,101 @@ export class SurveyResultDetailsComponent implements OnInit {
       error: (e: Error) => { },
     });
   }
-
   buildChartData(chartData: TeamDataModel, title: string) {
     const thisRef = this;
-    const average = this.chartData.scores.map((data) => data.average);
-    const categories = this.chartData.scores.map((data) => data.categoryName);
-    const result =
-      average.reduce((sum, current) => sum + current, 0) / categories.length;
+    const average = this.chartData.scores.map((data) => data.average)
+    const categories = this.chartData.scores.map((data) => data.categoryName)
+    const result = (average.reduce((sum, current) => sum + current, 0) / categories.length)
     this.overallHPTAScore = result;
 
+    const series: ApexAxisChartSeries = [{
+      name: "Average",
+      data: this.calculateAverage(chartData.scores)
+    }];
+
     const chartOptions: ChartOptions = {
-      series: [
-        {
-          name: 'Average',
-          data: chartData.scores.map((data) => data.average),
-        },
-      ],
-      fill: {
-        colors: [
-          function (data: any) {
-            const category = data.w.globals.labels[data.dataPointIndex];
-            return thisRef.getColorCode(category);
-          },
-        ],
-      },
+      series: series,
       chart: {
-        height: 350,
         type: 'bar',
+        height: 350,
+        stacked: true,
         toolbar: {
-          show: false,
+          show: false
         },
         events: {
           dataPointSelection: (event, chartContext, config) => {
-            const category = config.w.globals.labels[
-              config.dataPointIndex
-            ] as string;
-            console.log(this.teamId);
+            const category = config.w.globals.labels[config.dataPointIndex] as string;
 
-            this._loadCategoryChartData(this.teamId, category);
+            this._loadCategoryChartData(this.teamId, category);;
             return;
-          },
+          }
+        }
+      },
+      plotOptions: {
+        bar: {
+          horizontal: true,
+          dataLabels: {
+            total: {
+              enabled: true,
+              offsetX: 0,
+              style: {
+                fontSize: '13px',
+                fontWeight: 700
+              },
+              formatter: function (value) {
+                return value!;
+              }
+            }
+          }
         },
+      },
+      stroke: {
+        width: 1,
+        colors: ['#fff']
       },
       title: {
-        text: title,
-      },
-      dataLabels: {
-        enabled: true,
-        style: {
-          fontSize: '14px',
-          // fontFamily: 'Times New Roman',
-          fontWeight: 'bold',
-          colors: ['#333'],
-        },
+        text: title
       },
       xaxis: {
         categories: chartData.scores.map((data) => data.categoryName),
-        axisTicks: {
-          show: true,
-        },
         title: {
-          text: undefined,
-        },
-        labels: {
-          show: true,
+          text: "HPTA VALUES"
         },
       },
       yaxis: {
-        show: true,
-        min: 0,
-        max: 5,
+        axisTicks: {
+          show: false
+        },
+        labels: {
+          show: true
+        }
       },
-      annotations: {},
-      grid: {},
-      labels: [],
-      stroke: {},
+      fill: {
+        colors: [function (data: any) {
+          const category = data.w.globals.labels[data.dataPointIndex];
+          return thisRef.getColorCode(category);
+        }]
+      },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'left',
+        offsetX: 40
+      },
+      dataLabels: {
+        enabled: false,
+        style: {
+          fontSize: '14px',
+          fontWeight: 'bold',
+          colors: ['#333'],
+        },
+        formatter: function (value: number, { seriesIndex, dataPointIndex, w }) {
+          let name = w.globals.labels[dataPointIndex];
+          if (name.length > 15) {
+            name = name.substring(0, 5) +'..';
+        }
+          return name;
+        }
+      }
     };
 
     return chartOptions;
@@ -226,5 +248,9 @@ export class SurveyResultDetailsComponent implements OnInit {
       this.chartData = {} as TeamDataModel;
       this.dataStatusIndicator?.setNoData();
     }
+  }
+ 
+  private calculateAverage(scores: ScoreModel[]): number[] {
+    return scores.map((data) => data.average);
   }
 }
