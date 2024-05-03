@@ -70,7 +70,7 @@ export class SurveyResultDetailsComponent implements OnInit {
       error: (e: Error) => { },
     });
   }
-  buildChartData(chartData: TeamDataModel, title: string) {
+  buildChartData(chartData: TeamDataModel, title: string, xAxisTitle: string) {
     const thisRef = this;
     const average = this.chartData.scores.map((data) => data.average)
     const categories = this.chartData.scores.map((data) => data.categoryName)
@@ -128,7 +128,7 @@ export class SurveyResultDetailsComponent implements OnInit {
       xaxis: {
         categories: chartData.scores.map((data) => data.categoryName),
         title: {
-          text: "HPTA VALUES"
+          text: xAxisTitle
         },
       },
       yaxis: {
@@ -160,8 +160,8 @@ export class SurveyResultDetailsComponent implements OnInit {
         formatter: function (value: number, { seriesIndex, dataPointIndex, w }) {
           let name = w.globals.labels[dataPointIndex];
           if (name.length > 15) {
-            name = name.substring(0, 5) +'..';
-        }
+            name = name.substring(0, 5) + '..';
+          }
           return name;
         }
       }
@@ -193,11 +193,11 @@ export class SurveyResultDetailsComponent implements OnInit {
     );
   }
   private updateOverviewGraph() {
-    const circumference = 2 * Math.PI * this.overviewGraphRadius;
+    const circumference = Math.floor(2 * Math.PI * (this.overviewGraphRadius + 10));
     const overviewGraphData = [];
-    let _offset = 0;
+    let _offset = 150;
     for (const s of this.chartData.scores) {
-      const val = (s.average / (this.chartData.scores.length * 5)) * circumference;
+      const val = Math.floor((s.average / ((this.chartData.scores.length + 1) * 5)) * circumference);
       const itm = {
         da: `${val} ${circumference}`,
         color: CATEGORY_COLORS[s.categoryName],
@@ -221,7 +221,8 @@ export class SurveyResultDetailsComponent implements OnInit {
         .subscribe((data) => {
           this.categoryChartOptions = this.buildChartData(
             data,
-            `Report for Category : ${categoryName}`
+            `Category : ${categoryName}`,
+            'SCORE'
           );
           this.cd.detectChanges();
         });
@@ -234,7 +235,8 @@ export class SurveyResultDetailsComponent implements OnInit {
       this.chartData = data;
       this.chartOptions = this.buildChartData(
         this.chartData,
-        'High Performing Team Report'
+        'High Performing Team Assessment',
+        "SCORE PER CATEGORY"
       );
 
       const average = this.chartData.scores.map((data) => data.average);
@@ -249,7 +251,7 @@ export class SurveyResultDetailsComponent implements OnInit {
       this.dataStatusIndicator?.setNoData();
     }
   }
- 
+
   private calculateAverage(scores: ScoreModel[]): number[] {
     return scores.map((data) => data.average);
   }
