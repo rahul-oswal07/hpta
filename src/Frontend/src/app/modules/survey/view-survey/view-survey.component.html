@@ -5,8 +5,8 @@
         [completed]="questionGroups.at(i).valid">
         <ng-template matStepContent>
           <div class="bg-white relative pb-5" [formArrayName]="i">
-            <div class="flex flex-col" formArrayName="questions">
-              <div class="m-5 py-6 bg-slate-100 relative" *ngFor="let question of category; let qIndex = index"
+            <div class="flex flex-col mb-3" formArrayName="questions">
+              <div class="mx-5 my-2 py-2 bg-slate-100 relative" *ngFor="let question of category; let qIndex = index"
                 [formGroupName]="qIndex">
                 <div class="question-number">{{question.questionNumber}}</div>
                 <h4 class="text-center">{{ question.question }}</h4>

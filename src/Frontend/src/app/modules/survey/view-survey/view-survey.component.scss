@@ -1,18 +1,18 @@
 .question-number {
   position: absolute;
-  top: -12px;
+  top: calc(50% - 12px);
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background-color: #1a237e;
+  background-color: #bcbecf;
   text-align: center;
   color: #fff;
-  left: calc(50% - 12px);
-  padding: 5px;
+  left: -12px;
+  padding: 3px 5px;
 }
 .button-container {
   position: absolute;
-  bottom: -12px;
+  bottom: -15px;
   width: 240px;
   left: calc(50% - 120px);
   text-align: center;

@@ -6,6 +6,7 @@
 @import "variables.scss";
 @import "~@angular/cdk/overlay-prebuilt.css";
 @import "@angular/material/prebuilt-themes/indigo-pink.css";
+@import "@fontsource/poppins";
 // Plus imports for other components in your app.
 
 // Include the common styles for Angular Material. We include this here so that you only
@@ -18,6 +19,9 @@
 // hue. Available color palettes: https://material.io/design/color/
 $cms-primary: mat.define-palette(mat.$indigo-palette, 900);
 $cms-accent: mat.define-palette(mat.$deep-orange-palette, A200, A100, A400);
+$cms-typography: mat.define-typography-config(
+  $font-family: "Poppins"
+);
 
 // The warn palette is optional (defaults to red).
 $cms-warn: mat.define-palette(mat.$red-palette);
@@ -30,7 +34,8 @@ $cms-theme: mat.define-light-theme(
       primary: $cms-primary,
       accent: $cms-accent,
       warn: $cms-warn
-    )
+    ),
+    typography: $cms-typography
   )
 );
 /* Dark Theme */
@@ -142,7 +147,7 @@ body {
 }
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: "Poppins", "Helvetica Neue", sans-serif;
   background-color: #e1dfea;
 }
 
