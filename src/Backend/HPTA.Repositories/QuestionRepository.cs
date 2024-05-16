@@ -13,6 +13,11 @@ public class QuestionRepository : Repository<Question>, IQuestionRepository
         _hPTADbContext = hPTADbContext;
     }
 
+    public async Task<List<int>> ListQuestionIds()
+    {
+        return await _hPTADbContext.Questions.AsNoTracking().Select(q => q.Id).ToListAsync();
+    }
+
     public IQueryable<Question> ListWithCategories()
     {
         return _hPTADbContext.Questions.Include(q => q.SubCategory).ThenInclude(q => q.Category);

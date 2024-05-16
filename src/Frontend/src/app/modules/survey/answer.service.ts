@@ -10,7 +10,7 @@ export class AnswerService extends DataService {
   constructor(injector: Injector) {
     super(injector);
   }
-  submitAnswers(surveyId: number, answers: any) {
-    return this.post(answers, surveyId.toString());
+  submitAnswers(answers: any) {
+    return this.post(answers);
   }
 }

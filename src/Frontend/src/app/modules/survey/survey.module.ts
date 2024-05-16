@@ -12,7 +12,7 @@ import { CreateSurveyComponent } from './create-survey/create-survey.component';
 
 const SURVEY_ROUTES: Routes = [
   {
-    path: 'view/:id',
+    path: 'view',
     component: ViewSurveyComponent,
   }
 ];

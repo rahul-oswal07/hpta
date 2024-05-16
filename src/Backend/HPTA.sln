@@ -42,7 +42,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPTA.Scheduler", "HPTA.Scheduler\HPTA.Scheduler.csproj", "{BB989F95-093F-4262-BC55-886D9FB4D120}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailClient", "EmailClient\EmailClient.csproj", "{C74DCC8E-0DE5-4F3A-941D-6B7F6AA8B8DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailClient", "EmailClient\EmailClient.csproj", "{C74DCC8E-0DE5-4F3A-941D-6B7F6AA8B8DF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Seed", "Seed", "{58710EB4-337A-4D38-AEAE-36AE393D1780}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Seed\categories.json = ..\..\Seed\categories.json
+		..\..\Seed\questions.json = ..\..\Seed\questions.json
+		..\..\Seed\sub-categories.json = ..\..\Seed\sub-categories.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{BE92F610-0A93-4637-B59E-B5A1E2590277}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Scripts\Stored Procedures.sql = ..\..\Scripts\Stored Procedures.sql
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -128,6 +140,8 @@ Global
 		{D098FB5F-2FA8-4C39-8B51-79A2658676B1} = {E5F10BD5-BD84-4F2F-98C0-58F3364D3174}
 		{EFCD1B7F-DF7F-4170-A28B-E3F4C2ED00D0} = {E5F10BD5-BD84-4F2F-98C0-58F3364D3174}
 		{2F8EB6E8-BCB1-4816-A84A-99BE154D1850} = {E5F10BD5-BD84-4F2F-98C0-58F3364D3174}
+		{58710EB4-337A-4D38-AEAE-36AE393D1780} = {B15818C9-715B-4241-9128-3EC8FF2DECDF}
+		{BE92F610-0A93-4637-B59E-B5A1E2590277} = {B15818C9-715B-4241-9128-3EC8FF2DECDF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E389A8A0-1A5F-438C-912C-DD92FCBDA05A}

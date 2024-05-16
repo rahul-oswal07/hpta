@@ -20,4 +20,10 @@ public class SurveyController : Controller
     {
         return Ok(await _surveyService.GetSurveyQuestions());
     }
+
+    [HttpGet("list")]
+    public async Task<IActionResult> ListSurveys()
+    {
+        return Ok(await _surveyService.ListSurveys());
+    }
 }

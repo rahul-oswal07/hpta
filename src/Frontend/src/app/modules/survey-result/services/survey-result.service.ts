@@ -16,18 +16,18 @@ export class SurveyResultService extends DataService {
     return this.getList<TeamsModel>();
   }
 
-  getChartData(teamId?: number) {
+  getChartData(teamId?: number, surveyId?: number) {
     if (!!teamId) {
-      return this.getSingle<TeamDataModel>(['result', teamId.toString()]);
+      return this.getSingle<TeamDataModel>(['result', teamId.toString()], { surveyId });
     }
-    return this.getSingle<TeamDataModel>(['result']);
+    return this.getSingle<TeamDataModel>(['result'], { surveyId });
   }
 
-  getCategoryChartData(categoryId: number, teamId?: number) {
+  getCategoryChartData(categoryId: number, teamId?: number, surveyId?: number) {
     if (!!teamId) {
-      return this.getSingle<TeamDataModel>(['result-category', categoryId.toString(), teamId.toString()]);
+      return this.getSingle<TeamDataModel>(['result-category', categoryId.toString(), teamId.toString()], { surveyId });
     }
-    return this.getSingle<TeamDataModel>(['result-category', categoryId.toString()]);
+    return this.getSingle<TeamDataModel>(['result-category', categoryId.toString()], { surveyId });
   }
 
   listMembers(teamId: number) {

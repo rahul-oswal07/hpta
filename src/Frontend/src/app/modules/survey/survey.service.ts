@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, Injector } from '@angular/core';
+import { ListItem } from 'src/app/core/models/list-item';
 import { DataService } from 'src/app/core/services/data.service';
 import { SurveyQuestion } from 'src/app/modules/survey/survey-question';
 
@@ -14,5 +15,9 @@ export class SurveyService extends DataService {
   }
   listQuestions() {
     return this.getList<SurveyQuestion>();
+  }
+
+  listSurveys() {
+    return this.getList<ListItem>('list');
   }
 }

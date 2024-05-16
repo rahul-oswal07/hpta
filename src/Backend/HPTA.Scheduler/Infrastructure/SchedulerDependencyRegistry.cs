@@ -27,6 +27,9 @@ namespace HPTA.Scheduler.Infrastructure
             var recurringJobService = app.ApplicationServices.GetRequiredKeyedService<IRecurringJobManager>(null);
             //Scheduled to run the job every day at 1:00 AM UTC
             recurringJobService.AddOrUpdate<IUserService>("devcentral_user_sync", u => u.SyncAllUsersAsync(), "0 1 * * *");
+            // Scheduled to run the job at 1st day of every month
+            recurringJobService.AddOrUpdate<ISurveyService>("auto_create_survey", s => s.CreateSurvey(), "0 0 1 * *");
+            BackgroundJob.Enqueue<ISurveyService>(s => s.CreateSurvey());
         }
     }
 }

@@ -11,12 +11,12 @@ public class AnswerController(IAnswerService answerService) : BaseController
 {
     private readonly IAnswerService _answerService = answerService;
 
-    [HttpPost("{surveyId}")]
-    public async Task<IActionResult> PostSurveyAnswers(int surveyId, List<SurveyAnswerModel> answers)
+    [HttpPost("{surveyId?}")]
+    public async Task<IActionResult> PostSurveyAnswers(int? surveyId, List<SurveyAnswerModel> answers)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-        await _answerService.AddAnswers(surveyId, answers);
+        await _answerService.AddAnswers(answers);
         return Ok();
     }
 }

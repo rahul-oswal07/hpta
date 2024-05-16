@@ -12,7 +12,7 @@ const basicMenu = [
   },
   {
     id: '', name: 'Survey', route: 'surveys', icon: 'mood', canRead: true, isMainMenu: true, subMenu: [
-      { id: '', name: 'Active Survey', route: 'survey/view/1', icon: 'summarize', canRead: true, isMainMenu: true }
+      { id: '', name: 'Active Survey', route: 'survey/view', icon: 'summarize', canRead: true, isMainMenu: true }
     ]
   },
   { id: '', name: 'Results', route: 'result', icon: 'analytics', canRead: true, isMainMenu: true },

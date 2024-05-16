@@ -47,7 +47,7 @@ namespace HPTA.Services
         public async Task SyncAllUsersAsync()
         {
             var data = await _devCentralClientService.GetAllTeamsInfo();
-            await SyncDevCentralData(data);
+            await SyncDevCentralData(data.Where(d => d.Employee.Email != null).ToList());
         }
 
         private async Task SyncDevCentralData(List<DevCentralTeamsResponse> data)
@@ -59,13 +59,20 @@ namespace HPTA.Services
 
         private async Task SaveTeams(List<DevCentralTeamsResponse> data)
         {
-            var teams = data.GroupBy(d => d.TeamId).Select(d => d.Select(t => t.Team).First());
-            foreach (var team in teams)
+            var teamIds = data.Select(d => d.TeamId).Distinct().ToList();
+            var existingTeams = await _teamRepository.GetByAsync(t => teamIds.Contains(t.Id));
+            List<int> existingTeamIds = new List<int>();
+            foreach (var team in existingTeams)
             {
-                if (!await _teamRepository.AnyAsync(t => t.Id == team.Id))
-                {
-                    _teamRepository.Add(_mapper.Map<Team>(team));
-                }
+                existingTeamIds.Add(team.Id);
+                var info = data.Where(d => d.TeamId == team.Id).OrderByDescending(t => t.EndDate).FirstOrDefault();
+                team.Name = info.Team.Name;
+                team.IsActive = info.Team.IsActive;
+            }
+            var newTeams = data.Where(d => !existingTeamIds.Contains(d.TeamId)).GroupBy(d => d.TeamId).Select(d => d.Select(t => t.Team).First());
+            foreach (var team in newTeams)
+            {
+                _teamRepository.Add(_mapper.Map<Team>(team));
             }
             await _teamRepository.SaveAsync();
         }
@@ -73,20 +80,31 @@ namespace HPTA.Services
         private async Task<Dictionary<string, string>> SaveUsers(List<DevCentralTeamsResponse> data)
         {
             Dictionary<string, string> userIdCache = [];
-            var employees = data.GroupBy(d => d.EmpId).Select(d => d.Select(e => e.Employee).First());
-            foreach (var employee in employees)
+            var employeeIds = data.Select(e => e.EmpId).Distinct().ToList();
+            var existingUsers = await _userRepository.GetByAsync(u => employeeIds.Contains(u.EmployeeCode));
+            List<string> existingEmployeeCodes = [];
+            foreach (var user in existingUsers)
             {
-                if (employee.Email == null) //Ignore visitor
-                    continue;
+                existingEmployeeCodes.Add(user.EmployeeCode);
+                var info = data.Where(d => d.EmpId == user.EmployeeCode).OrderByDescending(e => e.StartDate).FirstOrDefault();
+                user.DoB = info.Employee.DoB;
+                user.DateOfJoin = info.Employee.DateOfJoin;
+                user.DateOfSeperation = info.Employee.DateOfSeperation;
+                user.IsTemporary = info.Employee.IsTemporary;
+                user.Email = info.Employee.Email;
+                user.IsActive = info.Employee.IsActive;
+                user.Name = info.Employee.Name;
+                userIdCache[user.Email] = user.Id;
+            }
+            var newEmployees = data.Where(d => !existingEmployeeCodes.Contains(d.EmpId)).GroupBy(d => d.EmpId).Select(d => d.Select(e => e.Employee).First());
+            foreach (var employee in newEmployees)
+            {
                 try
                 {
-                    if (!userIdCache.ContainsKey(employee.Email) && !await _userRepository.AnyAsync(u => u.Email == employee.Email))
-                    {
-                        var user = _mapper.Map<User>(employee);
-                        user.Id = Guid.NewGuid().ToString("N");
-                        _userRepository.Add(user);
-                        userIdCache[employee.Email] = user.Id;
-                    }
+                    var user = _mapper.Map<User>(employee);
+                    user.Id = Guid.NewGuid().ToString("N");
+                    _userRepository.Add(user);
+                    userIdCache[employee.Email] = user.Id;
                 }
                 catch (Exception)
                 {
@@ -100,21 +118,31 @@ namespace HPTA.Services
 
         private async Task SaveUserTeams(List<DevCentralTeamsResponse> data, Dictionary<string, string> userIdCache)
         {
-            var tmp = data.Distinct();
-            foreach (var member in data.Distinct())
+            var userTeamIds = data.Select(d => d.Id).ToList();
+            var existingUserTeams = await _userTeamRepository.GetByAsync(ut => userTeamIds.Contains(ut.Id));
+            List<int> existingUserTeamIds = [];
+            foreach (var userTeam in existingUserTeams)
             {
-                if (member.Employee.Email == null) //Ignore visitor
-                    continue;
+                existingUserTeamIds.Add(userTeam.Id);
+                var info = data.Where(d => d.Id == userTeam.Id).FirstOrDefault();
+                userTeam.EndDate = info.EndDate;
+                userTeam.IsBillable = info.IsBillable;
+                userTeam.IsCoreMember = info.IsCoreMember;
+                userTeam.RoleId = info.RoleId;
+                userTeam.StartDate = info.StartDate;
+                userTeam.TeamId = info.TeamId;
+                userTeam.UserId = userIdCache[info.Employee.Email];
+            }
+            var newUserTeams = data.Where(d => !existingUserTeamIds.Contains(d.Id)).ToList();
+            foreach (var member in newUserTeams)
+            {
                 try
                 {
-                    if (!await _userTeamRepository.AnyAsync(ut => ut.User.EmployeeCode == member.EmpId && ut.TeamId == member.TeamId && ut.RoleId == member.RoleId && ut.StartDate == member.StartDate))
-                    {
-                        var teamMember = _mapper.Map<UserTeam>(member);
-                        if (!userIdCache.ContainsKey(member.Employee.Email))
-                            userIdCache[member.Employee.Email] = await _userRepository.GetUserIdByEmailAsync(member.Employee.Email);
-                        teamMember.UserId = userIdCache[member.Employee.Email];
-                        _userTeamRepository.Add(teamMember);
-                    }
+                    var teamMember = _mapper.Map<UserTeam>(member);
+                    if (!userIdCache.ContainsKey(member.Employee.Email))
+                        userIdCache[member.Employee.Email] = await _userRepository.GetUserIdByEmailAsync(member.Employee.Email);
+                    teamMember.UserId = userIdCache[member.Employee.Email];
+                    _userTeamRepository.Add(teamMember);
                 }
                 catch (Exception)
                 {

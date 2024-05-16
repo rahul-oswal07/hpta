@@ -4,6 +4,8 @@ import { SurveyResultService } from './services/survey-result.service';
 import { TeamsModel } from './models/team.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RoutingHelperService } from 'src/app/core/services/routing-helper.service';
+import { SurveyService } from 'src/app/modules/survey/survey.service';
+import { ListItem } from 'src/app/core/models/list-item';
 
 
 @Component({
@@ -16,20 +18,27 @@ import { RoutingHelperService } from 'src/app/core/services/routing-helper.servi
 export class SurveyResultComponent implements OnInit, OnDestroy {
   form: FormGroup;
   teams: TeamsModel[];
+  surveys: ListItem[]
   filteredOptions: TeamsModel[];
   teamId: number;
+  surveyId: number;
   teamMembers: string[];
 
   constructor(private formBuilder: FormBuilder, private teamService: SurveyResultService, private router: Router, private route: ActivatedRoute
-    , private routingHelper: RoutingHelperService) {
+    , private routingHelper: RoutingHelperService, private surveyService: SurveyService) {
     this._buildForm();
 
     this.form.controls['selectedTeam'].valueChanges.subscribe(value => {
       this.teamId = value;
-      this.router.navigate(['team', value], { relativeTo: this.route });
+      this.router.navigate(['team', this.teamId], { relativeTo: this.route, queryParams: { survey: this.surveyId } });
       this.loadTeamMembers();
     });
-
+    this.form.controls['selectedSurvey'].valueChanges.subscribe(value => {
+      this.surveyId = value;
+      if (this.teamId) {
+        this.router.navigate(['team', this.teamId], { relativeTo: this.route, queryParams: { survey: this.surveyId } });
+      }
+    });
     this.form.controls['searchedInput'].valueChanges
       .subscribe(searchValue => {
         this.filteredOptions = this.teams.filter(team => team.name.replace(/\s/g, '').toLowerCase().includes(searchValue.toLowerCase()));
@@ -44,6 +53,12 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
+    this.surveyService.listSurveys().subscribe(r => {
+      this.surveys = r;
+      if (!this.surveyId && r.length > 0) {
+        this.form.get('selectedSurvey')?.patchValue(r[r.length - 1].id);
+      }
+    })
     this._loadTeams();
   }
 
@@ -68,7 +83,8 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
   private _buildForm() {
     this.form = this.formBuilder.group({
       selectedTeam: [''],
-      searchedInput: ['']
+      searchedInput: [''],
+      selectedSurvey: ['']
     })
   }
 

@@ -1,10 +1,12 @@
 <div>
-  <div class="flex gap-2 bg-white">
+  <div class="p-2 flex flex-col gap-2 bg-white">
 
-    <div class="p-3 w-96">
+    <div>
+
       <form [formGroup]="form">
-        <mat-form-field class="w-full">
-          <mat-select placeholder="Please select an option" #singleSelect formControlName="selectedTeam"
+        <mat-form-field class="w-96 me-2">
+          <mat-label>Team</mat-label>
+          <mat-select placeholder="Please select a team" #singleSelect formControlName="selectedTeam"
             panelClass="my-panel">
             <mat-option>
               <ngx-mat-select-search formControlName="searchedInput" placeholderLabel="Find team..."
@@ -17,8 +19,21 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-      </form>
+        <mat-form-field class="w-96">
+          <mat-label>Survey</mat-label>
+          <mat-select placeholder="Please select a survey" formControlName="selectedSurvey">
+            <!-- <mat-option>
+          <ngx-mat-select-search formControlName="searchedInput" placeholderLabel="Find team..."
+          noEntriesFoundLabel="No data">
+        </ngx-mat-select-search>
+      </mat-option> -->
 
+            <mat-option *ngFor="let option of surveys" [value]="option.id">
+              {{ option.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
     </div>
     <div class="flex items-center">
       <mat-chip-listbox>

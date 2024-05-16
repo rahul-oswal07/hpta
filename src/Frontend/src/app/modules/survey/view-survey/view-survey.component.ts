@@ -112,7 +112,7 @@ export class ViewSurveyComponent implements OnInit {
     const formValues = this.form.value;
     const answers = this.flattenFormValues(formValues);
     this.submitting = true;
-    this.answerService.submitAnswers(1, answers).subscribe({
+    this.answerService.submitAnswers(answers).subscribe({
       next: () => {
         this.router.navigate(['/result']);
       },
