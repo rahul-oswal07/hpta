@@ -4,11 +4,11 @@ namespace HPTA.Services.Contracts;
 
 public interface ITeamService
 {
-    Task<TeamDataModel> LoadChartData(int? teamId, int? surveyId);
+    Task<TeamDataModel> LoadChartData(int? teamId, int? surveyId, string email);
 
     Task<List<TeamModel>> GetAllTeams();
 
-    Task<TeamDataModel> LoadCategoryChartData(int? teamId, int categoryId, int? surveyId);
+    Task<TeamDataModel> LoadCategoryChartData(int? teamId, int categoryId, int? surveyId, string email);
 
-    Task<List<string>> ListTeamMembers(int teamId);
+    Task<List<TeamMemberModel>> ListTeamMembers(int teamId);
 }

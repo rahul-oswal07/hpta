@@ -47,5 +47,24 @@ namespace HPTA.Repositories
             var teamData = await _hptaDbContext.UspTeamDataReturnModels.FromSqlRaw("exec Usp_GetCategoryWiseDataForUser @p0,@p1, @p2", userIdParam, categoryIdParam, surveyIdParam).ToListAsync();
             return teamData;
         }
+
+        public async Task<List<UspTeamDataReturnModel>> LoadTeamMemberChartData(string email, int teamId, int surveyId)
+        {
+            var emailParam = new SqlParameter("@p0", email);
+            var teamIdParam = new SqlParameter("@p1", teamId);
+            var surveyIdParam = new SqlParameter("@p2", surveyId);
+            var teamData = await _hptaDbContext.UspTeamDataReturnModels.FromSqlRaw("exec Usp_GetTeamMemberChartData @p0, @p1, @p2", emailParam, teamIdParam, surveyIdParam).ToListAsync();
+            return teamData;
+        }
+
+        public async Task<List<UspTeamDataReturnModel>> LoadTeamMemberCategoryChartData(string email, int teamId, int categoryId, int surveyId)
+        {
+            var teamIdParam = new SqlParameter("@p0", teamId);
+            var categoryIdParam = new SqlParameter("@p1", categoryId);
+            var surveyIdParam = new SqlParameter("@p2", surveyId);
+            var emailParam = new SqlParameter("@p3", email);
+            var teamData = await _hptaDbContext.UspTeamDataReturnModels.FromSqlRaw("exec Usp_GetTeamMemberCategoryWiseData @p0, @p1, @p2, @p3", teamIdParam, categoryIdParam, surveyIdParam, emailParam).ToListAsync();
+            return teamData;
+        }
     }
 }

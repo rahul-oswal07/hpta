@@ -1,11 +1,13 @@
 import { Injectable, Injector } from "@angular/core";
+import { Observable, Subject } from "rxjs";
 import { DataService } from "src/app/core/services/data.service";
-import { TeamDataModel, TeamsModel } from "src/app/modules/survey-result/models/team.model";
+import { TeamDataModel, TeamMemberModel, TeamsModel } from "src/app/modules/survey-result/models/team.model";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SurveyResultService extends DataService {
+  private teamMemberId$: Subject<string> = new Subject<string>();
   override path = 'team';
 
   constructor(injector: Injector) {
@@ -16,21 +18,35 @@ export class SurveyResultService extends DataService {
     return this.getList<TeamsModel>();
   }
 
-  getChartData(teamId?: number, surveyId?: number) {
+  getChartData(email: string, teamId?: number, surveyId?: number) {
     if (!!teamId) {
+      if (!!email) {
+        return this.getSingle<TeamDataModel>(['result', teamId.toString()], { surveyId, email });
+      }
       return this.getSingle<TeamDataModel>(['result', teamId.toString()], { surveyId });
     }
     return this.getSingle<TeamDataModel>(['result'], { surveyId });
   }
 
-  getCategoryChartData(categoryId: number, teamId?: number, surveyId?: number) {
+  getCategoryChartData(email: string, categoryId: number, teamId?: number, surveyId?: number) {
     if (!!teamId) {
+      if (!!email) {
+        return this.getSingle<TeamDataModel>(['result-category', categoryId.toString(), teamId.toString()], { surveyId, email });
+      }
       return this.getSingle<TeamDataModel>(['result-category', categoryId.toString(), teamId.toString()], { surveyId });
     }
     return this.getSingle<TeamDataModel>(['result-category', categoryId.toString()], { surveyId });
   }
 
   listMembers(teamId: number) {
-    return this.getList<string>([teamId.toString(), 'members']);
+    return this.getList<TeamMemberModel>([teamId.toString(), 'members']);
+  }
+
+  updateTeamMemberId(email: string): void {
+    this.teamMemberId$.next(email);
+  }
+
+  getTeamMemberId(): Observable<string> {
+    return this.teamMemberId$;
   }
 }

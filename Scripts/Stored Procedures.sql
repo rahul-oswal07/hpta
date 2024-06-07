@@ -158,3 +158,68 @@ from (
 		order by CategoryName
 END
 GO
+
+CREATE OR ALTER PROCEDURE [dbo].[Usp_GetTeamMemberChartData]
+    @email VARCHAR(100),
+	@teamId int,
+	@surveyId int
+AS
+BEGIN
+	select Max(result.TeamId) As TeamId,
+		Max(result.TeamName) As TeamName,
+		Max(result.CategoryId) As CategoryId, 
+		Max(result.CategoryName) As CategoryName,
+		CAST(FORMAT(ROUND(CAST(Sum(TotalRating) AS DECIMAL(10, 2)) / (Count(TotalQuestions) * Max(Result.RespondedUsers)),1), 'N1') as float) As Average,
+		NULL As RespondedUsers,
+		NULL As TotalUsers
+from (
+		select Teams.Id As TeamId, Teams.Name As TeamName, Categories.Name As CategoryName,Categories.Id As CategoryId,Questions.Id As TotalQuestions, Sum(Answers.rating) As TotalRating,
+				Count(UserTeams.UserId) As RespondedUsers
+		from Teams
+		inner join UserTeams on Teams.Id = UserTeams.TeamId and UserTeams.IsCoreMember = 1 and UserTeams.StartDate<=GETDATE() and UserTeams.EndDate>=GETDATE()
+		inner join Users on Users.Id = UserTeams.UserId
+		inner join Answers on Answers.UserId = Users.Id and Answers.SurveyId=@surveyId
+		inner join SurveyQuestions on Answers.QuestionNumber = SurveyQuestions.QuestionNumber and SurveyQuestions.SurveyId=@surveyId
+		inner join Questions on Questions.Id = SurveyQuestions.QuestionId
+		inner join SubCategories on SubCategories.Id = Questions.SubCategoryId
+		inner join Categories on Categories.Id = SubCategories.CategoryId
+		where Teams.id=@teamId and Users.Email = @email
+		group by Teams.Id,Teams.Name, Categories.Name, Categories.Id,Questions.Id
+	) As result
+		group by result.CategoryId
+		order by CategoryName
+END
+GO
+
+CREATE OR ALTER PROCEDURE [dbo].[Usp_GetTeamMemberCategoryWiseData] 
+	@teamId int,
+	@categoryId int,
+	@surveyId int,
+	@email varchar(100)
+AS
+BEGIN
+	select Max(result.TeamId) As TeamId,
+		Max(result.TeamName) As TeamName,
+		Max(result.CategoryId) As CategoryId, 
+		Max(result.CategoryName) As CategoryName,
+		CAST(FORMAT(ROUND(CAST(Sum(TotalRating) AS DECIMAL(10, 2)) / (Count(TotalQuestions) * Max(Result.RespondedUsers)),1), 'N1') as float) As Average,
+		NULL As RespondedUsers,
+		NULL As TotalUsers
+		FROM (
+				select Teams.Id As TeamId, Teams.Name As TeamName, SubCategories.Name As CategoryName,SubCategories.Id As CategoryId,COUNT(Questions.Id) As TotalQuestions, Sum(Answers.rating) As TotalRating,
+						Count(UserTeams.UserId) As RespondedUsers
+				from Teams
+				inner join UserTeams on Teams.Id = UserTeams.TeamId and UserTeams.IsCoreMember = 1 and UserTeams.StartDate<=GETDATE() and UserTeams.EndDate>=GETDATE()
+				inner join Users on Users.Id = UserTeams.UserId
+				inner join Answers on Answers.UserId = Users.Id and Answers.SurveyId=@surveyId
+				inner join SurveyQuestions on Answers.QuestionNumber = SurveyQuestions.QuestionNumber and SurveyQuestions.SurveyId=@surveyId
+				inner join Questions on Questions.Id = SurveyQuestions.QuestionId
+				inner join SubCategories on SubCategories.Id = Questions.SubCategoryId
+				inner join Categories on Categories.Id = SubCategories.CategoryId
+				where Teams.id=@teamId and Categories.Id=@categoryId and Users.Email=@email
+				group by Teams.Id,Teams.Name, SubCategories.Name, SubCategories.Id,Questions.Id 
+			) As result
+		group by result.CategoryId
+		order by CategoryName
+END
+GO
