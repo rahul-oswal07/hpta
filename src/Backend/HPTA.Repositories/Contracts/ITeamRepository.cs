@@ -10,5 +10,7 @@ namespace HPTA.Repositories.Contracts
         Task<List<UspTeamDataReturnModel>> LoadCategoryChartData(int teamId, int categoryId, int surveyId);
         Task<List<UspTeamDataReturnModel>> LoadUserChartData(string email, int surveyId);
         Task<List<UspTeamDataReturnModel>> LoadCategoryChartDataForUser(string email, int categoryId, int surveyId);
+        Task<List<UspTeamDataReturnModel>> LoadTeamMemberChartData(string email, int teamId, int surveyId);
+        Task<List<UspTeamDataReturnModel>> LoadTeamMemberCategoryChartData(string email, int teamId, int categoryId, int surveyId);
     }
 }

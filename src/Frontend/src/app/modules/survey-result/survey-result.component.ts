@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SurveyResultService } from './services/survey-result.service';
-import { TeamsModel } from './models/team.model';
+import { TeamMemberModel, TeamsModel } from './models/team.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RoutingHelperService } from 'src/app/core/services/routing-helper.service';
 import { SurveyService } from 'src/app/modules/survey/survey.service';
 import { ListItem } from 'src/app/core/models/list-item';
+import { MatChipSelectionChange } from '@angular/material/chips';
 
 
 @Component({
@@ -22,13 +23,15 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
   filteredOptions: TeamsModel[];
   teamId: number;
   surveyId: number;
-  teamMembers: string[];
+  teamMembers: TeamMemberModel[] = [];
+  selectedTeamMember: string;
 
   constructor(private formBuilder: FormBuilder, private teamService: SurveyResultService, private router: Router, private route: ActivatedRoute
     , private routingHelper: RoutingHelperService, private surveyService: SurveyService) {
     this._buildForm();
 
     this.form.controls['selectedTeam'].valueChanges.subscribe(value => {
+      this.selectedTeamMember = "";
       this.teamId = value;
       this.router.navigate(['team', this.teamId], { relativeTo: this.route, queryParams: { survey: this.surveyId } });
       this.loadTeamMembers();
@@ -86,6 +89,17 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
       searchedInput: [''],
       selectedSurvey: ['']
     })
+  }
+
+  onTeamMemberSelectionChange(teamMember: MatChipSelectionChange) {
+    if (teamMember.selected) {
+      this.selectedTeamMember = teamMember.source.id;
+      this.teamService.updateTeamMemberId(teamMember.source.id);
+    }
+    else {
+      this.selectedTeamMember = "";
+      this.teamService.updateTeamMemberId("");
+    }
   }
 
   ngOnDestroy(): void {

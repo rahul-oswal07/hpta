@@ -53,10 +53,9 @@ ILogger<TeamService> logger)
         return await teams.ProjectTo<TeamModel>(_mapper.ConfigurationProvider).OrderBy(team => team.Name).ToListAsync();
     }
 
-    public async Task<TeamDataModel> LoadChartData(int? teamId, int? surveyId)
+    public async Task<TeamDataModel> LoadChartData(int? teamId, int? surveyId, string email)
     {
         List<UspTeamDataReturnModel> chartData = null;
-        var email = _identityService.GetEmail();
         TeamPerformanceDTO performance = null;
         if (!surveyId.HasValue)
             surveyId = await _surveyRepository.GetLatestSurveyId();
@@ -69,7 +68,15 @@ ILogger<TeamService> logger)
                 throw new Exception("Invalid team or the user does not have access to the team.");
             } 
 #endif
-            chartData = await _teamRepository.LoadChartData(teamId.Value, surveyId.Value);
+
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                chartData = await _teamRepository.LoadTeamMemberChartData(email, teamId.Value, surveyId.Value);
+            }
+            else
+            {
+                chartData = await _teamRepository.LoadChartData(teamId.Value, surveyId.Value);
+            }
             if (chartData?.Count > 0)
             {
                 var teamPerformance = await _aIResponseRepository.GetResponseDataForTeam(teamId.Value);
@@ -79,6 +86,7 @@ ILogger<TeamService> logger)
         }
         else // Anonymous user
         {
+            email = _identityService.GetEmail();
             chartData = await _teamRepository.LoadUserChartData(email, surveyId.Value);
             if (chartData?.Count > 0)
             {
@@ -109,10 +117,9 @@ ILogger<TeamService> logger)
         return teamData;
     }
 
-    public async Task<TeamDataModel> LoadCategoryChartData(int? teamId, int categoryId, int? surveyId)
+    public async Task<TeamDataModel> LoadCategoryChartData(int? teamId, int categoryId, int? surveyId, string email)
     {
         List<UspTeamDataReturnModel> chartData = null;
-        var email = _identityService.GetEmail();
         if (!surveyId.HasValue)
             surveyId = await _surveyRepository.GetLatestSurveyId();
         if (teamId.HasValue) // Devon user
@@ -124,10 +131,18 @@ ILogger<TeamService> logger)
                 throw new Exception("Invalid team or the user does not have access to the team.");
             } 
 #endif
-            chartData = await _teamRepository.LoadCategoryChartData(teamId.Value, categoryId, surveyId.Value);
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                chartData = await _teamRepository.LoadTeamMemberCategoryChartData(email, teamId.Value, categoryId, surveyId.Value);
+            }
+            else
+            {
+                chartData = await _teamRepository.LoadCategoryChartData(teamId.Value, categoryId, surveyId.Value);
+            }
         }
         else // Anonymous user
         {
+            email = _identityService.GetEmail();
             chartData = await _teamRepository.LoadCategoryChartDataForUser(email, categoryId, surveyId.Value);
         }
 
@@ -140,9 +155,13 @@ ILogger<TeamService> logger)
         return teamData;
     }
 
-    public async Task<List<string>> ListTeamMembers(int teamId)
+    public async Task<List<TeamMemberModel>> ListTeamMembers(int teamId)
     {
-        return await _userRepository.GetByTeamId(teamId).Select(u => u.Name).OrderBy(name => name).ToListAsync();
+        return await _userRepository.GetByTeamId(teamId).Select(u => new TeamMemberModel
+        {
+            Email = u.Email,
+            Name = u.Name
+        }).OrderBy(x => x.Name).ToListAsync();
     }
 
     private async Task<TeamPerformanceDTO> GetAIResponse(int? teamId, string userEmail, Dictionary<string, double> categoryScores)

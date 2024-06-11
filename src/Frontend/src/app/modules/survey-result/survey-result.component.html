@@ -1,27 +1,38 @@
 <div>
   <div class="p-2 flex flex-col gap-2 bg-white">
-
     <div>
-
       <form [formGroup]="form">
         <mat-form-field class="w-96 me-2">
           <mat-label>Team</mat-label>
-          <mat-select placeholder="Please select a team" #singleSelect formControlName="selectedTeam"
-            panelClass="my-panel">
+          <mat-select
+            placeholder="Please select a team"
+            #singleSelect
+            formControlName="selectedTeam"
+            panelClass="my-panel"
+          >
             <mat-option>
-              <ngx-mat-select-search formControlName="searchedInput" placeholderLabel="Find team..."
-                noEntriesFoundLabel="No data">
+              <ngx-mat-select-search
+                formControlName="searchedInput"
+                placeholderLabel="Find team..."
+                noEntriesFoundLabel="No data"
+              >
               </ngx-mat-select-search>
             </mat-option>
 
-            <mat-option *ngFor="let option of filteredOptions" [value]="option.id">
+            <mat-option
+              *ngFor="let option of filteredOptions"
+              [value]="option.id"
+            >
               {{ option.name }}
             </mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field class="w-96">
           <mat-label>Survey</mat-label>
-          <mat-select placeholder="Please select a survey" formControlName="selectedSurvey">
+          <mat-select
+            placeholder="Please select a survey"
+            formControlName="selectedSurvey"
+          >
             <!-- <mat-option>
           <ngx-mat-select-search formControlName="searchedInput" placeholderLabel="Find team..."
           noEntriesFoundLabel="No data">
@@ -37,12 +48,17 @@
     </div>
     <div class="flex items-center">
       <mat-chip-listbox>
-        <mat-chip *ngFor="let member of teamMembers">
+        <mat-chip-option
+          *ngFor="let member of teamMembers"
+          [color]="selectedTeamMember === member.email ? 'accent' : 'warn'"
+          (selectionChange)="onTeamMemberSelectionChange($event)"
+          [id]="member.email"
+        >
           <mat-chip-avatar>
             <img class="profile-picture" src="assets/avatar-placeholder.svg" />
           </mat-chip-avatar>
-          {{member}}
-        </mat-chip>
+          {{ member.name }}
+        </mat-chip-option>
       </mat-chip-listbox>
     </div>
   </div>

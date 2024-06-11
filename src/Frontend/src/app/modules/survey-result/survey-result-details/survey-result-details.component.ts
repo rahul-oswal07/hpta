@@ -55,6 +55,8 @@ export class SurveyResultDetailsComponent implements OnInit {
   overviewGraphRadius = 25;
   overviewGraphData: { da: string, color: string, offset: number }[]
 
+  email: string;
+
   constructor(
     private surveyResultService: SurveyResultService,
     private activatedRoute: ActivatedRoute,
@@ -66,15 +68,23 @@ export class SurveyResultDetailsComponent implements OnInit {
       next: (value) => {
         this.categoryChartOptions = this.chartOptions = {} as ChartOptions;
         this.teamId = value;
+        this.email = "";
         this._loadChartData();
       },
       error: (e: Error) => { },
     });
     this.activatedRoute.queryParams.pipe(map((qp) => qp['survey'])).subscribe({
       next: (value) => {
+        this.categoryChartOptions = this.chartOptions = {} as ChartOptions;
         this.surveyId = value;
         this._loadChartData();
       }
+    });
+
+    this.surveyResultService.getTeamMemberId().subscribe(memberId => {
+      this.categoryChartOptions = this.chartOptions = {} as ChartOptions;
+      this.email = memberId;
+      this._loadChartData();
     });
   }
   buildChartData(chartData: TeamDataModel, title: string, xAxisTitle: string) {
@@ -186,7 +196,7 @@ export class SurveyResultDetailsComponent implements OnInit {
   private _loadChartData() {
     this.dataStatusIndicator?.setLoading();
 
-    this.surveyResultService.getChartData(this.teamId, this.surveyId).subscribe(
+    this.surveyResultService.getChartData(this.email, this.teamId, this.surveyId).subscribe(
       (data) => {
         this.populateChart(data);
         this.updateOverviewGraph();
@@ -199,6 +209,7 @@ export class SurveyResultDetailsComponent implements OnInit {
       }
     );
   }
+
   private updateOverviewGraph() {
     const circumference = Math.floor(2 * Math.PI * (this.overviewGraphRadius + 10));
     const overviewGraphData = [];
@@ -224,7 +235,7 @@ export class SurveyResultDetailsComponent implements OnInit {
     if (categoryId) {
       this.categoryChartOptions = {} as ChartOptions;
       this.surveyResultService
-        .getCategoryChartData(categoryId, teamId, this.surveyId)
+        .getCategoryChartData(this.email, categoryId, teamId, this.surveyId)
         .subscribe((data) => {
           this.categoryChartOptions = this.buildChartData(
             data,
