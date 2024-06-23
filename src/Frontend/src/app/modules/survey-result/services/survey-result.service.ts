@@ -1,7 +1,7 @@
 import { Injectable, Injector } from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import { DataService } from "src/app/core/services/data.service";
-import { TeamDataModel, TeamMemberModel, TeamsModel } from "src/app/modules/survey-result/models/team.model";
+import { ChartDataRequestModel, TeamDataModel, TeamMemberModel, TeamsModel } from "src/app/modules/survey-result/models/team.model";
 
 @Injectable({
   providedIn: 'root'
@@ -18,24 +18,18 @@ export class SurveyResultService extends DataService {
     return this.getList<TeamsModel>();
   }
 
-  getChartData(email: string, teamId?: number, surveyId?: number) {
+  getChartData(chartRequest: ChartDataRequestModel, teamId?: number): Observable<TeamDataModel> {
     if (!!teamId) {
-      if (!!email) {
-        return this.getSingle<TeamDataModel>(['result', teamId.toString()], { surveyId, email });
-      }
-      return this.getSingle<TeamDataModel>(['result', teamId.toString()], { surveyId });
+      return this.post(chartRequest, ['result', teamId.toString()]);
     }
-    return this.getSingle<TeamDataModel>(['result'], { surveyId });
+    return this.post(chartRequest, ['result']);
   }
 
-  getCategoryChartData(email: string, categoryId: number, teamId?: number, surveyId?: number) {
+  getCategoryChartData(chartRequest: ChartDataRequestModel, categoryId: number, teamId?: number): Observable<TeamDataModel> {
     if (!!teamId) {
-      if (!!email) {
-        return this.getSingle<TeamDataModel>(['result-category', categoryId.toString(), teamId.toString()], { surveyId, email });
-      }
-      return this.getSingle<TeamDataModel>(['result-category', categoryId.toString(), teamId.toString()], { surveyId });
+      return this.post(chartRequest, ['result-category', categoryId.toString(), teamId.toString()]);
     }
-    return this.getSingle<TeamDataModel>(['result-category', categoryId.toString()], { surveyId });
+    return this.post(chartRequest, ['result-category', categoryId.toString()]);
   }
 
   listMembers(teamId: number) {

@@ -1,12 +1,16 @@
 import {
+  ApexAnnotations,
   ApexAxisChartSeries,
   ApexChart,
   ApexDataLabels,
   ApexFill,
+  ApexGrid,
   ApexLegend,
   ApexPlotOptions,
   ApexStroke,
+  ApexTheme,
   ApexTitleSubtitle,
+  ApexTooltip,
   ApexXAxis,
   ApexYAxis
 } from 'ng-apexcharts';
@@ -16,19 +20,25 @@ export interface TeamsModel {
   name: string;
 }
 
-export interface ScoreModel {
-  categoryId: number;
-  categoryName: string;
-  average: number;
+export interface TeamDataModel {
+    teamId: number;
+    teamName: string;
+    totalUsers: number;
+    surveyResults: SurveyResultDataModel[];
 }
 
-export interface TeamDataModel {
-  teamId: number;
-  teamName: string;
-  scores: ScoreModel[];
-  teamPerformance: TeamPerformanceModel;
-  totalUsers: number;
-  respondedUsers: number;
+export interface SurveyResultDataModel {
+    surveyId: number;
+    scores: ScoreModel[];
+    teamPerformance: TeamPerformanceModel;
+    respondedUsers: number;
+}
+
+export interface ScoreModel {
+    categoryId: number;
+    categoryName: string;
+    average: number;
+    description: string;
 }
 
 export interface TeamPerformanceModel {
@@ -52,8 +62,10 @@ export interface ChartOptions {
   fill: ApexFill;
   yaxis: ApexYAxis;
   plotOptions: ApexPlotOptions;
+  tooltip: ApexTooltip;
   legend: ApexLegend;
-}
+  colors: string[]
+};
 
 export interface KeyValue {
   key: string;
@@ -63,4 +75,9 @@ export interface KeyValue {
 export interface TeamMemberModel {
   email: string;
   name: string;
+}
+
+export interface ChartDataRequestModel {
+  surveyId: number[];
+  email: string;
 }

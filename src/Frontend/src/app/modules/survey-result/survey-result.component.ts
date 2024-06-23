@@ -22,7 +22,7 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
   surveys: ListItem[]
   filteredOptions: TeamsModel[];
   teamId: number;
-  surveyId: number;
+  surveyId: number[];
   teamMembers: TeamMemberModel[] = [];
   selectedTeamMember: string;
 
@@ -39,7 +39,7 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
     this.form.controls['selectedSurvey'].valueChanges.subscribe(value => {
       this.surveyId = value;
       if (this.teamId) {
-        this.router.navigate(['team', this.teamId], { relativeTo: this.route, queryParams: { survey: this.surveyId } });
+        this.router.navigate(['team', this.teamId], { relativeTo: this.route, queryParams: { survey: this.surveyId.join() } });
       }
     });
     this.form.controls['searchedInput'].valueChanges
@@ -59,7 +59,7 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
     this.surveyService.listSurveys().subscribe(r => {
       this.surveys = r;
       if (!this.surveyId && r.length > 0) {
-        this.form.get('selectedSurvey')?.patchValue(r[r.length - 1].id);
+        this.form.get('selectedSurvey')?.patchValue([r[r.length - 1].id]);
       }
     })
     this._loadTeams();
@@ -87,7 +87,7 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
     this.form = this.formBuilder.group({
       selectedTeam: [''],
       searchedInput: [''],
-      selectedSurvey: ['']
+      selectedSurvey: [[]]
     })
   }
 
