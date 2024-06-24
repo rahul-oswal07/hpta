@@ -47,7 +47,10 @@
         </ng-template>
       </div>
     </div>
-    <div class="overall-score bg-white mat-elevation-z8" *ngIf="!isMultiSelection">
+    <div
+      class="overall-score bg-white mat-elevation-z8"
+      *ngIf="chartData?.surveyResults?.length == 1"
+    >
       <div class="text-center">Scores</div>
       <div class="block relative p-1">
         <ng-template

@@ -15,6 +15,7 @@ public class TeamDataMapping : Profile
                     .Select(g => new SurveyResultDataModel
                     {
                         SurveyId = g.Key,
+                        SurveyName = g.First().SurveyName,
                         RespondedUsers = g.First().RespondedUsers,
                         Scores = g.Select(item => new ScoreModel
                         {

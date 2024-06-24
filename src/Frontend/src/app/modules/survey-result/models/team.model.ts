@@ -29,6 +29,7 @@ export interface TeamDataModel {
 
 export interface SurveyResultDataModel {
     surveyId: number;
+    surveyName: string;
     scores: ScoreModel[];
     teamPerformance: TeamPerformanceModel;
     respondedUsers: number;

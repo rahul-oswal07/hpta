@@ -65,6 +65,10 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
     this._loadTeams();
   }
 
+  private get selectedSurveys(): number[] {
+    return this.form.get('selectedSurvey')?.value;
+  }
+
   private _loadTeams() {
     this.teamService.getTeams().subscribe(teams => {
       this.teams = this.filteredOptions = teams;
@@ -100,6 +104,10 @@ export class SurveyResultComponent implements OnInit, OnDestroy {
       this.selectedTeamMember = "";
       this.teamService.updateTeamMemberId("");
     }
+  }
+
+  isOptionDisabled(item: number): boolean {
+    return this.selectedSurveys.length == 4 && !this.selectedSurveys.find(el => el == item)
   }
 
   ngOnDestroy(): void {

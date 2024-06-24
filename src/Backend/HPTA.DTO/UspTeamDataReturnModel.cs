@@ -8,6 +8,8 @@ public class UspTeamDataReturnModel
 
     public int SurveyId { get; set; }
 
+    public string SurveyName { get; set; } = string.Empty;
+
     public int CategoryId { get; set; }
 
     public string CategoryName { get; set; } = string.Empty;
@@ -22,6 +24,8 @@ public class UspTeamDataReturnModel
 public class SurveyResultDataModel
 {
     public int SurveyId { get; set; }
+
+    public string SurveyName { get; set; }
 
     public List<ScoreModel> Scores { get; set; }
 

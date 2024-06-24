@@ -110,7 +110,7 @@ export class SurveyResultDetailsComponent implements OnInit {
       let series: ApexAxisChartSeries = [];
       chartData.surveyResults.forEach(surveyResult => {
         series.push({
-          name: surveyResult.surveyId.toString(),
+          name: surveyResult.surveyName,
           data: this.calculateAverage(surveyResult.scores)
         });
       })

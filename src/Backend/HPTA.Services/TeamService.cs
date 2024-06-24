@@ -159,11 +159,16 @@ ILogger<TeamService> logger)
 
     public async Task<List<TeamMemberModel>> ListTeamMembers(int teamId)
     {
-        return await _userRepository.GetByTeamId(teamId).Select(u => new TeamMemberModel
-        {
-            Email = u.Email,
-            Name = u.Name
-        }).OrderBy(x => x.Name).ToListAsync();
+        var email = _identityService.GetEmail();
+        var role = await _userRepository.GetRoleByUser(email);
+
+        if (role >= Common.Roles.ScrumMaster)
+            return await _userRepository.GetByTeamId(teamId).Select(u => new TeamMemberModel
+            {
+                Email = u.Email,
+                Name = u.Name
+            }).OrderBy(x => x.Name).ToListAsync();
+        return new List<TeamMemberModel>();
     }
 
     private async Task<TeamPerformanceDTO> GetAIResponse(int? teamId, string userEmail, Dictionary<string, double> categoryScores)
