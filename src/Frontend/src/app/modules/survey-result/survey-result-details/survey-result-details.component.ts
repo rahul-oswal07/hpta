@@ -50,6 +50,7 @@ export class SurveyResultDetailsComponent implements OnInit {
   teamId: number;
   surveyId: number[];
   chartOptions: ChartOptions;
+  multiselectAverageChartOptions: ChartOptions;
   categoryChartOptions: ChartOptions;
 
   @ViewChild(DataStatusIndicator)
@@ -156,7 +157,7 @@ export class SurveyResultDetailsComponent implements OnInit {
           colors: ['#fff']
         },
         title: {
-          text: title
+          text: "Average"
         },
         xaxis: {
           categories: categories,
@@ -178,7 +179,7 @@ export class SurveyResultDetailsComponent implements OnInit {
             return thisRef.getColorCode(category);
           }]
         },
-        colors: this.isMultiSelection ? ['#85b5c7', '#80aaff'] : [],
+        colors: this.isMultiSelection ? ['#85b5c7', '#80aaff', '#F9C80E', '#449DD1'] : [],
         legend: {
           position: 'top',
           horizontalAlign: 'left',
@@ -194,11 +195,80 @@ export class SurveyResultDetailsComponent implements OnInit {
         },
         tooltip: {
           enabled: false
-        }
+        },
+        markers: {}
       };
     }
 
     return chartOptions;
+  }
+
+  buildMultiselectAverageChart() {
+    if (this.chartData?.surveyResults) {
+      this.multiselectAverageChartOptions = {
+        series: [
+          {
+            name: "Average",
+            data: this.calculateTotalAverage()
+          }
+        ],
+        chart: {
+          height: 350,
+          width: 700,
+          type: "line",
+          toolbar: {
+            show: false
+          },
+          zoom: {
+            enabled: false
+          }
+        },
+        stroke: {
+          width: 7,
+          curve: "smooth"
+        },
+        xaxis: {
+          categories: this.chartData.surveyResults.map(x => x.surveyName)
+        },
+        title: {
+          text: "Average of Selected Surveys",
+        },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shade: "dark",
+            gradientToColors: ["#FDD835"],
+            shadeIntensity: 1,
+            type: "horizontal",
+            opacityFrom: 1,
+            opacityTo: 1,
+            stops: [0, 100, 100, 100]
+          }
+        },
+        markers: {
+          size: 4,
+          colors: ["#FFA41B"],
+          strokeColors: "#fff",
+          strokeWidth: 2,
+          hover: {
+            size: 7,
+          }
+        },
+        yaxis: {
+          min: 0,
+          max: 5
+        },
+        dataLabels: {
+          enabled: true,
+        },
+        plotOptions: {},
+        colors: [],
+        legend: {},
+        tooltip: {
+          enabled: false
+        }
+      };
+    }
   }
 
   getColorCode(category: string): string {
@@ -208,6 +278,7 @@ export class SurveyResultDetailsComponent implements OnInit {
   }
 
   private _loadChartData() {
+    this.multiselectAverageChartOptions = {} as ChartOptions;
     this.dataStatusIndicator?.setLoading();
 
     const chartRequest: ChartDataRequestModel = {
@@ -219,11 +290,14 @@ export class SurveyResultDetailsComponent implements OnInit {
       (data) => {
         this.populateChart(data);
         this.updateOverviewGraph();
+        if (data.surveyResults?.length > 1) {
+          this.buildMultiselectAverageChart();
+        }
       },
       (err) => {
         this.dataStatusIndicator?.setError('Error while loading the data!');
         this.overallHPTAScore = 0;
-        this.chartOptions = {} as ChartOptions;
+        this.chartOptions = this.multiselectAverageChartOptions = {} as ChartOptions;
         this.chartData = {} as TeamDataModel;
       }
     );
@@ -294,7 +368,7 @@ export class SurveyResultDetailsComponent implements OnInit {
       this.overallHPTAScore = result;
     } else {
       this.overallHPTAScore = 0;
-      this.chartOptions = {} as ChartOptions;
+      this.chartOptions = this.multiselectAverageChartOptions = {} as ChartOptions;
       this.chartData = {} as TeamDataModel;
       this.dataStatusIndicator?.setNoData();
     }
@@ -302,5 +376,17 @@ export class SurveyResultDetailsComponent implements OnInit {
 
   private calculateAverage(scores: ScoreModel[]): number[] {
     return scores.map((data) => data.average);
+  }
+
+  private calculateTotalAverage(): number[] {
+    const averagePerSurvey: number[] = [];
+
+    this.chartData.surveyResults.forEach(surveyResult => {
+      const sumOfAverages = surveyResult.scores.map(x => x.average).reduce((a, b) => a + b, 0);
+      const average = Number((sumOfAverages / surveyResult.scores.length).toFixed(2));
+      averagePerSurvey.push(average);
+    });
+
+    return averagePerSurvey;
   }
 }

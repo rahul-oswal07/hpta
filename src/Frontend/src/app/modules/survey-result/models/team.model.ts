@@ -1,14 +1,12 @@
 import {
-  ApexAnnotations,
   ApexAxisChartSeries,
   ApexChart,
   ApexDataLabels,
   ApexFill,
-  ApexGrid,
   ApexLegend,
+  ApexMarkers,
   ApexPlotOptions,
   ApexStroke,
-  ApexTheme,
   ApexTitleSubtitle,
   ApexTooltip,
   ApexXAxis,
@@ -65,7 +63,8 @@ export interface ChartOptions {
   plotOptions: ApexPlotOptions;
   tooltip: ApexTooltip;
   legend: ApexLegend;
-  colors: string[]
+  colors: string[],
+  markers: ApexMarkers;
 };
 
 export interface KeyValue {

@@ -61,6 +61,22 @@
     </div>
   </div>
 
+  <div id="chart">
+    <apx-chart
+      *ngIf="multiselectAverageChartOptions?.series"
+      [series]="multiselectAverageChartOptions.series"
+      [chart]="multiselectAverageChartOptions.chart"
+      [xaxis]="multiselectAverageChartOptions.xaxis"
+      [dataLabels]="multiselectAverageChartOptions.dataLabels"
+      [stroke]="multiselectAverageChartOptions.stroke"
+      [title]="multiselectAverageChartOptions.title"
+      [markers]="multiselectAverageChartOptions.markers"
+      [yaxis]="multiselectAverageChartOptions.yaxis"
+      [fill]="multiselectAverageChartOptions.fill"
+      [tooltip]="multiselectAverageChartOptions.tooltip"
+    ></apx-chart>
+  </div>
+
   <!-- <div *ngIf="chartData.teamPerformance" class="mat-elevation-z8 my-5">
     <div class="summary-panel p-5">
       <h3>TEAM PERFORMANCE SUMMARY</h3>
