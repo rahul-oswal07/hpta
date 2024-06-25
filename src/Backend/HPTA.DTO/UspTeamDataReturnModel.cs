@@ -2,9 +2,13 @@
 
 public class UspTeamDataReturnModel
 {
-    public int? TeamId { get; set; }
+    public int TeamId { get; set; }
 
     public string TeamName { get; set; } = string.Empty;
+
+    public int SurveyId { get; set; }
+
+    public string SurveyName { get; set; } = string.Empty;
 
     public int CategoryId { get; set; }
 
@@ -19,9 +23,15 @@ public class UspTeamDataReturnModel
 
 public class SurveyResultDataModel
 {
+    public int SurveyId { get; set; }
+
+    public string SurveyName { get; set; }
+
     public List<ScoreModel> Scores { get; set; }
 
     public TeamPerformanceDTO TeamPerformance { get; set; }
+
+    public int? RespondedUsers { get; set; }
 }
 
 public class PromptScoreDescriptionModel
@@ -31,15 +41,15 @@ public class PromptScoreDescriptionModel
     public List<ScoreModel> Categories { get; set; }
 }
 
-public class TeamDataModel : SurveyResultDataModel
+public class TeamDataModel
 {
     public int TeamId { get; set; }
 
     public string TeamName { get; set; } = string.Empty;
 
-    public int RespondedUsers { get; set; }
+    public int? TotalUsers { get; set; }
 
-    public int TotalUsers { get; set; }
+    public List<SurveyResultDataModel> SurveyResults { get;set; }
 }
 
 public class ScoreModel

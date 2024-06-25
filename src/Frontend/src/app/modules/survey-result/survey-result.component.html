@@ -32,14 +32,9 @@
           <mat-select
             placeholder="Please select a survey"
             formControlName="selectedSurvey"
+            multiple
           >
-            <!-- <mat-option>
-          <ngx-mat-select-search formControlName="searchedInput" placeholderLabel="Find team..."
-          noEntriesFoundLabel="No data">
-        </ngx-mat-select-search>
-      </mat-option> -->
-
-            <mat-option *ngFor="let option of surveys" [value]="option.id">
+            <mat-option *ngFor="let option of surveys" [value]="option.id"  [disabled]="isOptionDisabled(option.id)">
               {{ option.name }}
             </mat-option>
           </mat-select>

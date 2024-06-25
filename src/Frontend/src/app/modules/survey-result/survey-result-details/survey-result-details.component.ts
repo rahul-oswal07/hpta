@@ -15,6 +15,8 @@ import {
   ScoreModel,
   TeamDataModel,
   TeamsModel,
+  ChartDataRequestModel,
+  SurveyResultDataModel
 } from 'src/app/modules/survey-result/models/team.model';
 import { SurveyResultService } from 'src/app/modules/survey-result/services/survey-result.service';
 
@@ -46,8 +48,9 @@ export class SurveyResultDetailsComponent implements OnInit {
   chartData = {} as TeamDataModel;
   overallHPTAScore: number;
   teamId: number;
-  surveyId: number;
+  surveyId: number[];
   chartOptions: ChartOptions;
+  multiselectAverageChartOptions: ChartOptions;
   categoryChartOptions: ChartOptions;
 
   @ViewChild(DataStatusIndicator)
@@ -56,6 +59,7 @@ export class SurveyResultDetailsComponent implements OnInit {
   overviewGraphData: { da: string, color: string, offset: number }[]
 
   email: string;
+  isMultiSelection: boolean;
 
   constructor(
     private surveyResultService: SurveyResultService,
@@ -76,7 +80,8 @@ export class SurveyResultDetailsComponent implements OnInit {
     this.activatedRoute.queryParams.pipe(map((qp) => qp['survey'])).subscribe({
       next: (value) => {
         this.categoryChartOptions = this.chartOptions = {} as ChartOptions;
-        this.surveyId = value;
+        this.surveyId = Array.isArray(value) ? value : value.split(',');
+        this.isMultiSelection = this.surveyId.length > 1;
         this._loadChartData();
       }
     });
@@ -87,104 +92,183 @@ export class SurveyResultDetailsComponent implements OnInit {
       this._loadChartData();
     });
   }
+
   buildChartData(chartData: TeamDataModel, title: string, xAxisTitle: string) {
     const thisRef = this;
-    const average = this.chartData.scores.map((data) => data.average)
-    const categories = this.chartData.scores.map((data) => data.categoryName)
-    const result = (average.reduce((sum, current) => sum + current, 0) / categories.length)
-    this.overallHPTAScore = result;
+    let chartOptions = {} as ChartOptions;
 
-    const series: ApexAxisChartSeries = [{
-      name: "Average",
-      data: this.calculateAverage(chartData.scores)
-    }];
+    if (chartData.surveyResults.length) {
+      const scores = chartData.surveyResults[0].scores;
 
-    const chartOptions: ChartOptions = {
-      series: series,
-      chart: {
-        type: 'bar',
-        height: 350,
-        stacked: true,
-        toolbar: {
-          show: false
-        },
-        events: {
-          dataPointSelection: (event, chartContext, config) => {
-            const category = config.w.globals.labels[config.dataPointIndex] as string;
+      const categories = scores.map((data) => data.categoryName);
 
-            this._loadCategoryChartData(this.teamId, category);;
-            return;
-          }
-        }
-      },
-      plotOptions: {
-        bar: {
-          horizontal: true,
-          dataLabels: {
-            total: {
-              enabled: true,
-              offsetX: 0,
-              style: {
-                fontSize: '13px',
-                fontWeight: 700
-              },
-              formatter: function (value) {
-                return value!;
-              }
+      if (!this.isMultiSelection) {
+        const average = scores.map((data) => data.average)
+        const result = (average.reduce((sum, current) => sum + current, 0) / categories.length)
+        this.overallHPTAScore = result;
+      }
+
+      let series: ApexAxisChartSeries = [];
+      chartData.surveyResults.forEach(surveyResult => {
+        series.push({
+          name: surveyResult.surveyName,
+          data: this.calculateAverage(surveyResult.scores)
+        });
+      })
+
+      chartOptions = {
+        series: series,
+        chart: {
+          type: 'bar',
+          height: 350,
+          stacked: true,
+          toolbar: {
+            show: false
+          },
+          events: {
+            dataPointSelection: (event, chartContext, config) => {
+              const category = config.w.globals.labels[config.dataPointIndex] as string;
+
+              this._loadCategoryChartData(this.teamId, category);;
+              return;
             }
           }
         },
-      },
-      stroke: {
-        width: 1,
-        colors: ['#fff']
-      },
-      title: {
-        text: title
-      },
-      xaxis: {
-        categories: chartData.scores.map((data) => data.categoryName),
+        plotOptions: {
+          bar: {
+            horizontal: true,
+            dataLabels: {
+              total: {
+                enabled: this.isMultiSelection ? false : true,
+                offsetX: 0,
+                style: {
+                  fontSize: '13px',
+                  fontWeight: 900
+                },
+                formatter: function (value) {
+                  return value!;
+                }
+              }
+            }
+          },
+        },
+        stroke: {
+          width: 1,
+          colors: ['#fff']
+        },
         title: {
-          text: xAxisTitle
+          text: "Average"
         },
-      },
-      yaxis: {
-        axisTicks: {
-          show: false
-        },
-        labels: {
-          show: true
-        }
-      },
-      fill: {
-        colors: [function (data: any) {
-          const category = data.w.globals.labels[data.dataPointIndex];
-          return thisRef.getColorCode(category);
-        }]
-      },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'left',
-        offsetX: 40
-      },
-      dataLabels: {
-        enabled: false,
-        style: {
-          fontSize: '14px',
-          fontWeight: 'bold',
-          colors: ['#333'],
-        },
-        formatter: function (value: number, { seriesIndex, dataPointIndex, w }) {
-          let name = w.globals.labels[dataPointIndex];
-          if (name.length > 15) {
-            name = name.substring(0, 5) + '..';
+        xaxis: {
+          categories: categories,
+          title: {
+            text: xAxisTitle
           }
-          return name;
-        }
-      }
-    };
+        },
+        yaxis: {
+          axisTicks: {
+            show: false
+          },
+          labels: {
+            show: true
+          }
+        },
+        fill: this.isMultiSelection ? {} : {
+          colors: [function (data: any) {
+            const category = data.w.globals.labels[data.dataPointIndex];
+            return thisRef.getColorCode(category);
+          }]
+        },
+        colors: this.isMultiSelection ? ['#85b5c7', '#80aaff', '#F9C80E', '#449DD1'] : [],
+        legend: {
+          position: 'top',
+          horizontalAlign: 'left',
+          offsetX: 40
+        },
+        dataLabels: {
+          enabled: this.isMultiSelection ? true : false,
+          style: {
+            fontSize: '14px',
+            fontWeight: 'bold',
+            colors: ['#333']
+          }
+        },
+        tooltip: {
+          enabled: false
+        },
+        markers: {}
+      };
+    }
 
     return chartOptions;
+  }
+
+  buildMultiselectAverageChart() {
+    if (this.chartData?.surveyResults) {
+      this.multiselectAverageChartOptions = {
+        series: [
+          {
+            name: "Average",
+            data: this.calculateTotalAverage()
+          }
+        ],
+        chart: {
+          height: 350,
+          width: 700,
+          type: "line",
+          toolbar: {
+            show: false
+          },
+          zoom: {
+            enabled: false
+          }
+        },
+        stroke: {
+          width: 7,
+          curve: "smooth"
+        },
+        xaxis: {
+          categories: this.chartData.surveyResults.map(x => x.surveyName)
+        },
+        title: {
+          text: "Average of Selected Surveys",
+        },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shade: "dark",
+            gradientToColors: ["#FDD835"],
+            shadeIntensity: 1,
+            type: "horizontal",
+            opacityFrom: 1,
+            opacityTo: 1,
+            stops: [0, 100, 100, 100]
+          }
+        },
+        markers: {
+          size: 4,
+          colors: ["#FFA41B"],
+          strokeColors: "#fff",
+          strokeWidth: 2,
+          hover: {
+            size: 7,
+          }
+        },
+        yaxis: {
+          min: 0,
+          max: 5
+        },
+        dataLabels: {
+          enabled: true,
+        },
+        plotOptions: {},
+        colors: [],
+        legend: {},
+        tooltip: {
+          enabled: false
+        }
+      };
+    }
   }
 
   getColorCode(category: string): string {
@@ -194,48 +278,66 @@ export class SurveyResultDetailsComponent implements OnInit {
   }
 
   private _loadChartData() {
+    this.multiselectAverageChartOptions = {} as ChartOptions;
     this.dataStatusIndicator?.setLoading();
 
-    this.surveyResultService.getChartData(this.email, this.teamId, this.surveyId).subscribe(
+    const chartRequest: ChartDataRequestModel = {
+      surveyId: this.surveyId,
+      email: this.email
+    }
+
+    this.surveyResultService.getChartData(chartRequest, this.teamId).subscribe(
       (data) => {
         this.populateChart(data);
         this.updateOverviewGraph();
+        if (data.surveyResults?.length > 1) {
+          this.buildMultiselectAverageChart();
+        }
       },
       (err) => {
         this.dataStatusIndicator?.setError('Error while loading the data!');
         this.overallHPTAScore = 0;
-        this.chartOptions = {} as ChartOptions;
+        this.chartOptions = this.multiselectAverageChartOptions = {} as ChartOptions;
         this.chartData = {} as TeamDataModel;
       }
     );
   }
 
   private updateOverviewGraph() {
-    const circumference = Math.floor(2 * Math.PI * (this.overviewGraphRadius + 10));
-    const overviewGraphData = [];
-    let _offset = 150;
-    for (const s of (this.chartData?.scores ?? [])) {
-      const val = Math.floor((s.average / ((this.chartData.scores.length + 1) * 5)) * circumference);
-      const itm = {
-        da: `${val} ${circumference}`,
-        color: CATEGORY_COLORS[s.categoryName],
-        offset: _offset
+    if (!this.isMultiSelection && this.chartData.surveyResults?.length) {
+      const circumference = Math.floor(2 * Math.PI * (this.overviewGraphRadius + 10));
+      const overviewGraphData = [];
+      let _offset = 150;
+      const scores = this.chartData.surveyResults[0].scores;
+      for (const s of (scores ?? [])) {
+        const val = Math.floor((s.average / ((scores.length + 1) * 5)) * circumference);
+        const itm = {
+          da: `${val} ${circumference}`,
+          color: CATEGORY_COLORS[s.categoryName],
+          offset: _offset
+        }
+        _offset += val;
+        overviewGraphData.push(itm);
       }
-      _offset += val;
-      overviewGraphData.push(itm);
+      this.overviewGraphData = overviewGraphData;
     }
-    this.overviewGraphData = overviewGraphData;
   }
+
   private _loadCategoryChartData(teamId: number, categoryName: string) {
     const categoryId = Number(
-      this.chartData.scores.find((data) => data.categoryName == categoryName)
+      this.chartData.surveyResults[0].scores.find((data) => data.categoryName == categoryName)
         ?.categoryId
     );
+
+    const chartRequest: ChartDataRequestModel = {
+      surveyId: this.surveyId,
+      email: this.email
+    }
 
     if (categoryId) {
       this.categoryChartOptions = {} as ChartOptions;
       this.surveyResultService
-        .getCategoryChartData(this.email, categoryId, teamId, this.surveyId)
+        .getCategoryChartData(chartRequest, categoryId, teamId)
         .subscribe((data) => {
           this.categoryChartOptions = this.buildChartData(
             data,
@@ -248,7 +350,7 @@ export class SurveyResultDetailsComponent implements OnInit {
   }
 
   private populateChart(data: TeamDataModel) {
-    if (data.scores) {
+    if (data.surveyResults?.length) {
       this.dataStatusIndicator?.setDefault();
       this.chartData = data;
       this.chartOptions = this.buildChartData(
@@ -257,14 +359,16 @@ export class SurveyResultDetailsComponent implements OnInit {
         "SCORE PER CATEGORY"
       );
 
-      const average = this.chartData.scores.map((data) => data.average);
-      const categories = this.chartData.scores.map((data) => data.categoryName);
+      const scores = this.chartData.surveyResults[0].scores;
+
+      const average = scores.map((data) => data.average);
+      const categories = scores.map((data) => data.categoryName);
       const result =
         average.reduce((sum, current) => sum + current, 0) / categories.length;
       this.overallHPTAScore = result;
     } else {
       this.overallHPTAScore = 0;
-      this.chartOptions = {} as ChartOptions;
+      this.chartOptions = this.multiselectAverageChartOptions = {} as ChartOptions;
       this.chartData = {} as TeamDataModel;
       this.dataStatusIndicator?.setNoData();
     }
@@ -272,5 +376,17 @@ export class SurveyResultDetailsComponent implements OnInit {
 
   private calculateAverage(scores: ScoreModel[]): number[] {
     return scores.map((data) => data.average);
+  }
+
+  private calculateTotalAverage(): number[] {
+    const averagePerSurvey: number[] = [];
+
+    this.chartData.surveyResults.forEach(surveyResult => {
+      const sumOfAverages = surveyResult.scores.map(x => x.average).reduce((a, b) => a + b, 0);
+      const average = Number((sumOfAverages / surveyResult.scores.length).toFixed(2));
+      averagePerSurvey.push(average);
+    });
+
+    return averagePerSurvey;
   }
 }

@@ -2,20 +2,43 @@
   <div class="bg-white my-5 p-5 mat-elevation-z2 relative">
     <div class="w-full flex justify-between gap-2">
       <div class="flex-1">
-        <apx-chart *ngIf="chartOptions?.series" [series]="chartOptions.series" [chart]="chartOptions.chart"
-          [xaxis]="chartOptions.xaxis" [dataLabels]="chartOptions.dataLabels" [stroke]="chartOptions.stroke"
-          [title]="chartOptions.title" [fill]="chartOptions.fill" [yaxis]="chartOptions.yaxis"
-          [plotOptions]="chartOptions.plotOptions" [legend]="chartOptions.legend"></apx-chart>
+        <apx-chart
+          *ngIf="chartOptions?.series"
+          [series]="chartOptions.series"
+          [chart]="chartOptions.chart"
+          [xaxis]="chartOptions.xaxis"
+          [dataLabels]="chartOptions.dataLabels"
+          [stroke]="chartOptions.stroke"
+          [title]="chartOptions.title"
+          [fill]="chartOptions.fill"
+          [yaxis]="chartOptions.yaxis"
+          [plotOptions]="chartOptions.plotOptions"
+          [legend]="chartOptions.legend"
+          [tooltip]="chartOptions.tooltip"
+          [colors]="chartOptions.colors"
+        ></apx-chart>
       </div>
 
       <div class="flex-1">
-        <apx-chart *ngIf="categoryChartOptions?.series; else selectCategory" [series]="categoryChartOptions.series"
-          [chart]="categoryChartOptions.chart" [xaxis]="categoryChartOptions.xaxis"
-          [dataLabels]="categoryChartOptions.dataLabels" [stroke]="categoryChartOptions.stroke"
-          [title]="categoryChartOptions.title" [fill]="categoryChartOptions.fill" [yaxis]="categoryChartOptions.yaxis"
-          [plotOptions]="categoryChartOptions.plotOptions" [legend]="categoryChartOptions.legend"></apx-chart>
+        <apx-chart
+          *ngIf="categoryChartOptions?.series; else selectCategory"
+          [series]="categoryChartOptions.series"
+          [chart]="categoryChartOptions.chart"
+          [xaxis]="categoryChartOptions.xaxis"
+          [dataLabels]="categoryChartOptions.dataLabels"
+          [stroke]="categoryChartOptions.stroke"
+          [title]="categoryChartOptions.title"
+          [fill]="categoryChartOptions.fill"
+          [yaxis]="categoryChartOptions.yaxis"
+          [plotOptions]="categoryChartOptions.plotOptions"
+          [legend]="categoryChartOptions.legend"
+          [tooltip]="categoryChartOptions.tooltip"
+          [colors]="categoryChartOptions.colors"
+        ></apx-chart>
         <ng-template #selectCategory>
-          <div class="h-full w-full flex items-center justify-center border border-gray-200; rounded-md italic">
+          <div
+            class="h-full w-full flex items-center justify-center border border-gray-200; rounded-md italic"
+          >
             <div class="placeholder flex flex-col items-center justify-center">
               <mat-icon>bar_chart</mat-icon>
               Select a category from the chart to view sub-category wise scores
@@ -24,16 +47,37 @@
         </ng-template>
       </div>
     </div>
-    <div class="overall-score bg-white mat-elevation-z8">
+    <div
+      class="overall-score bg-white mat-elevation-z8"
+      *ngIf="chartData?.surveyResults?.length == 1"
+    >
       <div class="text-center">Scores</div>
       <div class="block relative p-1">
-        <ng-template [ngTemplateOutlet]="overallGraph"
-          [ngTemplateOutletContext]="{ r: overviewGraphRadius, sw: 5 }"></ng-template>
+        <ng-template
+          [ngTemplateOutlet]="overallGraph"
+          [ngTemplateOutletContext]="{ r: overviewGraphRadius, sw: 5 }"
+        ></ng-template>
       </div>
     </div>
   </div>
 
-  <div *ngIf="chartData.teamPerformance" class="mat-elevation-z8 my-5">
+  <div id="chart">
+    <apx-chart
+      *ngIf="multiselectAverageChartOptions?.series"
+      [series]="multiselectAverageChartOptions.series"
+      [chart]="multiselectAverageChartOptions.chart"
+      [xaxis]="multiselectAverageChartOptions.xaxis"
+      [dataLabels]="multiselectAverageChartOptions.dataLabels"
+      [stroke]="multiselectAverageChartOptions.stroke"
+      [title]="multiselectAverageChartOptions.title"
+      [markers]="multiselectAverageChartOptions.markers"
+      [yaxis]="multiselectAverageChartOptions.yaxis"
+      [fill]="multiselectAverageChartOptions.fill"
+      [tooltip]="multiselectAverageChartOptions.tooltip"
+    ></apx-chart>
+  </div>
+
+  <!-- <div *ngIf="chartData.teamPerformance" class="mat-elevation-z8 my-5">
     <div class="summary-panel p-5">
       <h3>TEAM PERFORMANCE SUMMARY</h3>
       {{ chartData.teamPerformance.description }}
@@ -41,13 +85,18 @@
     <div class="bg-white p-5">
       <h3>OUR AI-AGILE COACH SUGGESTIONS</h3>
       <div class="grid grid-cols-3 gap-5">
-        <mat-card *ngFor="let item of chartData.teamPerformance.categories" appearance="outlined">
+        <mat-card
+          *ngFor="let item of chartData.teamPerformance.categories"
+          appearance="outlined"
+        >
           <mat-card-header>
             <div class="px-5 flex items-center w-full">
               <mat-card-title>{{ item.category }} </mat-card-title>
               <div class="flex-auto"></div>
               <div class="me-3">
-                <mat-icon [ngStyle]="{ color: getColorCode(item.category) }">trip_origin</mat-icon>
+                <mat-icon [ngStyle]="{ color: getColorCode(item.category) }"
+                  >trip_origin</mat-icon
+                >
               </div>
             </div>
           </mat-card-header>
@@ -59,24 +108,54 @@
         </mat-card>
       </div>
     </div>
-  </div>
+  </div> -->
 </div>
 
-<app-data-status-indicator [element]="chart" [initialState]="'Loading'"></app-data-status-indicator>
+<app-data-status-indicator
+  [element]="chart"
+  [initialState]="'Loading'"
+></app-data-status-indicator>
 
 <ng-template #overallGraph let-r="r" let-sw="sw">
-  <svg [attr.width]="r * 3" [attr.height]="r * 3" [attr.viewBox]="
+  <svg
+    [attr.width]="r * 3"
+    [attr.height]="r * 3"
+    [attr.viewBox]="
       r - sw + ' ' + (r - sw) + ' ' + (r * 2 + sw * 2) + ' ' + (r * 2 + sw * 2)
-    " xmlns="http://www.w3.org/2000/svg">
+    "
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <!-- Background circle -->
-    <circle [attr.cx]="r * 2" [attr.cy]="r * 2" [attr.r]="r - 3" fill="white" stroke="#ccc" stroke-width="5" />
+    <circle
+      [attr.cx]="r * 2"
+      [attr.cy]="r * 2"
+      [attr.r]="r - 3"
+      fill="white"
+      stroke="#ccc"
+      stroke-width="5"
+    />
     <!-- Text in the middle -->
-    <text [attr.x]="r * 2" [attr.y]="r * 2" font-family="Arial" font-size="10" fill="#333" text-anchor="middle">
+    <text
+      [attr.x]="r * 2"
+      [attr.y]="r * 2"
+      font-family="Arial"
+      font-size="10"
+      fill="#333"
+      text-anchor="middle"
+    >
       {{ overallHPTAScore | number : "1.0-2" }}
     </text>
     <!-- Percentage circles -->
-    <circle *ngFor="let data of overviewGraphData" [attr.cx]="r * 2" [attr.cy]="r * 2" [attr.r]="r" fill="transparent"
-      [attr.stroke]="data.color" stroke-width="10" [attr.stroke-dasharray]="data.da"
-      [attr.stroke-dashoffset]="data.offset" />
+    <circle
+      *ngFor="let data of overviewGraphData"
+      [attr.cx]="r * 2"
+      [attr.cy]="r * 2"
+      [attr.r]="r"
+      fill="transparent"
+      [attr.stroke]="data.color"
+      stroke-width="10"
+      [attr.stroke-dasharray]="data.da"
+      [attr.stroke-dashoffset]="data.offset"
+    />
   </svg>
 </ng-template>

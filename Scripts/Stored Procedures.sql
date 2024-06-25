@@ -1,16 +1,20 @@
 USE [HPTAMasterDb]
 GO
-/****** Object:  StoredProcedure [dbo].[Usp_GetCategoryWiseData]    Script Date: 16-05-2024 13:09:12 ******/
+/****** Object:  StoredProcedure [dbo].[Usp_LoadChartDataForTeam]    Script Date: 24-06-2024 16:01:54 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE OR ALTER PROCEDURE [dbo].[Usp_GetCategoryWiseData] 
+ALTER PROCEDURE [dbo].[Usp_LoadChartDataForTeam]
 	@teamId int,
-	@categoryId int,
-	@surveyId int
+	@surveyId varchar(250)
 AS
 BEGIN
+
+DECLARE @SurveyIds TABLE (SurveyId INT)
+INSERT INTO @SurveyIds (SurveyId)
+SELECT Value FROM dbo.SplitStringToInt(@surveyId, ',');
+
 WITH DistinctUsersCTE AS (
 		SELECT Count(DISTINCT
 			Users.Id) AS UserId
@@ -20,39 +24,281 @@ WITH DistinctUsersCTE AS (
 			INNER JOIN Users ON Users.Id = UserTeams.UserId
 		WHERE
 			Teams.id = @teamId
-	)
-	select Max(result.TeamId) As TeamId,
-		Max(result.TeamName) As TeamName,
-		Max(result.CategoryId) As CategoryId, 
-		Max(result.CategoryName) As CategoryName,
-		CAST(FORMAT(ROUND(CAST(Sum(TotalRating) AS DECIMAL(10, 2)) / (Count(TotalQuestions) * Max(Result.RespondedUsers)),1), 'N1') as float) As Average,
-		Max(Result.RespondedUsers) As RespondedUsers,
-		DistinctUsersCTE.UserId As TotalUsers
-		FROM (
-				select Teams.Id As TeamId, Teams.Name As TeamName, SubCategories.Name As CategoryName,SubCategories.Id As CategoryId,COUNT(Questions.Id) As TotalQuestions, Sum(Answers.rating) As TotalRating,
-						Count(UserTeams.UserId) As RespondedUsers
-				from Teams
-				inner join UserTeams on Teams.Id = UserTeams.TeamId and UserTeams.IsCoreMember = 1 and UserTeams.StartDate<=GETDATE() and UserTeams.EndDate>=GETDATE()
-				inner join Users on Users.Id = UserTeams.UserId
-				inner join Answers on Answers.UserId = Users.Id and Answers.SurveyId=@surveyId
-				inner join SurveyQuestions on Answers.QuestionNumber = SurveyQuestions.QuestionNumber and SurveyQuestions.SurveyId=@surveyId
+)
+
+	SELECT TeamId AS TeamId, TeamName AS TeamName,
+		   SurveyId AS SurveyId, SurveyName AS SurveyName, CategoryId As CategoryId, CategoryName As CategoryName, 
+		   SUM(Rating) AS TotalRating, 	   
+		   CAST(FORMAT(ROUND(CAST(SUM(Rating) AS DECIMAL(10, 2)) / (MAX(NoOfQuestions) * COUNT(RespondedUsers)),1), 'N1') as float) As Average,
+		   COUNT(RespondedUsers) As RespondedUsers, MAX(DistinctUsersCTE.UserId) AS TotalUsers
+	FROM 
+	(
+		SELECT TeamId AS TeamId, TeamName AS TeamName,
+			   CategoryId As CategoryId, CategoryName As CategoryName, 
+			   SurveyId AS SurveyId, SurveyName AS SurveyName, SUM(Rating) AS Rating, 		   
+			   MAX(RespondedUsers) AS RespondedUsers, COUNT(NoOfQuestions) As NoOfQuestions
+		FROM
+		(
+			SELECT DISTINCT Teams.Id AS TeamId, Teams.Name AS TeamName,
+							Categories.Id as CategoryId, Categories.Name AS CategoryName, 
+							Answers.SurveyId AS SurveyId, Surveys.Title As SurveyName, MAX(Answers.Rating) AS Rating, 
+							Answers.UserId AS RespondedUsers, SurveyQuestions.QuestionNumber As NoOfQuestions
+			FROM Answers
+				inner join SurveyQuestions on Answers.SurveyId = SurveyQuestions.SurveyId and Answers.QuestionNumber = SurveyQuestions.QuestionNumber
+				inner join Surveys on Surveys.Id = SurveyQuestions.SurveyId
 				inner join Questions on Questions.Id = SurveyQuestions.QuestionId
 				inner join SubCategories on SubCategories.Id = Questions.SubCategoryId
 				inner join Categories on Categories.Id = SubCategories.CategoryId
-				where Teams.id=@teamId and Categories.Id=@categoryId
-				group by Teams.Id,Teams.Name, SubCategories.Name, SubCategories.Id,Questions.Id 
-			) As result
-		CROSS JOIN DistinctUsersCTE
-		group by result.CategoryId,DistinctUsersCTE.UserId
-		order by CategoryName
+				inner join Users on Users.Id = Answers.UserId
+				inner join UserTeams on Users.Id = UserTeams.UserId and UserTeams.IsCoreMember = 1 and UserTeams.StartDate<=GETDATE() and UserTeams.EndDate>=GETDATE()
+				inner join Teams on UserTeams.TeamId = Teams.Id
+
+			WHERE Answers.SurveyId IN (SELECT SurveyId FROM @SurveyIds) and Teams.Id = @teamId
+
+			GROUP BY Answers.Id, Teams.Id, Teams.Name, Answers.SurveyId, Surveys.Title, Categories.Id, Categories.Name, Answers.UserId, SurveyQuestions.QuestionNumber
+		) AS surveyResult
+
+       GROUP BY TeamId, TeamName, SurveyId, SurveyName, CategoryId, CategoryName, RespondedUsers 
+
+	) AS finalResult
+	CROSS JOIN DistinctUsersCTE
+	GROUP BY TeamId, TeamName, SurveyId, SurveyName, CategoryId, CategoryName
+
+	ORDER BY SurveyId, CategoryName
 END
-GO
-/****** Object:  StoredProcedure [dbo].[Usp_GetCategoryWiseDataForUser]    Script Date: 16-05-2024 13:09:12 ******/
+
+/****** Object:  StoredProcedure [dbo].[Usp_LoadCategoryChartDataForTeam]    Script Date: 24-06-2024 16:02:39 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
- CREATE OR ALTER PROCEDURE [dbo].[Usp_GetCategoryWiseDataForUser] 
+ALTER PROCEDURE [dbo].[Usp_LoadCategoryChartDataForTeam] 
+	@teamId int,
+	@categoryId int,
+	@surveyId VARCHAR(250)
+AS
+BEGIN
+
+DECLARE @SurveyIds TABLE (SurveyId INT)
+INSERT INTO @SurveyIds (SurveyId)
+SELECT Value FROM dbo.SplitStringToInt(@surveyId, ',');
+
+WITH DistinctUsersCTE AS (
+		SELECT Count(DISTINCT
+			Users.Id) AS UserId
+		FROM
+			Teams
+			INNER JOIN UserTeams ON Teams.Id = UserTeams.TeamId AND UserTeams.IsCoreMember = 1 and UserTeams.StartDate<=GETDATE() and UserTeams.EndDate>=GETDATE()
+			INNER JOIN Users ON Users.Id = UserTeams.UserId
+		WHERE
+			Teams.id = @teamId
+)
+
+	SELECT TeamId AS TeamId, TeamName AS TeamName,
+		   SurveyId AS SurveyId, SurveyName AS SurveyName, CategoryId As CategoryId, CategoryName As CategoryName, 
+		   SUM(Rating) AS TotalRating, 	   
+		   CAST(FORMAT(ROUND(CAST(SUM(Rating) AS DECIMAL(10, 2)) / (MAX(NoOfQuestions) * COUNT(RespondedUsers)),1), 'N1') as float) As Average,
+		   COUNT(RespondedUsers) As RespondedUsers, MAX(DistinctUsersCTE.UserId) AS TotalUsers
+	FROM 
+	(
+		SELECT TeamId AS TeamId, TeamName AS TeamName,
+			   CategoryId As CategoryId, CategoryName As CategoryName, 
+			   SurveyId AS SurveyId, SurveyName AS SurveyName, SUM(Rating) AS Rating, 		   
+			   MAX(RespondedUsers) AS RespondedUsers, COUNT(NoOfQuestions) As NoOfQuestions
+		FROM
+		(
+			SELECT DISTINCT Teams.Id AS TeamId, Teams.Name AS TeamName,
+							SubCategories.Id as CategoryId, SubCategories.Name AS CategoryName, 
+							Answers.SurveyId AS SurveyId, Surveys.Title As SurveyName, MAX(Answers.Rating) AS Rating, 
+							Answers.UserId AS RespondedUsers, SurveyQuestions.QuestionNumber As NoOfQuestions
+			FROM Answers
+				inner join SurveyQuestions on Answers.SurveyId = SurveyQuestions.SurveyId and Answers.QuestionNumber = SurveyQuestions.QuestionNumber
+				inner join Surveys on Surveys.Id = SurveyQuestions.SurveyId
+				inner join Questions on Questions.Id = SurveyQuestions.QuestionId
+				inner join SubCategories on SubCategories.Id = Questions.SubCategoryId
+				inner join Categories on Categories.Id = SubCategories.CategoryId
+				inner join Users on Users.Id = Answers.UserId
+				inner join UserTeams on Users.Id = UserTeams.UserId and UserTeams.IsCoreMember = 1 and UserTeams.StartDate<=GETDATE() and UserTeams.EndDate>=GETDATE()
+				inner join Teams on UserTeams.TeamId = Teams.Id and Categories.Id = @categoryId
+
+			WHERE Answers.SurveyId IN (SELECT SurveyId FROM @SurveyIds) and Teams.Id = @teamId
+
+			GROUP BY Answers.Id, Teams.Id, Teams.Name, Answers.SurveyId, Surveys.Title, SubCategories.Id, SubCategories.Name, Answers.UserId, SurveyQuestions.QuestionNumber
+		) AS surveyResult
+
+       GROUP BY TeamId, TeamName, SurveyId, SurveyName, CategoryId, CategoryName, RespondedUsers 
+
+	) AS finalResult
+	CROSS JOIN DistinctUsersCTE
+	GROUP BY TeamId, TeamName, SurveyId, SurveyName, CategoryId, CategoryName
+
+	ORDER BY SurveyId, CategoryName
+END
+
+/****** Object:  StoredProcedure [dbo].[Usp_LoadChartDataForTeamMember]    Script Date: 24-06-2024 16:03:38 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[Usp_LoadChartDataForTeamMember]
+    @email VARCHAR(100),
+	@teamId int,
+	@surveyId VARCHAR(250)
+AS
+BEGIN
+
+DECLARE @SurveyIds TABLE (SurveyId INT)
+INSERT INTO @SurveyIds (SurveyId)
+SELECT Value FROM dbo.SplitStringToInt(@surveyId, ',');
+
+WITH DistinctUsersCTE AS (
+		SELECT Count(DISTINCT
+			Users.Id) AS UserId
+		FROM
+			Teams
+			INNER JOIN UserTeams ON Teams.Id = UserTeams.TeamId AND UserTeams.IsCoreMember = 1 and UserTeams.StartDate<=GETDATE() and UserTeams.EndDate>=GETDATE()
+			INNER JOIN Users ON Users.Id = UserTeams.UserId
+		WHERE
+			Teams.id = @teamId
+)
+
+	SELECT TeamId AS TeamId, TeamName AS TeamName,
+		   SurveyId AS SurveyId, SurveyName AS SurveyName, CategoryId As CategoryId, CategoryName As CategoryName, 
+		   SUM(Rating) AS TotalRating, 	   
+		   CAST(FORMAT(ROUND(CAST(SUM(Rating) AS DECIMAL(10, 2)) / (MAX(NoOfQuestions) * COUNT(RespondedUsers)),1), 'N1') as float) As Average,
+		   NULL As RespondedUsers, NULL As TotalUsers
+	FROM 
+	(
+		SELECT TeamId AS TeamId, TeamName AS TeamName,
+			   CategoryId As CategoryId, CategoryName As CategoryName, 
+			   SurveyId AS SurveyId, SurveyName AS SurveyName, SUM(Rating) AS Rating, 		   
+			   MAX(RespondedUsers) AS RespondedUsers, COUNT(NoOfQuestions) As NoOfQuestions
+		FROM
+		(
+			SELECT DISTINCT Teams.Id AS TeamId, Teams.Name AS TeamName,
+							Categories.Id as CategoryId, Categories.Name AS CategoryName, 
+							Answers.SurveyId AS SurveyId, Surveys.Title As SurveyName, MAX(Answers.Rating) AS Rating, 
+							Answers.UserId AS RespondedUsers, SurveyQuestions.QuestionNumber As NoOfQuestions
+			FROM Answers
+				inner join SurveyQuestions on Answers.SurveyId = SurveyQuestions.SurveyId and Answers.QuestionNumber = SurveyQuestions.QuestionNumber
+				inner join Surveys on Surveys.Id = SurveyQuestions.SurveyId
+				inner join Questions on Questions.Id = SurveyQuestions.QuestionId
+				inner join SubCategories on SubCategories.Id = Questions.SubCategoryId
+				inner join Categories on Categories.Id = SubCategories.CategoryId
+				inner join Users on Users.Id = Answers.UserId
+				inner join UserTeams on Users.Id = UserTeams.UserId and UserTeams.IsCoreMember = 1 and UserTeams.StartDate<=GETDATE() and UserTeams.EndDate>=GETDATE()
+				inner join Teams on UserTeams.TeamId = Teams.Id
+
+			WHERE Answers.SurveyId IN (SELECT SurveyId FROM @SurveyIds) and Teams.Id = @teamId and Users.Email = @email
+
+			GROUP BY Answers.Id, Teams.Id, Teams.Name, Answers.SurveyId, Surveys.Title, Categories.Id, Categories.Name, Answers.UserId, SurveyQuestions.QuestionNumber
+		) AS surveyResult
+
+       GROUP BY TeamId, TeamName, SurveyId, SurveyName, CategoryId, CategoryName, RespondedUsers 
+
+	) AS finalResult
+	CROSS JOIN DistinctUsersCTE
+	GROUP BY TeamId, TeamName, SurveyId, SurveyName, CategoryId, CategoryName
+
+	ORDER BY SurveyId, CategoryName
+END
+
+/****** Object:  StoredProcedure [dbo].[Usp_LoadCategoryChartDataForTeamMember]    Script Date: 24-06-2024 16:05:34 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[Usp_LoadCategoryChartDataForTeamMember] 
+	@teamId int,
+	@categoryId int,
+	@surveyId VARCHAR(250),
+	@email varchar(100)
+AS
+BEGIN
+
+DECLARE @SurveyIds TABLE (SurveyId INT)
+INSERT INTO @SurveyIds (SurveyId)
+SELECT Value FROM dbo.SplitStringToInt(@surveyId, ',');
+
+
+	SELECT TeamId AS TeamId, TeamName AS TeamName,
+		   SurveyId AS SurveyId, SurveyName AS SurveyName, CategoryId As CategoryId, CategoryName As CategoryName, 
+		   SUM(Rating) AS TotalRating, 	   
+		   CAST(FORMAT(ROUND(CAST(SUM(Rating) AS DECIMAL(10, 2)) / (MAX(NoOfQuestions) * COUNT(RespondedUsers)),1), 'N1') as float) As Average,
+		   NULL As RespondedUsers, NULL AS TotalUsers
+	FROM 
+	(
+		SELECT TeamId AS TeamId, TeamName AS TeamName,
+			   CategoryId As CategoryId, CategoryName As CategoryName, 
+			   SurveyId AS SurveyId, SurveyName AS SurveyName, SUM(Rating) AS Rating, 		   
+			   MAX(RespondedUsers) AS RespondedUsers, COUNT(NoOfQuestions) As NoOfQuestions
+		FROM
+		(
+			SELECT DISTINCT Teams.Id AS TeamId, Teams.Name AS TeamName,
+							SubCategories.Id as CategoryId, SubCategories.Name AS CategoryName, 
+							Answers.SurveyId AS SurveyId, Surveys.Title As SurveyName, MAX(Answers.Rating) AS Rating, 
+							Answers.UserId AS RespondedUsers, SurveyQuestions.QuestionNumber As NoOfQuestions
+			FROM Answers
+				inner join SurveyQuestions on Answers.SurveyId = SurveyQuestions.SurveyId and Answers.QuestionNumber = SurveyQuestions.QuestionNumber
+				inner join Surveys on Surveys.Id = SurveyQuestions.SurveyId
+				inner join Questions on Questions.Id = SurveyQuestions.QuestionId
+				inner join SubCategories on SubCategories.Id = Questions.SubCategoryId
+				inner join Categories on Categories.Id = SubCategories.CategoryId
+				inner join Users on Users.Id = Answers.UserId
+				inner join UserTeams on Users.Id = UserTeams.UserId and UserTeams.IsCoreMember = 1 and UserTeams.StartDate<=GETDATE() and UserTeams.EndDate>=GETDATE()
+				inner join Teams on UserTeams.TeamId = Teams.Id and Categories.Id = @categoryId
+
+			WHERE Answers.SurveyId IN (SELECT SurveyId FROM @SurveyIds) and Teams.Id = @teamId and Users.Email = @email and Categories.Id = @categoryId
+
+			GROUP BY Answers.Id, Teams.Id, Teams.Name, Answers.SurveyId, Surveys.Title, SubCategories.Id, SubCategories.Name, Answers.UserId, SurveyQuestions.QuestionNumber
+		) AS surveyResult
+
+       GROUP BY TeamId, TeamName, SurveyId, SurveyName, CategoryId, CategoryName, RespondedUsers 
+
+	) AS finalResult
+	GROUP BY TeamId, TeamName, SurveyId, SurveyName, CategoryId, CategoryName
+
+	ORDER BY SurveyId, CategoryName
+END
+
+/****** Object:  StoredProcedure [dbo].[Usp_LoadChartDataForAnonymousUser]    Script Date: 24-06-2024 16:06:07 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ ALTER PROCEDURE [dbo].[Usp_LoadChartDataForAnonymousUser]
+	@email Nvarchar(50),
+	@surveyId int
+AS
+BEGIN
+	select NULL AS TeamId,
+		NULL AS TeamName,
+		Max(result.CategoryId) As CategoryId, 
+		Max(result.CategoryName) As CategoryName,
+		CAST(FORMAT(ROUND(CAST(Sum(TotalRating) AS DECIMAL(10, 2)) / Count(TotalQuestions),1), 'N1') as float) As Average,
+		NULL As RespondedUsers,
+		NULL AS TotalUsers
+from (
+		select Categories.Name As CategoryName,Categories.Id As CategoryId,Questions.Id As TotalQuestions, Sum(Answers.rating) As TotalRating
+		from Users
+		inner join Answers on Answers.UserId = Users.Id and Answers.SurveyId=@surveyId
+		inner join SurveyQuestions on Answers.QuestionNumber = SurveyQuestions.QuestionNumber and SurveyQuestions.SurveyId=@surveyId
+		inner join Questions on Questions.Id = SurveyQuestions.QuestionId
+		inner join SubCategories on SubCategories.Id = Questions.SubCategoryId
+		inner join Categories on Categories.Id = SubCategories.CategoryId
+		where Users.Email=@email
+		group by Categories.Name, Categories.Id,Questions.Id
+	) As result
+		group by result.CategoryId
+		order by CategoryName
+END
+
+/****** Object:  StoredProcedure [dbo].[Usp_LoadCategoryChartDataForAnonymousUser]    Script Date: 24-06-2024 16:06:23 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ ALTER PROCEDURE [dbo].[Usp_LoadCategoryChartDataForAnonymousUser] 
 	@email Nvarchar(50),
 	@categoryId int,
 	@surveyId int
@@ -79,147 +325,3 @@ BEGIN
 		group by result.CategoryId
 		order by CategoryName
 END
-GO
-/****** Object:  StoredProcedure [dbo].[Usp_GetTeamWiseData]    Script Date: 16-05-2024 13:09:12 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE OR ALTER PROCEDURE [dbo].[Usp_GetTeamWiseData]
-	@teamId int,
-	@surveyId int
-AS
-BEGIN
-WITH DistinctUsersCTE AS (
-		SELECT Count(DISTINCT
-			Users.Id) AS UserId
-		FROM
-			Teams
-			INNER JOIN UserTeams ON Teams.Id = UserTeams.TeamId AND UserTeams.IsCoreMember = 1 and UserTeams.StartDate<=GETDATE() and UserTeams.EndDate>=GETDATE()
-			INNER JOIN Users ON Users.Id = UserTeams.UserId
-		WHERE
-			Teams.id = @teamId
-	)
-	select Max(result.TeamId) As TeamId,
-		Max(result.TeamName) As TeamName,
-		Max(result.CategoryId) As CategoryId, 
-		Max(result.CategoryName) As CategoryName,
-		CAST(FORMAT(ROUND(CAST(Sum(TotalRating) AS DECIMAL(10, 2)) / (Count(TotalQuestions) * Max(Result.RespondedUsers)),1), 'N1') as float) As Average,
-		Max(Result.RespondedUsers) As RespondedUsers,
-		DistinctUsersCTE.UserId As TotalUsers
-from (
-		select Teams.Id As TeamId, Teams.Name As TeamName, Categories.Name As CategoryName,Categories.Id As CategoryId,Questions.Id As TotalQuestions, Sum(Answers.rating) As TotalRating,
-				Count(UserTeams.UserId) As RespondedUsers
-		from Teams
-		inner join UserTeams on Teams.Id = UserTeams.TeamId and UserTeams.IsCoreMember = 1 and UserTeams.StartDate<=GETDATE() and UserTeams.EndDate>=GETDATE()
-		inner join Users on Users.Id = UserTeams.UserId
-		inner join Answers on Answers.UserId = Users.Id and Answers.SurveyId=@surveyId
-		inner join SurveyQuestions on Answers.QuestionNumber = SurveyQuestions.QuestionNumber and SurveyQuestions.SurveyId=@surveyId
-		inner join Questions on Questions.Id = SurveyQuestions.QuestionId
-		inner join SubCategories on SubCategories.Id = Questions.SubCategoryId
-		inner join Categories on Categories.Id = SubCategories.CategoryId
-		where Teams.id=@teamId
-		group by Teams.Id,Teams.Name, Categories.Name, Categories.Id,Questions.Id
-	) As result
-	CROSS JOIN DistinctUsersCTE
-		group by result.CategoryId,DistinctUsersCTE.UserId
-		order by CategoryName
-END
-GO
-/****** Object:  StoredProcedure [dbo].[Usp_GetUserChartData]    Script Date: 16-05-2024 13:09:12 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
- CREATE OR ALTER PROCEDURE [dbo].[Usp_GetUserChartData]
-	@email Nvarchar(50),
-	@surveyId int
-AS
-BEGIN
-	select NULL AS TeamId,
-		NULL AS TeamName,
-		Max(result.CategoryId) As CategoryId, 
-		Max(result.CategoryName) As CategoryName,
-		CAST(FORMAT(ROUND(CAST(Sum(TotalRating) AS DECIMAL(10, 2)) / Count(TotalQuestions),1), 'N1') as float) As Average,
-		NULL As RespondedUsers,
-		NULL AS TotalUsers
-from (
-		select Categories.Name As CategoryName,Categories.Id As CategoryId,Questions.Id As TotalQuestions, Sum(Answers.rating) As TotalRating
-		from Users
-		inner join Answers on Answers.UserId = Users.Id and Answers.SurveyId=@surveyId
-		inner join SurveyQuestions on Answers.QuestionNumber = SurveyQuestions.QuestionNumber and SurveyQuestions.SurveyId=@surveyId
-		inner join Questions on Questions.Id = SurveyQuestions.QuestionId
-		inner join SubCategories on SubCategories.Id = Questions.SubCategoryId
-		inner join Categories on Categories.Id = SubCategories.CategoryId
-		where Users.Email=@email
-		group by Categories.Name, Categories.Id,Questions.Id
-	) As result
-		group by result.CategoryId
-		order by CategoryName
-END
-GO
-
-CREATE OR ALTER PROCEDURE [dbo].[Usp_GetTeamMemberChartData]
-    @email VARCHAR(100),
-	@teamId int,
-	@surveyId int
-AS
-BEGIN
-	select Max(result.TeamId) As TeamId,
-		Max(result.TeamName) As TeamName,
-		Max(result.CategoryId) As CategoryId, 
-		Max(result.CategoryName) As CategoryName,
-		CAST(FORMAT(ROUND(CAST(Sum(TotalRating) AS DECIMAL(10, 2)) / (Count(TotalQuestions) * Max(Result.RespondedUsers)),1), 'N1') as float) As Average,
-		NULL As RespondedUsers,
-		NULL As TotalUsers
-from (
-		select Teams.Id As TeamId, Teams.Name As TeamName, Categories.Name As CategoryName,Categories.Id As CategoryId,Questions.Id As TotalQuestions, Sum(Answers.rating) As TotalRating,
-				Count(UserTeams.UserId) As RespondedUsers
-		from Teams
-		inner join UserTeams on Teams.Id = UserTeams.TeamId and UserTeams.IsCoreMember = 1 and UserTeams.StartDate<=GETDATE() and UserTeams.EndDate>=GETDATE()
-		inner join Users on Users.Id = UserTeams.UserId
-		inner join Answers on Answers.UserId = Users.Id and Answers.SurveyId=@surveyId
-		inner join SurveyQuestions on Answers.QuestionNumber = SurveyQuestions.QuestionNumber and SurveyQuestions.SurveyId=@surveyId
-		inner join Questions on Questions.Id = SurveyQuestions.QuestionId
-		inner join SubCategories on SubCategories.Id = Questions.SubCategoryId
-		inner join Categories on Categories.Id = SubCategories.CategoryId
-		where Teams.id=@teamId and Users.Email = @email
-		group by Teams.Id,Teams.Name, Categories.Name, Categories.Id,Questions.Id
-	) As result
-		group by result.CategoryId
-		order by CategoryName
-END
-GO
-
-CREATE OR ALTER PROCEDURE [dbo].[Usp_GetTeamMemberCategoryWiseData] 
-	@teamId int,
-	@categoryId int,
-	@surveyId int,
-	@email varchar(100)
-AS
-BEGIN
-	select Max(result.TeamId) As TeamId,
-		Max(result.TeamName) As TeamName,
-		Max(result.CategoryId) As CategoryId, 
-		Max(result.CategoryName) As CategoryName,
-		CAST(FORMAT(ROUND(CAST(Sum(TotalRating) AS DECIMAL(10, 2)) / (Count(TotalQuestions) * Max(Result.RespondedUsers)),1), 'N1') as float) As Average,
-		NULL As RespondedUsers,
-		NULL As TotalUsers
-		FROM (
-				select Teams.Id As TeamId, Teams.Name As TeamName, SubCategories.Name As CategoryName,SubCategories.Id As CategoryId,COUNT(Questions.Id) As TotalQuestions, Sum(Answers.rating) As TotalRating,
-						Count(UserTeams.UserId) As RespondedUsers
-				from Teams
-				inner join UserTeams on Teams.Id = UserTeams.TeamId and UserTeams.IsCoreMember = 1 and UserTeams.StartDate<=GETDATE() and UserTeams.EndDate>=GETDATE()
-				inner join Users on Users.Id = UserTeams.UserId
-				inner join Answers on Answers.UserId = Users.Id and Answers.SurveyId=@surveyId
-				inner join SurveyQuestions on Answers.QuestionNumber = SurveyQuestions.QuestionNumber and SurveyQuestions.SurveyId=@surveyId
-				inner join Questions on Questions.Id = SurveyQuestions.QuestionId
-				inner join SubCategories on SubCategories.Id = Questions.SubCategoryId
-				inner join Categories on Categories.Id = SubCategories.CategoryId
-				where Teams.id=@teamId and Categories.Id=@categoryId and Users.Email=@email
-				group by Teams.Id,Teams.Name, SubCategories.Name, SubCategories.Id,Questions.Id 
-			) As result
-		group by result.CategoryId
-		order by CategoryName
-END
-GO

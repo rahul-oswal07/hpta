@@ -1,4 +1,5 @@
-﻿using HPTA.Services.Contracts;
+﻿using HPTA.DTO;
+using HPTA.Services.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,15 +19,15 @@ public class TeamController : BaseController
     public async Task<ActionResult> GetAllTeams()
          => Ok(await _teamService.GetAllTeams());
 
-    [HttpGet("result/{teamId?}")]
+    [HttpPost("result/{teamId?}")]
     [Authorize(AuthenticationSchemes = $"{AuthenticationSchemes.CustomJwt},{AuthenticationSchemes.AzureAD}")]
-    public async Task<ActionResult> LoadChartData(int? teamId, int? surveyId, string email)
-        => Ok(await _teamService.LoadChartData(teamId, surveyId, email));
+    public async Task<ActionResult> LoadChartData1(int? teamId, ChartDataRequestModel chartDataRequest)
+        => Ok(await _teamService.LoadChartData(teamId, chartDataRequest));
 
-    [HttpGet("result-category/{categoryId}/{teamId?}")]
+    [HttpPost("result-category/{categoryId}/{teamId?}")]
     [Authorize(AuthenticationSchemes = $"{AuthenticationSchemes.CustomJwt},{AuthenticationSchemes.AzureAD}")]
-    public async Task<ActionResult> LoadCategoryChartData(int categoryId, int? teamId, int? surveyId, string email)
-            => Ok(await _teamService.LoadCategoryChartData(teamId: teamId, categoryId: categoryId, surveyId, email));
+    public async Task<ActionResult> LoadCategoryChartData(int categoryId, int? teamId, ChartDataRequestModel chartDataRequest)
+            => Ok(await _teamService.LoadCategoryChartData(teamId: teamId, categoryId: categoryId, chartDataRequest));
 
     [HttpGet("{teamId}/members")]
     public async Task<ActionResult> ListTeamMembers(int teamId) => Ok(await _teamService.ListTeamMembers(teamId));

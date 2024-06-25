@@ -60,12 +60,12 @@ public class AnswerService : IAnswerService
     {
         try
         {
-            Dictionary<string, double> score = (await _teamRepository.LoadUserChartData(userEmail, surveyId)).ToDictionary(x => x.CategoryName, x => x.Average);
+            Dictionary<string, double> score = (await _teamRepository.LoadChartDataForAnonymousUser(userEmail, surveyId)).ToDictionary(x => x.CategoryName, x => x.Average);
             var modelData = await GetAIResponse(score);
             await _aIResponseRepository.AddOrUpdateResponseDataForUser(userId, modelData);
             if (teamId.HasValue)
             {
-                score = (await _teamRepository.LoadChartData(teamId.Value, surveyId)).ToDictionary(x => x.CategoryName, x => x.Average);
+                score = (await _teamRepository.LoadChartDataForTeam(teamId.Value, [surveyId])).ToDictionary(x => x.CategoryName, x => x.Average);
                 modelData = await GetAIResponse(score);
                 await _aIResponseRepository.AddOrUpdateResponseDataForTeam(teamId.Value, modelData);
             }
