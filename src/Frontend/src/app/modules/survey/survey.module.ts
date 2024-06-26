@@ -9,6 +9,7 @@ import { RatingModule } from 'src/app/modules/rating/rating.module';
 import { MatButtonModule } from '@angular/material/button';
 import { DataStatusIndicatorModule } from 'src/app/modules/data-status-indicator/data-status-indicator.module';
 import { CreateSurveyComponent } from './create-survey/create-survey.component';
+import { MatIconModule } from '@angular/material/icon';
 
 const SURVEY_ROUTES: Routes = [
   {
@@ -29,6 +30,7 @@ const SURVEY_ROUTES: Routes = [
     MatButtonModule,
     RatingModule,
     DataStatusIndicatorModule,
+    MatIconModule,
     RouterModule.forChild(SURVEY_ROUTES)
   ],
   exports: [
