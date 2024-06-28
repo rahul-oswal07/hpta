@@ -30,9 +30,9 @@ export class DataStatusIndicator implements OnInit {
   }
   setElementVisibility() {
     if (this.status === 'Default') {
-      this.renderer.removeClass(this.element, 'invisible');
+      this.renderer.removeClass(this.element, 'hidden');
     } else {
-      this.renderer.addClass(this.element, 'invisible');
+      this.renderer.addClass(this.element, 'hidden');
     }
   }
   setNoData() {

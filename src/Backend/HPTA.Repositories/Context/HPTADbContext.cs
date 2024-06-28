@@ -1,4 +1,5 @@
 ﻿using HPTA.Data.Entities;
+using HPTA.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace HPTA.Repositories;
@@ -26,4 +27,6 @@ public partial class HPTADbContext
     public DbSet<OTPRequest> OTPRequests { get; set; }
 
     public DbSet<AIResponse> AIResponses { get; set; }
+
+    public DbSet<UspTeamDataReturnModel> UspTeamDataReturnModels { get; set; }
 }

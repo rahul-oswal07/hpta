@@ -9,8 +9,8 @@ namespace HPTA.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<AIResponse> builder)
         {
-            builder.HasIndex(p => p.UserId).IsUnique().HasFilter($"{nameof(AIResponse.UserId)} is not null");
-            builder.HasIndex(p => p.TeamId).IsUnique().HasFilter($"{nameof(AIResponse.TeamId)} is not null");
+            builder.HasIndex(p => new { p.UserId, p.SurveyId }).IsUnique().HasFilter($"{nameof(AIResponse.UserId)} is not null");
+            builder.HasIndex(p => new { p.TeamId, p.SurveyId }).IsUnique().HasFilter($"{nameof(AIResponse.TeamId)} is not null");
             builder.Property(e => e.ResponseData).HasConversion(
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<AIResponseData>(v) ?? new AIResponseData()

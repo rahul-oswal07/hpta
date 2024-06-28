@@ -17,6 +17,7 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatChipsModule } from '@angular/material/chips';
 import { RatingModule } from 'src/app/modules/rating/rating.module';
 import { MatCardModule } from '@angular/material/card';
+import {MatTabsModule} from '@angular/material/tabs';
 
 @NgModule({
   declarations: [SurveyResultComponent, SurveyResultDetailsComponent],
@@ -38,6 +39,7 @@ import { MatCardModule } from '@angular/material/card';
     RatingModule,
     NgxMatSelectSearchModule,
     MatCardModule,
+    MatTabsModule
   ],
 })
 export class SurveyResultModule {}

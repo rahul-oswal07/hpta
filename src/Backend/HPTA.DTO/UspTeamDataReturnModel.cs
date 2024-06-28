@@ -2,7 +2,7 @@
 
 public class UspTeamDataReturnModel
 {
-    public int TeamId { get; set; }
+    public int? TeamId { get; set; }
 
     public string TeamName { get; set; } = string.Empty;
 
@@ -43,7 +43,7 @@ public class PromptScoreDescriptionModel
 
 public class TeamDataModel
 {
-    public int TeamId { get; set; }
+    public int? TeamId { get; set; }
 
     public string TeamName { get; set; } = string.Empty;
 

@@ -23,8 +23,6 @@ namespace HPTA.Repositories
             base.OnModelCreating(modelBuilder);
         }
 
-        public virtual DbSet<UspTeamDataReturnModel> UspTeamDataReturnModels { get; set; } = null!;
-
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
             configurationBuilder.Conventions.Remove(typeof(CascadeDeleteConvention));

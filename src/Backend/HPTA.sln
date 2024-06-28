@@ -54,6 +54,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{BE92F610-0A93-4637-B59E-B5A1E2590277}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\Scripts\Stored Procedures.sql = ..\..\Scripts\Stored Procedures.sql
+		..\..\Scripts\UDF.sql = ..\..\Scripts\UDF.sql
 	EndProjectSection
 EndProject
 Global

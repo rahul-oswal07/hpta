@@ -9,10 +9,12 @@ namespace HPTA.Api.Controllers;
 public class TeamController : BaseController
 {
     private readonly ITeamService _teamService;
+    private readonly IAnswerService _answerService;
 
-    public TeamController(ITeamService teamService)
+    public TeamController(ITeamService teamService, IAnswerService answerService)
     {
         _teamService = teamService;
+        this._answerService = answerService;
     }
 
     [HttpGet]
@@ -31,4 +33,11 @@ public class TeamController : BaseController
 
     [HttpGet("{teamId}/members")]
     public async Task<ActionResult> ListTeamMembers(int teamId) => Ok(await _teamService.ListTeamMembers(teamId));
+
+    [HttpPost("ai/{surveyId}")]
+    public async Task<ActionResult> UpdateAIRecommentadions(int surveyId, [FromQuery]int? teamId, [FromQuery]string userId)
+    {
+        await _answerService.UpdateAIRecommendations(surveyId, teamId, userId);
+        return Ok();
+    }
 }
