@@ -7,8 +7,19 @@
   background-color: #bcbecf;
   text-align: center;
   color: #fff;
-  left: -12px;
+  right: -12px;
   padding: 3px 5px;
+}
+.question-tick {
+  position: absolute;
+  top: calc(50% - 12px);
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  text-align: center;
+  color: #fff;
+  padding: 3px 5px;
+  right: -12px;
 }
 .button-container {
   position: absolute;
@@ -16,4 +27,12 @@
   width: 240px;
   left: calc(50% - 120px);
   text-align: center;
+}
+.success {
+  background-color: #4BB543;
+}
+.tick-icon {
+  margin-left: -6px;
+  margin-top: -2px;
+  color: #4BB543;
 }
