@@ -53,15 +53,22 @@
     >
       <div class="text-center">Scores</div>
       <div class="block relative p-1">
-        <ng-template
-          [ngTemplateOutlet]="overallGraph"
-          [ngTemplateOutletContext]="{ r: overviewGraphRadius, sw: 5 }"
-        ></ng-template>
+        <apx-chart
+          [series]="summaryChartOptions.series"
+          [chart]="summaryChartOptions.chart"
+          [plotOptions]="summaryChartOptions.plotOptions"
+          [dataLabels]="summaryChartOptions.dataLabels"
+          [legend]="summaryChartOptions.legend"
+          [labels]="summaryChartOptions.labels"
+        ></apx-chart>
       </div>
     </div>
   </div>
 
-  <div id="chart">
+  <div
+    id="chart"
+    class="mat-elevation-z8 bg-white flex items-center justify-center"
+  >
     <apx-chart
       *ngIf="multiselectAverageChartOptions?.series"
       [series]="multiselectAverageChartOptions.series"
@@ -77,85 +84,57 @@
     ></apx-chart>
   </div>
 
-  <!-- <div *ngIf="chartData.teamPerformance" class="mat-elevation-z8 my-5">
-    <div class="summary-panel p-5">
-      <h3>TEAM PERFORMANCE SUMMARY</h3>
-      {{ chartData.teamPerformance.description }}
-    </div>
-    <div class="bg-white p-5">
-      <h3>OUR AI-AGILE COACH SUGGESTIONS</h3>
-      <div class="grid grid-cols-3 gap-5">
-        <mat-card
-          *ngFor="let item of chartData.teamPerformance.categories"
-          appearance="outlined"
-        >
-          <mat-card-header>
-            <div class="px-5 flex items-center w-full">
-              <mat-card-title>{{ item.category }} </mat-card-title>
-              <div class="flex-auto"></div>
-              <div class="me-3">
-                <mat-icon [ngStyle]="{ color: getColorCode(item.category) }"
-                  >trip_origin</mat-icon
-                >
-              </div>
+  <div
+    *ngIf="chartData?.surveyResults?.length || 0 > 0"
+    class="mat-elevation-z8 my-5"
+  >
+    <mat-tab-group>
+      <mat-tab
+        *ngFor="let survey of chartData.surveyResults"
+        [label]="survey.surveyName"
+      >
+        <ng-container *ngIf="survey.teamPerformance; else noAIResponse">
+          <div class="summary-panel p-5">
+            <h3>TEAM PERFORMANCE SUMMARY</h3>
+            {{ survey.teamPerformance.description }}
+          </div>
+          <div class="bg-white p-5">
+            <h3>OUR AI-AGILE COACH SUGGESTIONS</h3>
+            <div class="grid grid-cols-3 gap-5">
+              <mat-card
+                *ngFor="let item of survey.teamPerformance.categories"
+                appearance="outlined"
+              >
+                <mat-card-header>
+                  <div class="px-5 flex items-center w-full">
+                    <mat-card-title>{{ item.category }} </mat-card-title>
+                    <div class="flex-auto"></div>
+                    <div class="me-3">
+                      <mat-icon
+                        [ngStyle]="{ color: getColorCode(item.category) }"
+                        >trip_origin</mat-icon
+                      >
+                    </div>
+                  </div>
+                </mat-card-header>
+                <mat-card-content>
+                  <p class="p-5">
+                    {{ item.description }}
+                  </p>
+                </mat-card-content>
+              </mat-card>
             </div>
-          </mat-card-header>
-          <mat-card-content>
-            <p class="p-5">
-              {{ item.description }}
-            </p>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </div>
-  </div> -->
+          </div>
+        </ng-container>
+        <ng-template #noAIResponse>
+          <div class="summary-panel p-5 text-center">No Data <button *ngIf="teamId" mat-stroked-button color="warn" (click)="updateAIRecommendations(survey.surveyId)">Update</button></div>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
 </div>
 
 <app-data-status-indicator
   [element]="chart"
   [initialState]="'Loading'"
 ></app-data-status-indicator>
-
-<ng-template #overallGraph let-r="r" let-sw="sw">
-  <svg
-    [attr.width]="r * 3"
-    [attr.height]="r * 3"
-    [attr.viewBox]="
-      r - sw + ' ' + (r - sw) + ' ' + (r * 2 + sw * 2) + ' ' + (r * 2 + sw * 2)
-    "
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <!-- Background circle -->
-    <circle
-      [attr.cx]="r * 2"
-      [attr.cy]="r * 2"
-      [attr.r]="r - 3"
-      fill="white"
-      stroke="#ccc"
-      stroke-width="5"
-    />
-    <!-- Text in the middle -->
-    <text
-      [attr.x]="r * 2"
-      [attr.y]="r * 2"
-      font-family="Arial"
-      font-size="10"
-      fill="#333"
-      text-anchor="middle"
-    >
-      {{ overallHPTAScore | number : "1.0-2" }}
-    </text>
-    <!-- Percentage circles -->
-    <circle
-      *ngFor="let data of overviewGraphData"
-      [attr.cx]="r * 2"
-      [attr.cy]="r * 2"
-      [attr.r]="r"
-      fill="transparent"
-      [attr.stroke]="data.color"
-      stroke-width="10"
-      [attr.stroke-dasharray]="data.da"
-      [attr.stroke-dashoffset]="data.offset"
-    />
-  </svg>
-</ng-template>

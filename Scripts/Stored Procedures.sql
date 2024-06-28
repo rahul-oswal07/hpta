@@ -5,7 +5,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-ALTER PROCEDURE [dbo].[Usp_LoadChartDataForTeam]
+CREATE OR ALTER PROCEDURE [dbo].[Usp_LoadChartDataForTeam]
 	@teamId int,
 	@surveyId varchar(250)
 AS
@@ -72,7 +72,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-ALTER PROCEDURE [dbo].[Usp_LoadCategoryChartDataForTeam] 
+CREATE OR ALTER PROCEDURE [dbo].[Usp_LoadCategoryChartDataForTeam] 
 	@teamId int,
 	@categoryId int,
 	@surveyId VARCHAR(250)
@@ -140,7 +140,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-ALTER PROCEDURE [dbo].[Usp_LoadChartDataForTeamMember]
+CREATE OR ALTER PROCEDURE [dbo].[Usp_LoadChartDataForTeamMember]
     @email VARCHAR(100),
 	@teamId int,
 	@surveyId VARCHAR(250)
@@ -208,7 +208,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-ALTER PROCEDURE [dbo].[Usp_LoadCategoryChartDataForTeamMember] 
+CREATE OR ALTER PROCEDURE [dbo].[Usp_LoadCategoryChartDataForTeamMember] 
 	@teamId int,
 	@categoryId int,
 	@surveyId VARCHAR(250),
@@ -266,7 +266,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
- ALTER PROCEDURE [dbo].[Usp_LoadChartDataForAnonymousUser]
+ CREATE OR ALTER PROCEDURE [dbo].[Usp_LoadChartDataForAnonymousUser]
 	@email Nvarchar(50),
 	@surveyId int
 AS
@@ -298,7 +298,7 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
- ALTER PROCEDURE [dbo].[Usp_LoadCategoryChartDataForAnonymousUser] 
+ CREATE OR ALTER PROCEDURE [dbo].[Usp_LoadCategoryChartDataForAnonymousUser] 
 	@email Nvarchar(50),
 	@categoryId int,
 	@surveyId int

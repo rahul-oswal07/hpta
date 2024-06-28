@@ -3,6 +3,7 @@ using HPTA.Data.Entities;
 using HPTA.DTO;
 using HPTA.Repositories.Contracts;
 using HPTA.Services.Contracts;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
 namespace HPTA.Services;
@@ -53,24 +54,35 @@ public class AnswerService : IAnswerService
                 _answerRepository.Update(ratingAnswer);
         }
         await _answerRepository.SaveAsync();
-        await UpdateAIResponse(teamId, email, userId, surveyId);
+        await UpdateAIResponse(teamId, userId, surveyId);
     }
 
-    private async Task UpdateAIResponse(int? teamId, string userEmail, string userId, int surveyId)
+    public async Task UpdateAIRecommendations(int surveyId, int? teamId, string userId)
+    {
+        if(userId == null)
+        {
+            var email = _identityService.GetEmail();
+            userId = await _userRepository.GetUserIdByEmailAsync(email);
+            await UpdateAIResponse(teamId, userId, surveyId);
+        }
+    }
+
+    private async Task UpdateAIResponse(int? teamId, string userId, int surveyId)
     {
         try
         {
-            Dictionary<string, double> score = (await _teamRepository.LoadChartDataForAnonymousUser(userEmail, surveyId)).ToDictionary(x => x.CategoryName, x => x.Average);
+            var scoreData = await _answerRepository.ListAnswersByTeamWithCategories(surveyId, teamId).Select(r => new { CategoryName = r.Question.Question.SubCategory.Category.Name, r.Rating, r.UserId }).ToListAsync();
+            Dictionary<string, double> score = scoreData.Where(s => s.UserId == userId).GroupBy(s => s.CategoryName).Select(s => new { CategoryName = s.Key, Average = s.Average(a => (int)a.Rating) }).ToDictionary(x => x.CategoryName, x => x.Average);
             var modelData = await GetAIResponse(score);
-            await _aIResponseRepository.AddOrUpdateResponseDataForUser(userId, modelData);
+            await _aIResponseRepository.AddOrUpdateResponseDataForUser(userId, surveyId, modelData);
             if (teamId.HasValue)
             {
-                score = (await _teamRepository.LoadChartDataForTeam(teamId.Value, [surveyId])).ToDictionary(x => x.CategoryName, x => x.Average);
+                score = scoreData.GroupBy(s => s.CategoryName).Select(s => new { CategoryName = s.Key, Average = s.Average(a => (int)a.Rating) }).ToDictionary(x => x.CategoryName, x => x.Average);
                 modelData = await GetAIResponse(score);
-                await _aIResponseRepository.AddOrUpdateResponseDataForTeam(teamId.Value, modelData);
+                await _aIResponseRepository.AddOrUpdateResponseDataForTeam(teamId.Value, surveyId, modelData);
             }
         }
-        catch
+        catch (Exception ex)
         {
         }
     }

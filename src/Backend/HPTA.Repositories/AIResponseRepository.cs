@@ -8,21 +8,33 @@ namespace HPTA.Repositories
     {
         private readonly HPTADbContext _context = context;
 
-        public async Task<AIResponseData> GetResponseDataForTeam(int teamId)
+        public async Task<AIResponseData> GetResponseDataForTeam(int teamId, int? surveyId)
         {
-            return await _context.AIResponses.AsNoTracking().Where(r => r.TeamId == teamId).Select(d => d.ResponseData).FirstOrDefaultAsync();
+            var query = _context.AIResponses.AsNoTracking().Where(r => r.TeamId == teamId);
+            if (surveyId.HasValue)
+                query = query.Where(r => r.SurveyId == surveyId.Value);
+            else
+                query = query.Where(r => r.Survey.IsActive);
+            return await query.Select(d => d.ResponseData).FirstOrDefaultAsync();
         }
 
-        public async Task<AIResponseData> GetResponseDataForUser(string userId)
+        public async Task<AIResponseData> GetResponseDataForUser(string userId, int? surveyId, int? teamId = null)
         {
-            return await _context.AIResponses.AsNoTracking().Where(r => r.UserId == userId).Select(d => d.ResponseData).FirstOrDefaultAsync();
+            var query = _context.AIResponses.AsNoTracking().Where(r => r.UserId == userId);
+            if (surveyId.HasValue)
+                query = query.Where(r => r.SurveyId == surveyId.Value);
+            else
+                query = query.Where(r => r.Survey.IsActive);
+            if (teamId.HasValue)
+                query = query.Where(r => r.TeamId == teamId.Value);
+            return await query.Select(d => d.ResponseData).FirstOrDefaultAsync();
         }
 
-        public async Task AddOrUpdateResponseDataForTeam(int teamId, AIResponseData data)
+        public async Task AddOrUpdateResponseDataForTeam(int teamId, int surveyId, AIResponseData data)
         {
-            var existing = await _context.AIResponses.Where(r => r.TeamId == teamId).FirstOrDefaultAsync();
+            var existing = await _context.AIResponses.Where(r => r.TeamId == teamId && r.SurveyId == surveyId).FirstOrDefaultAsync();
             if (existing == null)
-                await _context.AIResponses.AddAsync(new AIResponse { ResponseData = data, TeamId = teamId });
+                await _context.AIResponses.AddAsync(new AIResponse { ResponseData = data, TeamId = teamId, SurveyId = surveyId });
             else
             {
                 existing.ResponseData = data;
@@ -31,11 +43,11 @@ namespace HPTA.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddOrUpdateResponseDataForUser(string userId, AIResponseData data)
+        public async Task AddOrUpdateResponseDataForUser(string userId, int surveyId, AIResponseData data)
         {
-            var existing = await _context.AIResponses.Where(r => r.UserId == userId).FirstOrDefaultAsync();
+            var existing = await _context.AIResponses.Where(r => r.UserId == userId && r.SurveyId == surveyId).FirstOrDefaultAsync();
             if (existing == null)
-                await _context.AIResponses.AddAsync(new AIResponse { ResponseData = data, UserId = userId });
+                await _context.AIResponses.AddAsync(new AIResponse { ResponseData = data, UserId = userId, SurveyId = surveyId });
             else
             {
                 existing.ResponseData = data;

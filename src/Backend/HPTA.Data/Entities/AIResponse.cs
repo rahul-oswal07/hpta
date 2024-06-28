@@ -16,6 +16,11 @@ namespace HPTA.Data.Entities
 
         public User User { get; set; }
 
+        [ForeignKey(nameof(Survey))]
+        public int? SurveyId { get; set; }
+
+        public Survey Survey { get; set; }
+
         public AIResponseData ResponseData { get; set; }
     }
 

@@ -56,18 +56,17 @@ ILogger<TeamService> logger)
     public async Task<TeamDataModel> LoadChartData(int? teamId, ChartDataRequestModel chartDataRequest)
     {
         List<UspTeamDataReturnModel> chartData = null;
-        TeamPerformanceDTO performance = null;
         if (chartDataRequest.SurveyId == null || !chartDataRequest.SurveyId.Any())
             chartDataRequest.SurveyId = [await _surveyRepository.GetLatestSurveyId()];
-
+        var userEmail = _identityService.GetEmail();
         if (teamId.HasValue) // Devon user
         {
             //ToDo: These values should be resolved using user id. Once custom claims are enabled in azure, this needs to be modified accordingly.
 #if !DEBUG
-            if (!await _userRepository.ValidateTeamId(teamId, email))
+            if (!await _userRepository.ValidateTeamId(teamId, userEmail))
             {
                 throw new Exception("Invalid team or the user does not have access to the team.");
-            } 
+            }
 #endif
 
             if (!string.IsNullOrWhiteSpace(chartDataRequest.Email))
@@ -78,23 +77,10 @@ ILogger<TeamService> logger)
             {
                 chartData = await _teamRepository.LoadChartDataForTeam(teamId.Value, chartDataRequest.SurveyId);
             }
-            //if (chartData?.Count > 0)
-            //{
-            //    var teamPerformance = await _aIResponseRepository.GetResponseDataForTeam(teamId.Value);
-            //    if (teamPerformance != null)
-            //        performance = _mapper.Map<TeamPerformanceDTO>(teamPerformance);
-            //}
         }
         else // Anonymous user
         {
-            chartDataRequest.Email = _identityService.GetEmail();
-            chartData = await _teamRepository.LoadChartDataForAnonymousUser(chartDataRequest.Email, chartDataRequest.SurveyId.FirstOrDefault());
-            //if (chartData?.Count > 0)
-            //{
-            //    var userPerformance = await _aIResponseRepository.GetResponseDataForUser(chartDataRequest.Email);
-            //    if (userPerformance != null)
-            //        performance = _mapper.Map<TeamPerformanceDTO>(userPerformance);
-            //}
+            chartData = await _teamRepository.LoadChartDataForAnonymousUser(userEmail, chartDataRequest.SurveyId.FirstOrDefault());
         }
 
         if (chartData == null || chartData.Count == 0)
@@ -106,8 +92,7 @@ ILogger<TeamService> logger)
         //var categoryScores = teamData.Scores.ToDictionary(x => x.CategoryName, x => x.Average);
         try
         {
-            //performance ??= await GetAIResponse(teamId, chartDataRequest.Email, categoryScores);
-            //teamData.TeamPerformance = performance;
+            await SetPerformanceData(teamId, userEmail, chartDataRequest, teamData);
         }
         catch (Exception ex)
         {
@@ -128,10 +113,10 @@ ILogger<TeamService> logger)
         {
             //ToDo: These values should be resolved using user id. Once custom claims are enabled in azure, this needs to be modified accordingly.
 #if !DEBUG
-            if (!await _userRepository.ValidateTeamId(teamId, email))
+            if (!await _userRepository.ValidateTeamId(teamId, string.IsNullOrEmpty(chartDataRequest.Email) ? _identityService.GetEmail() : chartDataRequest.Email))
             {
                 throw new Exception("Invalid team or the user does not have access to the team.");
-            } 
+            }
 #endif
             if (!string.IsNullOrWhiteSpace(chartDataRequest.Email))
             {
@@ -171,7 +156,7 @@ ILogger<TeamService> logger)
         return new List<TeamMemberModel>();
     }
 
-    private async Task<TeamPerformanceDTO> GetAIResponse(int? teamId, string userEmail, Dictionary<string, double> categoryScores)
+    private async Task<TeamPerformanceDTO> GetAIResponse(int surveyId, int? teamId, string userEmail, Dictionary<string, double> categoryScores)
     {
         var result = JsonSerializer.Deserialize<TeamPerformanceDTO>(await _openAIService.GetPromptResponse(categoryScores), new JsonSerializerOptions { PropertyNameCaseInsensitive = true, NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString });
         var modelData = _mapper.Map<AIResponseData>(result);
@@ -179,17 +164,45 @@ ILogger<TeamService> logger)
         {
             if (teamId.HasValue)
             {
-                await _aIResponseRepository.AddOrUpdateResponseDataForTeam(teamId.Value, modelData);
+                await _aIResponseRepository.AddOrUpdateResponseDataForTeam(teamId.Value, surveyId, modelData);
             }
             else
             {
                 var userId = await _userRepository.GetUserIdByEmailAsync(userEmail);
-                await _aIResponseRepository.AddOrUpdateResponseDataForUser(userId, modelData);
+                await _aIResponseRepository.AddOrUpdateResponseDataForUser(userId, surveyId, modelData);
             }
         }
         catch
         {
         }
         return result;
+    }
+
+    private async Task SetPerformanceData(int? teamId, string userEmail, ChartDataRequestModel chartDataRequest, TeamDataModel teamData)
+    {
+        foreach (var survey in teamData.SurveyResults)
+        {
+            if (teamId.HasValue) // Devon user
+            {
+                if (!string.IsNullOrWhiteSpace(chartDataRequest.Email))
+                {
+                    var userPerformance = await _aIResponseRepository.GetResponseDataForUser(chartDataRequest.Email, survey.SurveyId, teamId);
+                    if (userPerformance != null)
+                        survey.TeamPerformance = _mapper.Map<TeamPerformanceDTO>(userPerformance);
+                }
+                else
+                {
+                    var teamPerformance = await _aIResponseRepository.GetResponseDataForTeam(teamId.Value, survey.SurveyId);
+                    if (teamPerformance != null)
+                        survey.TeamPerformance = _mapper.Map<TeamPerformanceDTO>(teamPerformance);
+                }
+            }
+            else // Anonymous user
+            {
+                var userPerformance = await _aIResponseRepository.GetResponseDataForUser(userEmail, survey.SurveyId);
+                if (userPerformance != null)
+                    survey.TeamPerformance = _mapper.Map<TeamPerformanceDTO>(userPerformance);
+            }
+        }
     }
 }

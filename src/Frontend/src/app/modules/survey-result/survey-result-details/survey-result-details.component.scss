@@ -7,8 +7,9 @@
 }
 .overall-score {
   position: absolute;
-  top: -20px;
-  right: 40px;
+  bottom: -40px;
+  left: calc(50% - 55px);
+  width: 110px;
 }
 .placeholder {
   font-size: larger;
