@@ -1,4 +1,5 @@
 ﻿using HPTA.DTO;
+using HPTA.Scheduler;
 using HPTA.Services.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,8 @@ public class AnswerController(IAnswerService answerService) : BaseController
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-        await _answerService.AddAnswers(answers);
+        var result = await _answerService.AddAnswers(answers);
+        AITaskManager.Enqueue(result.Item1, result.Item2, result.Item3);
         return Ok();
     }
 }

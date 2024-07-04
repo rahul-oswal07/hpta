@@ -1,3 +1,4 @@
+import { TeamPerformanceModel } from "./../models/team.model";
 import {
   animate,
   state,
@@ -18,7 +19,10 @@ import {
   ChartDataRequestModel,
   SurveyResultDataModel,
 } from "src/app/modules/survey-result/models/team.model";
-import { SurveyResultService } from "src/app/modules/survey-result/services/survey-result.service";
+import {
+  PROGRESS_STATUS,
+  SurveyResultService,
+} from "src/app/modules/survey-result/services/survey-result.service";
 
 const CATEGORY_COLORS: any = {
   Culture: "#85b5c7",
@@ -53,12 +57,14 @@ export class SurveyResultDetailsComponent implements OnInit {
   multiselectAverageChartOptions: ChartOptions;
   categoryChartOptions: ChartOptions;
   summaryChartOptions?: any;
+  teamPerformance: Record<number, TeamPerformanceModel> = {};
 
   @ViewChild(DataStatusIndicator)
   dataStatusIndicator?: DataStatusIndicator;
 
   email: string;
   isMultiSelection: boolean;
+  teamPerformanceProgress?: PROGRESS_STATUS;
 
   constructor(
     private surveyResultService: SurveyResultService,
@@ -90,9 +96,9 @@ export class SurveyResultDetailsComponent implements OnInit {
       },
     });
 
-    this.surveyResultService.getTeamMemberId().subscribe((memberId) => {
+    this.surveyResultService.getTeamMemberId().subscribe((email) => {
       this.categoryChartOptions = this.chartOptions = {} as ChartOptions;
-      this.email = memberId;
+      this.email = email;
       this._loadChartData();
     });
   }
@@ -303,11 +309,13 @@ export class SurveyResultDetailsComponent implements OnInit {
       surveyId: this.surveyId,
       email: this.email,
     };
-
+    this.teamPerformance = {};
+    this.teamPerformanceProgress = undefined;
     this.surveyResultService.getChartData(chartRequest, this.teamId).subscribe({
       next: (data) => {
         this.populateChart(data);
         this.updateOverviewGraph();
+        this._loadPerformanceData();
         if (data.surveyResults?.length > 1) {
           this.buildMultiselectAverageChart();
         }
@@ -320,6 +328,40 @@ export class SurveyResultDetailsComponent implements OnInit {
         this.chartData = {} as TeamDataModel;
       },
     });
+  }
+
+  private _loadPerformanceData() {
+    if (!this.surveyId || this.surveyId.length === 0) {
+      return;
+    }
+
+    const chartRequest: ChartDataRequestModel = {
+      surveyId: this.chartData?.surveyResults?.map((r) => r.surveyId) ?? [],
+      email: this.email,
+    };
+    if (chartRequest.surveyId.length === 0) {
+      return;
+    }
+
+    this.surveyResultService
+      .getPerformanceData(chartRequest, this.teamId)
+      .subscribe({
+        next: (data) => {
+          if (data === "in_progress") {
+            this.teamPerformance = {};
+            this.teamPerformanceProgress = "in_progress";
+            // ToDo: replace this polling service with signalr service
+            setTimeout(() => this._loadPerformanceData(), 5000);
+          } else {
+            this.teamPerformance = data;
+            this.teamPerformanceProgress = undefined;
+          }
+          this.cd.markForCheck();
+        },
+        error: (err) => {
+          this.teamPerformance = {};
+        },
+      });
   }
 
   private updateOverviewGraph() {
@@ -364,9 +406,9 @@ export class SurveyResultDetailsComponent implements OnInit {
                       0
                     );
 
-                    return `${(total / w.globals.seriesTotals.length).toFixed(
-                      2
-                    ).replace(/[.,]00$/, "")}/5`;
+                    return `${(total / w.globals.seriesTotals.length)
+                      .toFixed(2)
+                      .replace(/[.,]00$/, "")}/5`;
                   },
                 },
               },
@@ -378,20 +420,6 @@ export class SurveyResultDetailsComponent implements OnInit {
     } else {
       this.summaryChartOptions = undefined;
     }
-  }
-  updateAIRecommendations(surveyId: number) {
-    this.dataStatusIndicator?.setLoading();
-    this.surveyResultService
-      .updateAIRecommendations(surveyId, this.teamId, this.email)
-      .subscribe({
-        next: () => {
-          this._loadChartData();
-          this.dataStatusIndicator?.setDefault();
-        },
-        error: () => {
-          this.dataStatusIndicator?.setDefault();
-        },
-      });
   }
 
   private _loadCategoryChartData(teamId: number, categoryName: string) {
@@ -459,7 +487,9 @@ export class SurveyResultDetailsComponent implements OnInit {
         .map((x) => x.average)
         .reduce((a, b) => a + b, 0);
       const average = Number(
-        (sumOfAverages / surveyResult.scores.length).toFixed(2).replace(/[.,]00$/, "")
+        (sumOfAverages / surveyResult.scores.length)
+          .toFixed(2)
+          .replace(/[.,]00$/, "")
       );
       averagePerSurvey.push(average);
     });

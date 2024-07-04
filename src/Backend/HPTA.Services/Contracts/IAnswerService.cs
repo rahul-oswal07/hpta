@@ -4,7 +4,7 @@ namespace HPTA.Services.Contracts;
 
 public interface IAnswerService
 {
-    Task AddAnswers(List<SurveyAnswerModel> answers);
+    Task<(int, int?, string)> AddAnswers(List<SurveyAnswerModel> answers);
 
-    Task UpdateAIRecommendations(int surveyId, int? teamId, string userId);
+    Task UpdateAIResponse(int? teamId, string email, int surveyId, string jobId);
 }
