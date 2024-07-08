@@ -1,10 +1,10 @@
 {
-  "description": "Provide a brief description of the team's overall performance.",
+  "description": "Explain the overall score of the team and highlight the category that needs improvement(score<4)",
   "categories": [
     {
       "category": "name",
-      "score": "score",
-      "description": "Provide insights and observations specific to this category."
+      "score": "average score",
+      "description": "Using a coaching tone without directly revealing the subcategory name, provide suggestions and tips to improve the least performing subcategories (include all with a score less than 4). Use the context of software development in an agile methodology within a service-based industry to create the tips. Suggestions could include improvements in ways of working, processes, tooling, culture, training, DevOps, Lean improvements, and more. Include appreciation for the highest performing subcategory without directly revealing the name if any score is > 4.5. Limit the response to 100 words max."
     }
   ]
 }

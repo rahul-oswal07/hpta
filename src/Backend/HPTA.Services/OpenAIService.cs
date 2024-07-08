@@ -2,9 +2,7 @@
 using HPTA.DTO;
 using HPTA.Services.Contracts;
 using Newtonsoft.Json;
-using System.Net.Http.Json;
 using System.Text;
-using System.Text.Encodings.Web;
 
 namespace HPTA.Services;
 
@@ -16,7 +14,7 @@ public class OpenAIService : IOpenAIService
         _connectionStrings = connectionStrings;
     }
 
-    public async Task<string> GetPromptResponse(Dictionary<string, double> scores)
+    public async Task<string> GetPromptResponse(IEnumerable<AIRequestCategoryDTO> scores)
     {
         var prompt = GetPrompt(scores);
         string json = JsonConvert.SerializeObject(new PromptModel { UserInput = prompt });
@@ -26,16 +24,22 @@ public class OpenAIService : IOpenAIService
         return response;
     }
 
-    static string GetPrompt(Dictionary<string, double> scores)
+    static string GetPrompt(IEnumerable<AIRequestCategoryDTO> scores)
     {
-        string prompt = @"As an AI Agile Coach for the team, I've received their assessment scores across various categories, rated on a scale of 1 to 5. The scores are as follows:";
-        foreach (var kvp in scores)
+        StringBuilder promptBuilder = new StringBuilder(@"I am conducting a survey on high-performing agile teams. I will provide the scores divided into categories and subcategories in a JSON format. I would like the response to be in the format below, with explanations for each field provided.");
+
+        foreach (var category in scores)
         {
-            prompt += $"\n{kvp.Key}: {kvp.Value}";
+            promptBuilder.Append($"\n{category.CategoryName}:");
+            foreach (var score in category.Scores)
+            {
+                promptBuilder.Append($" [{score.SubCategoryName} : {score.Score}]");
+            }
         }
 
-        prompt += @"Could you provide detailed insights for each category? The output should be in JSON format without html tags, structured as follows: " + GetStringFromJSonFile();
-        return prompt;
+        promptBuilder.Append("\n" + GetStringFromJSonFile());
+
+        return promptBuilder.ToString();
     }
 
     private async Task<string> GetAIResponse(string json)
