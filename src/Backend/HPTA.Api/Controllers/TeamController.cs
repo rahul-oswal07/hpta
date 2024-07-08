@@ -1,4 +1,5 @@
 ﻿using HPTA.DTO;
+using HPTA.Scheduler;
 using HPTA.Services.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,11 +11,13 @@ public class TeamController : BaseController
 {
     private readonly ITeamService _teamService;
     private readonly IAnswerService _answerService;
+    private readonly IIdentityService identityService;
 
-    public TeamController(ITeamService teamService, IAnswerService answerService)
+    public TeamController(ITeamService teamService, IAnswerService answerService, IIdentityService identityService)
     {
         _teamService = teamService;
         this._answerService = answerService;
+        this.identityService = identityService;
     }
 
     [HttpGet]
@@ -34,10 +37,28 @@ public class TeamController : BaseController
     [HttpGet("{teamId}/members")]
     public async Task<ActionResult> ListTeamMembers(int teamId) => Ok(await _teamService.ListTeamMembers(teamId));
 
-    [HttpPost("ai/{surveyId}")]
-    public async Task<ActionResult> UpdateAIRecommentadions(int surveyId, [FromQuery]int? teamId, [FromQuery]string userId)
+    [HttpPost("performance/{teamId?}")]
+    public async Task<ActionResult> GetPerformanceData(int? teamId, ChartDataRequestModel chartDataRequest)
     {
-        await _answerService.UpdateAIRecommendations(surveyId, teamId, userId);
-        return Ok();
+        
+        if (chartDataRequest.SurveyId.Any(s => AITaskManager.IsJobRunning(s, teamId, chartDataRequest.Email)))
+        {
+            return Ok(new { Message= "in_progress" });
+        }
+        var result = await _teamService.GetPerformanceData(teamId, chartDataRequest);
+        bool inProgress = false;
+        foreach (var item in chartDataRequest.SurveyId)
+        {
+            if (!result.ContainsKey(item) || result[item] == null)
+            {
+                if (string.IsNullOrEmpty(chartDataRequest.Email))
+                    chartDataRequest.Email = identityService.GetEmail();
+                AITaskManager.Enqueue(item, teamId, chartDataRequest.Email);
+                inProgress = true;
+            }
+        }
+        if (inProgress)
+            return Ok(new { Message = "in_progress" });
+        return Ok(result);
     }
 }

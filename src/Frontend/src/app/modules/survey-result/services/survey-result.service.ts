@@ -1,12 +1,15 @@
 import { Injectable, Injector } from "@angular/core";
-import { Observable, Subject } from "rxjs";
+import { Observable, Subject, map } from "rxjs";
 import { DataService } from "src/app/core/services/data.service";
 import {
   ChartDataRequestModel,
   TeamDataModel,
   TeamMemberModel,
+  TeamPerformanceModel,
   TeamsModel,
 } from "src/app/modules/survey-result/models/team.model";
+
+export type PROGRESS_STATUS = "in_progress";
 
 @Injectable({
   providedIn: "root",
@@ -31,10 +34,6 @@ export class SurveyResultService extends DataService {
       return this.post(chartRequest, ["result", teamId.toString()]);
     }
     return this.post(chartRequest, ["result"]);
-  }
-
-  updateAIRecommendations(surveyId: number, teamId: number, userId: string) {
-    return this.post(null, ['ai',surveyId.toString()], {teamId, userId});
   }
 
   getCategoryChartData(
@@ -62,5 +61,21 @@ export class SurveyResultService extends DataService {
 
   getTeamMemberId(): Observable<string> {
     return this.teamMemberId$;
+  }
+
+  getPerformanceData(chartRequest: ChartDataRequestModel, teamId?: number) {
+    const pathParams = ["performance"];
+    if (teamId) {
+      pathParams.push(teamId.toString());
+    }
+    return this.post<
+      any,
+      Record<number, TeamPerformanceModel> | { message: string }
+    >(chartRequest, pathParams).pipe(
+      map((r: { message: string } | Record<number, TeamPerformanceModel>) => {
+        if ("message" in r) return 'in_progress';
+        return r;
+      })
+    );
   }
 }

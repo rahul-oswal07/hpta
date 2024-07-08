@@ -18,9 +18,9 @@ namespace HPTA.Repositories
             return await query.Select(d => d.ResponseData).FirstOrDefaultAsync();
         }
 
-        public async Task<AIResponseData> GetResponseDataForUser(string userId, int? surveyId, int? teamId = null)
+        public async Task<AIResponseData> GetResponseDataForUser(string userEmail, int? surveyId, int? teamId = null)
         {
-            var query = _context.AIResponses.AsNoTracking().Where(r => r.UserId == userId);
+            var query = _context.AIResponses.AsNoTracking().Where(r => r.User.Email == userEmail);
             if (surveyId.HasValue)
                 query = query.Where(r => r.SurveyId == surveyId.Value);
             else
