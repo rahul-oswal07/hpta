@@ -2,6 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using HPTA.Data.Entities;
 using HPTA.DTO;
+using HPTA.Repositories;
 using HPTA.Repositories.Contracts;
 using HPTA.Services.Contracts;
 using Microsoft.EntityFrameworkCore;
@@ -18,12 +19,14 @@ public class TeamService : ITeamService
     private readonly IUserRepository _userRepository;
     private readonly IAIResponseRepository _aIResponseRepository;
     private readonly ISurveyRepository _surveyRepository;
+    private readonly IUserTeamRepository _userTeamRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<TeamService> Logger;
 
     public TeamService(ITeamRepository teamRepository, IMapper mapper, IOpenAIService openAIService, IIdentityService identityService, IUserRepository userRepository,
 IAIResponseRepository aIResponseRepository,
 ISurveyRepository surveyRepository,
+IUserTeamRepository userTeamRepository,
 ILogger<TeamService> logger)
     {
         _teamRepository = teamRepository;
@@ -33,6 +36,7 @@ ILogger<TeamService> logger)
         _userRepository = userRepository;
         _aIResponseRepository = aIResponseRepository;
         _surveyRepository = surveyRepository;
+        this._userTeamRepository = userTeamRepository;
         Logger = logger;
     }
 
@@ -42,14 +46,10 @@ ILogger<TeamService> logger)
         var email = _identityService.GetEmail();
         var myRole = await _userRepository.GetRoleByUser(email);
         IQueryable<Team> teams;
-#if DEBUG
-        teams = _teamRepository.GetBy(t => t.IsActive);
-#else
         if (myRole >= Common.Roles.CDL)
             teams = _teamRepository.GetBy(t => t.IsActive);
         else
             teams = _teamRepository.ListByUser(email);
-#endif
         return await teams.ProjectTo<TeamModel>(_mapper.ConfigurationProvider).OrderBy(team => team.Name).ToListAsync();
     }
 
@@ -180,5 +180,12 @@ ILogger<TeamService> logger)
             }
         }
         return result;
+    }
+
+    public async Task<int?> GetCoreTeamId()
+    {
+        var email = _identityService.GetEmail();
+        var userId = await _userRepository.GetUserIdByEmailAsync(email);
+        return await _userTeamRepository.GetCoreTeamIdByUserId(userId);
     }
 }

@@ -37,6 +37,9 @@ public class TeamController : BaseController
     [HttpGet("{teamId}/members")]
     public async Task<ActionResult> ListTeamMembers(int teamId) => Ok(await _teamService.ListTeamMembers(teamId));
 
+    [HttpGet("coreteamid")]
+    public async Task<ActionResult> GetCoreTeamId() => Ok(await _teamService.GetCoreTeamId());
+
     [HttpPost("performance/{teamId?}")]
     public async Task<ActionResult> GetPerformanceData(int? teamId, ChartDataRequestModel chartDataRequest)
     {
