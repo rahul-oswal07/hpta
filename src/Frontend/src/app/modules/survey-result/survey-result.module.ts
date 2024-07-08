@@ -18,6 +18,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { RatingModule } from 'src/app/modules/rating/rating.module';
 import { MatCardModule } from '@angular/material/card';
 import {MatTabsModule} from '@angular/material/tabs';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+
 
 @NgModule({
   declarations: [SurveyResultComponent, SurveyResultDetailsComponent],
@@ -39,7 +41,8 @@ import {MatTabsModule} from '@angular/material/tabs';
     RatingModule,
     NgxMatSelectSearchModule,
     MatCardModule,
-    MatTabsModule
+    MatTabsModule,
+    MatProgressBarModule
   ],
 })
 export class SurveyResultModule {}

@@ -17,6 +17,7 @@ namespace HPTA.Scheduler.Infrastructure
         .UseSqlServerStorage(appSettings.MasterDbConnectionString));
 
             services.AddHangfireServer();
+            services.AddSingleton<IAITaskStatusUpdater>(f => new AITaskManager());
         }
 
         public static void InitTeamSync(this IApplicationBuilder app)

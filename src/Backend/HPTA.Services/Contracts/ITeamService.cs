@@ -11,4 +11,6 @@ public interface ITeamService
     Task<TeamDataModel> LoadCategoryChartData(int? teamId, int categoryId, ChartDataRequestModel chartDataRequest);
 
     Task<List<TeamMemberModel>> ListTeamMembers(int teamId);
+
+    Task<Dictionary<int, TeamPerformanceDTO>> GetPerformanceData(int? teamId, ChartDataRequestModel chartDataRequest);
 }

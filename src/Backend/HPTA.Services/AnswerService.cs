@@ -19,9 +19,10 @@ public class AnswerService : IAnswerService
     private readonly IAIResponseRepository _aIResponseRepository;
     private readonly IUserTeamRepository _userTeamRepository;
     private readonly ISurveyRepository _surveyRepository;
+    private readonly IAITaskStatusUpdater aITaskStatusUpdater;
 
     public AnswerService(IAnswerRepository answerRepository, IIdentityService identityService, IUserRepository userRepository, ITeamRepository teamRepository,
-        IOpenAIService openAIService, IMapper mapper, IAIResponseRepository aIResponseRepository, IUserTeamRepository userTeamRepository, ISurveyRepository surveyRepository)
+        IOpenAIService openAIService, IMapper mapper, IAIResponseRepository aIResponseRepository, IUserTeamRepository userTeamRepository, ISurveyRepository surveyRepository, IAITaskStatusUpdater aITaskStatusUpdater)
     {
         _answerRepository = answerRepository;
         _identityService = identityService;
@@ -32,9 +33,10 @@ public class AnswerService : IAnswerService
         _aIResponseRepository = aIResponseRepository;
         _userTeamRepository = userTeamRepository;
         _surveyRepository = surveyRepository;
+        this.aITaskStatusUpdater = aITaskStatusUpdater;
     }
 
-    public async Task AddAnswers(List<SurveyAnswerModel> answers)
+    public async Task<(int, int?, string)> AddAnswers(List<SurveyAnswerModel> answers)
     {
         var email = _identityService.GetEmail();
         var userId = await _userRepository.GetUserIdByEmailAsync(email);
@@ -54,23 +56,14 @@ public class AnswerService : IAnswerService
                 _answerRepository.Update(ratingAnswer);
         }
         await _answerRepository.SaveAsync();
-        await UpdateAIResponse(teamId, userId, surveyId);
+        return (surveyId, teamId, email);
     }
 
-    public async Task UpdateAIRecommendations(int surveyId, int? teamId, string userId)
-    {
-        if(userId == null)
-        {
-            var email = _identityService.GetEmail();
-            userId = await _userRepository.GetUserIdByEmailAsync(email);
-            await UpdateAIResponse(teamId, userId, surveyId);
-        }
-    }
-
-    private async Task UpdateAIResponse(int? teamId, string userId, int surveyId)
+    public async Task UpdateAIResponse(int? teamId, string email, int surveyId, string jobId)
     {
         try
         {
+            var userId = await _userRepository.GetUserIdByEmailAsync(email);
             var scoreData = await _answerRepository.ListAnswersByTeamWithCategories(surveyId, teamId).Select(r => new { CategoryName = r.Question.Question.SubCategory.Category.Name, r.Rating, r.UserId }).ToListAsync();
             Dictionary<string, double> score = scoreData.Where(s => s.UserId == userId).GroupBy(s => s.CategoryName).Select(s => new { CategoryName = s.Key, Average = s.Average(a => (int)a.Rating) }).ToDictionary(x => x.CategoryName, x => x.Average);
             var modelData = await GetAIResponse(score);
@@ -85,6 +78,7 @@ public class AnswerService : IAnswerService
         catch (Exception ex)
         {
         }
+        aITaskStatusUpdater.UpdateStatus(jobId, false);
     }
 
     private async Task<AIResponseData> GetAIResponse(Dictionary<string, double> score)

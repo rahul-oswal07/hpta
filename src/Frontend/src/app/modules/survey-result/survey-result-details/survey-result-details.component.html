@@ -49,7 +49,7 @@
     </div>
     <div
       class="overall-score bg-white mat-elevation-z8"
-      *ngIf="chartData?.surveyResults?.length == 1"
+      *ngIf="summaryChartOptions?.series"
     >
       <div class="text-center">Scores</div>
       <div class="block relative p-1">
@@ -93,16 +93,16 @@
         *ngFor="let survey of chartData.surveyResults"
         [label]="survey.surveyName"
       >
-        <ng-container *ngIf="survey.teamPerformance; else noAIResponse">
+        <ng-container *ngIf="teamPerformance[survey.surveyId]; else noAIResponse">
           <div class="summary-panel p-5">
             <h3>TEAM PERFORMANCE SUMMARY</h3>
-            {{ survey.teamPerformance.description }}
+            {{ teamPerformance[survey.surveyId].description }}
           </div>
           <div class="bg-white p-5">
             <h3>OUR AI-AGILE COACH SUGGESTIONS</h3>
             <div class="grid grid-cols-3 gap-5">
               <mat-card
-                *ngFor="let item of survey.teamPerformance.categories"
+                *ngFor="let item of teamPerformance[survey.surveyId].categories"
                 appearance="outlined"
               >
                 <mat-card-header>
@@ -127,7 +127,15 @@
           </div>
         </ng-container>
         <ng-template #noAIResponse>
-          <div class="summary-panel p-5 text-center">No Data <button *ngIf="teamId" mat-stroked-button color="warn" (click)="updateAIRecommendations(survey.surveyId)">Update</button></div>
+          <div class="summary-panel p-5" *ngIf="teamPerformanceProgress">
+            <div class="flex flex-col">
+              <div class="text-center">
+                Great things are happening in the background. Hang on just a moment!
+
+              </div>
+              <mat-progress-bar class="mt-10" mode="indeterminate"></mat-progress-bar>
+            </div>
+          </div>
         </ng-template>
       </mat-tab>
     </mat-tab-group>
