@@ -26,6 +26,10 @@ export class SurveyResultService extends DataService {
     return this.getList<TeamsModel>();
   }
 
+  getCoreTeamId(){
+    return this.getSingle<number>('coreteamid');
+  }
+
   getChartData(
     chartRequest: ChartDataRequestModel,
     teamId?: number
