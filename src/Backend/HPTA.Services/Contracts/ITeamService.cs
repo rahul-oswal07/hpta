@@ -13,4 +13,6 @@ public interface ITeamService
     Task<List<TeamMemberModel>> ListTeamMembers(int teamId);
 
     Task<Dictionary<int, TeamPerformanceDTO>> GetPerformanceData(int? teamId, ChartDataRequestModel chartDataRequest);
+
+    Task<int?> GetCoreTeamId();
 }
