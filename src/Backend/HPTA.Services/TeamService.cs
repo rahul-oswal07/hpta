@@ -45,8 +45,10 @@ ILogger<TeamService> logger)
         //ToDo: These values should be resolved using user id. Once custom claims are enabled in azure, this needs to be modified accordingly.
         var email = _identityService.GetEmail();
         var myRole = await _userRepository.GetRoleByUser(email);
+        var user = await _userRepository.GetUserByEmail(email);
+
         IQueryable<Team> teams;
-        if (myRole >= Common.Roles.CDL)
+        if (myRole >= Common.Roles.CDL || user.HasSpecialPrivilege.GetValueOrDefault())
             teams = _teamRepository.GetBy(t => t.IsActive);
         else
             teams = _teamRepository.ListByUser(email);
@@ -135,8 +137,9 @@ ILogger<TeamService> logger)
     {
         var email = _identityService.GetEmail();
         var role = await _userRepository.GetRoleByUser(email);
+        var user = await _userRepository.GetUserByEmail(email);
 
-        if (role >= Common.Roles.ScrumMaster)
+        if (role >= Common.Roles.ScrumMaster || user.HasSpecialPrivilege.GetValueOrDefault())
             return await _userRepository.GetByTeamId(teamId).Select(u => new TeamMemberModel
             {
                 Email = u.Email,
