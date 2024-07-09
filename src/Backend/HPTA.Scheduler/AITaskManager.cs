@@ -1,12 +1,6 @@
 ﻿using Hangfire;
 using HPTA.Services.Contracts;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HPTA.Scheduler
 {

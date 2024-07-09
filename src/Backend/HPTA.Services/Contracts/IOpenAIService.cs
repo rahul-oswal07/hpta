@@ -1,6 +1,8 @@
-﻿namespace HPTA.Services.Contracts;
+﻿using HPTA.DTO;
+
+namespace HPTA.Services.Contracts;
 
 public interface IOpenAIService
 {
-    Task<string> GetPromptResponse(Dictionary<string, double> scores);
+    Task<string> GetPromptResponse(IEnumerable<AIRequestCategoryDTO> scores);
 }

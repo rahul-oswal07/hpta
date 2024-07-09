@@ -4,6 +4,7 @@ using HPTA.DTO;
 using HPTA.Repositories.Contracts;
 using HPTA.Services.Contracts;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Text.Json;
 
 namespace HPTA.Services;
@@ -64,14 +65,21 @@ public class AnswerService : IAnswerService
         try
         {
             var userId = await _userRepository.GetUserIdByEmailAsync(email);
-            var scoreData = await _answerRepository.ListAnswersByTeamWithCategories(surveyId, teamId).Select(r => new { CategoryName = r.Question.Question.SubCategory.Category.Name, r.Rating, r.UserId }).ToListAsync();
-            Dictionary<string, double> score = scoreData.Where(s => s.UserId == userId).GroupBy(s => s.CategoryName).Select(s => new { CategoryName = s.Key, Average = s.Average(a => (int)a.Rating) }).ToDictionary(x => x.CategoryName, x => x.Average);
+            var scoreData = await _answerRepository.ListAnswersByTeamWithCategories(surveyId, teamId).Select(r => new { CategoryName = r.Question.Question.SubCategory.Category.Name, SubCategoryName = r.Question.Question.SubCategory.Name, r.Rating, r.UserId }).ToListAsync();
+            var score = scoreData
+                .Where(s => s.UserId == userId)
+                .GroupBy(s => s.CategoryName)
+                .Select(x => new AIRequestCategoryDTO()
+                {
+                    CategoryName = x.Key,
+                    Scores = x.GroupBy(y => y.SubCategoryName)
+                .Select(t => new AIRequestSubCategoryDTO() { SubCategoryName = t.Key, Score = t.Average(a => Convert.ToDouble((int)a.Rating)) }).ToList()
+                }).ToList();
+
             var modelData = await GetAIResponse(score);
             await _aIResponseRepository.AddOrUpdateResponseDataForUser(userId, surveyId, modelData);
             if (teamId.HasValue)
             {
-                score = scoreData.GroupBy(s => s.CategoryName).Select(s => new { CategoryName = s.Key, Average = s.Average(a => (int)a.Rating) }).ToDictionary(x => x.CategoryName, x => x.Average);
-                modelData = await GetAIResponse(score);
                 await _aIResponseRepository.AddOrUpdateResponseDataForTeam(teamId.Value, surveyId, modelData);
             }
         }
@@ -81,7 +89,7 @@ public class AnswerService : IAnswerService
         aITaskStatusUpdater.UpdateStatus(jobId, false);
     }
 
-    private async Task<AIResponseData> GetAIResponse(Dictionary<string, double> score)
+    private async Task<AIResponseData> GetAIResponse(IEnumerable<AIRequestCategoryDTO> score)
     {
         var result = JsonSerializer.Deserialize<TeamPerformanceDTO>(await _openAIService.GetPromptResponse(score), new JsonSerializerOptions { PropertyNameCaseInsensitive = true, NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString });
         var modelData = _mapper.Map<AIResponseData>(result);
