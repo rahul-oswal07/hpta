@@ -23,6 +23,8 @@ public partial class User
 
     public string AzureAdUserId { get; set; }
 
+    public bool? HasSpecialPrivilege { get; set; }
+
     #region Audit Properties
     public DateTime CreatedOn { get; set; }
     public DateTime UpdatedOn { get; set; }
