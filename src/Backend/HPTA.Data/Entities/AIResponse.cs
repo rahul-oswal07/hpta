@@ -33,7 +33,7 @@ namespace HPTA.Data.Entities
     public class AIRecommendation
     {
         public string Category { get; set; }
-        public string Score { get; set; }
+        public decimal Score { get; set; }
         public string Description { get; set; }
     }
 }
