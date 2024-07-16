@@ -45,8 +45,10 @@ ILogger<TeamService> logger)
         //ToDo: These values should be resolved using user id. Once custom claims are enabled in azure, this needs to be modified accordingly.
         var email = _identityService.GetEmail();
         var myRole = await _userRepository.GetRoleByUser(email);
+        var user = await _userRepository.GetUserByEmail(email);
+
         IQueryable<Team> teams;
-        if (myRole >= Common.Roles.CDL)
+        if (myRole >= Common.Roles.CDL || user.HasSpecialPrivilege.GetValueOrDefault())
             teams = _teamRepository.GetBy(t => t.IsActive);
         else
             teams = _teamRepository.ListByUser(email);
@@ -59,15 +61,15 @@ ILogger<TeamService> logger)
         if (chartDataRequest.SurveyId == null || !chartDataRequest.SurveyId.Any())
             chartDataRequest.SurveyId = [await _surveyRepository.GetLatestSurveyId()];
         var userEmail = _identityService.GetEmail();
+        var user = await _userRepository.GetUserByEmail(userEmail);
+
         if (teamId.HasValue) // Devon user
         {
             //ToDo: These values should be resolved using user id. Once custom claims are enabled in azure, this needs to be modified accordingly.
-#if !DEBUG
-            if (!await _userRepository.ValidateTeamId(teamId, userEmail))
+            if (!user.HasSpecialPrivilege.GetValueOrDefault() && !await _userRepository.ValidateTeamId(teamId, userEmail))
             {
                 throw new Exception("Invalid team or the user does not have access to the team.");
             }
-#endif
 
             if (!string.IsNullOrWhiteSpace(chartDataRequest.Email))
             {
@@ -94,6 +96,9 @@ ILogger<TeamService> logger)
 
     public async Task<TeamDataModel> LoadCategoryChartData(int? teamId, int categoryId, ChartDataRequestModel chartDataRequest)
     {
+        var userEmail = _identityService.GetEmail();
+        var user = await _userRepository.GetUserByEmail(userEmail);
+
         List<UspTeamDataReturnModel> chartData = null;
         if (chartDataRequest.SurveyId == null || !chartDataRequest.SurveyId.Any())
             chartDataRequest.SurveyId = [await _surveyRepository.GetLatestSurveyId()];
@@ -101,12 +106,11 @@ ILogger<TeamService> logger)
         if (teamId.HasValue) // Devon user
         {
             //ToDo: These values should be resolved using user id. Once custom claims are enabled in azure, this needs to be modified accordingly.
-#if !DEBUG
-            if (!await _userRepository.ValidateTeamId(teamId, _identityService.GetEmail()))
+            if (!user.HasSpecialPrivilege.GetValueOrDefault() && !await _userRepository.ValidateTeamId(teamId, _identityService.GetEmail()))
             {
                 throw new Exception("Invalid team or the user does not have access to the team.");
             }
-#endif
+
             if (!string.IsNullOrWhiteSpace(chartDataRequest.Email))
             {
                 chartData = await _teamRepository.LoadCategoryChartDataForTeamMember(chartDataRequest.Email, teamId.Value, categoryId, chartDataRequest.SurveyId);
@@ -135,8 +139,9 @@ ILogger<TeamService> logger)
     {
         var email = _identityService.GetEmail();
         var role = await _userRepository.GetRoleByUser(email);
+        var user = await _userRepository.GetUserByEmail(email);
 
-        if (role >= Common.Roles.ScrumMaster)
+        if (role >= Common.Roles.ScrumMaster || user.HasSpecialPrivilege.GetValueOrDefault())
             return await _userRepository.GetByTeamId(teamId).Select(u => new TeamMemberModel
             {
                 Email = u.Email,
@@ -149,19 +154,19 @@ ILogger<TeamService> logger)
     {
         var result = new Dictionary<int, TeamPerformanceDTO>();
         var email = _identityService.GetEmail();
-#if !DEBUG
-            if (teamId.HasValue && !await _userRepository.ValidateTeamId(teamId, email))
-            {
-                throw new Exception("Invalid team or the user does not have access to the team.");
-            }
-#endif
+        var user = await _userRepository.GetUserByEmail(email);
+
+        if (teamId.HasValue && !user.HasSpecialPrivilege.GetValueOrDefault() && !await _userRepository.ValidateTeamId(teamId, email))
+        {
+            throw new Exception("Invalid team or the user does not have access to the team.");
+        }
         foreach (var surveyId in chartDataRequest.SurveyId)
         {
             if (teamId.HasValue) // Devon user
             {
                 if (!string.IsNullOrWhiteSpace(chartDataRequest.Email))
                 {
-                    var userPerformance = await _aIResponseRepository.GetResponseDataForUser(chartDataRequest.Email, surveyId, teamId);
+                    var userPerformance = await _aIResponseRepository.GetResponseDataForUser(chartDataRequest.Email, surveyId);
                     if (userPerformance != null)
                         result.Add(surveyId, _mapper.Map<TeamPerformanceDTO>(userPerformance));
                 }

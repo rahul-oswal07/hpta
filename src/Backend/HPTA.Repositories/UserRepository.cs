@@ -49,5 +49,10 @@ namespace HPTA.Repositories
         {
             return await _hptaDbContext.Users.AnyAsync(u => u.IsActive && u.Email == email && (u.Teams.Any(t => t.RoleId >= Roles.CDL) || u.Teams.Any(t => t.StartDate <= DateTime.Today && t.EndDate >= DateTime.Today && t.IsCoreMember && t.TeamId == teamId)));
         }
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            return await _hptaDbContext.Users.Where(u => u.Email == email).FirstOrDefaultAsync();
+        }
     }
 }

@@ -91,7 +91,7 @@ export class SurveyResultDetailsComponent implements OnInit {
               .split(",")
               .filter((v: string) => !!v)
               .map((v: string) => Number(v));
-        this.isMultiSelection = this.surveyId.length > 1;
+
         this._loadChartData();
       },
     });
@@ -107,7 +107,8 @@ export class SurveyResultDetailsComponent implements OnInit {
     const thisRef = this;
     let chartOptions = {} as ChartOptions;
 
-    if (chartData.surveyResults.length) {
+    if (chartData.surveyResults?.length) {
+      this.isMultiSelection = chartData.surveyResults.length > 1;
       const scores = chartData.surveyResults[0].scores;
 
       const categories = scores.map((data) => data.categoryName);
@@ -365,7 +366,7 @@ export class SurveyResultDetailsComponent implements OnInit {
   }
 
   private updateOverviewGraph() {
-    if (!this.isMultiSelection && this.chartData.surveyResults?.length) {
+    if (this.chartData.surveyResults?.length == 1) {
       const options = {
         series: (this.chartData.surveyResults[0].scores ?? []).map(
           (s) => s.average
