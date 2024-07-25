@@ -26,21 +26,19 @@ public class OpenAIService : IOpenAIService
 
     static string GetPrompt(IEnumerable<AIRequestCategoryDTO> scores)
     {
-        StringBuilder promptBuilder = new StringBuilder(@"I am conducting a survey on high-performing agile teams. I will provide the scores divided into categories and subcategories in a JSON format. I would like the response to be in the format below, with explanations for each field provided.");
+        var prompt = @"You are an agile coach for a company. A team has submitted an High performing team assessment which will indicate the current status of the team. Each question in the assessment are divided into categories. You will be provided with the score for each categories and again divided into sub-categories. The score for each categories and their sub-categories are as follows:";
 
         foreach (var category in scores)
         {
-            promptBuilder.Append($"\n{category.CategoryName}:");
-            foreach (var score in category.Scores)
-            {
-                promptBuilder.Append($" [{score.SubCategoryName} : {score.Score}]");
-            }
+            prompt += $"\n{category.CategoryName}-[{string.Join(",", category.Scores.Select(s => $"{s.SubCategoryName} - {s.Score}"))}]";
         }
+        
+        prompt += "\n You need to provide detail explanation of the team is doing with respect to each categories in below JSON format:";
+        prompt += "\n" + GetStringFromJSonFile();
 
-        promptBuilder.Append("\n" + GetStringFromJSonFile());
-
-        return promptBuilder.ToString();
+        return prompt;
     }
+
 
     private async Task<string> GetAIResponse(string json)
     {
