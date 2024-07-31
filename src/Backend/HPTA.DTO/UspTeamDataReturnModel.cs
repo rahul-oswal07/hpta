@@ -65,6 +65,7 @@ public class ScoreModel
 
 public class TeamPerformanceDTO
 {
+    public DateTime? AssessmentDateTime { get; set; }
     public string Description { get; set; }
     public List<CategoryDTO> Categories { get; set; }
 }
