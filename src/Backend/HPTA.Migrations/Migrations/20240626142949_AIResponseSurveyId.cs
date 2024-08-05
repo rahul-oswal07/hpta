@@ -10,29 +10,29 @@ namespace HPTA.Migrations.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<int>(
-                name: "TeamId",
-                table: "UspTeamDataReturnModels",
-                type: "int",
-                nullable: false,
-                defaultValue: 0,
-                oldClrType: typeof(int),
-                oldType: "int",
-                oldNullable: true);
+            //migrationBuilder.AlterColumn<int>(
+            //    name: "TeamId",
+            //    table: "UspTeamDataReturnModels",
+            //    type: "int",
+            //    nullable: false,
+            //    defaultValue: 0,
+            //    oldClrType: typeof(int),
+            //    oldType: "int",
+            //    oldNullable: true);
 
-            migrationBuilder.AddColumn<int>(
-                name: "SurveyId",
-                table: "UspTeamDataReturnModels",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
+            //migrationBuilder.AddColumn<int>(
+            //    name: "SurveyId",
+            //    table: "UspTeamDataReturnModels",
+            //    type: "int",
+            //    nullable: false,
+            //    defaultValue: 0);
 
-            migrationBuilder.AddColumn<string>(
-                name: "SurveyName",
-                table: "UspTeamDataReturnModels",
-                type: "nvarchar(50)",
-                maxLength: 50,
-                nullable: true);
+            //migrationBuilder.AddColumn<string>(
+            //    name: "SurveyName",
+            //    table: "UspTeamDataReturnModels",
+            //    type: "nvarchar(50)",
+            //    maxLength: 50,
+            //    nullable: true);
 
             migrationBuilder.AddColumn<int>(
                 name: "SurveyId",
@@ -64,25 +64,25 @@ namespace HPTA.Migrations.Migrations
                 name: "IX_AIResponses_SurveyId",
                 table: "AIResponses");
 
-            migrationBuilder.DropColumn(
-                name: "SurveyId",
-                table: "UspTeamDataReturnModels");
+            //migrationBuilder.DropColumn(
+            //    name: "SurveyId",
+            //    table: "UspTeamDataReturnModels");
 
-            migrationBuilder.DropColumn(
-                name: "SurveyName",
-                table: "UspTeamDataReturnModels");
+            //migrationBuilder.DropColumn(
+            //    name: "SurveyName",
+            //    table: "UspTeamDataReturnModels");
 
             migrationBuilder.DropColumn(
                 name: "SurveyId",
                 table: "AIResponses");
 
-            migrationBuilder.AlterColumn<int>(
-                name: "TeamId",
-                table: "UspTeamDataReturnModels",
-                type: "int",
-                nullable: true,
-                oldClrType: typeof(int),
-                oldType: "int");
+            //migrationBuilder.AlterColumn<int>(
+            //    name: "TeamId",
+            //    table: "UspTeamDataReturnModels",
+            //    type: "int",
+            //    nullable: true,
+            //    oldClrType: typeof(int),
+            //    oldType: "int");
         }
     }
 }

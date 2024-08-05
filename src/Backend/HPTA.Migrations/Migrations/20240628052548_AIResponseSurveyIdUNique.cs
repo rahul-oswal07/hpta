@@ -18,13 +18,13 @@ namespace HPTA.Migrations.Migrations
                 name: "IX_AIResponses_UserId",
                 table: "AIResponses");
 
-            migrationBuilder.AlterColumn<int>(
-                name: "TeamId",
-                table: "UspTeamDataReturnModels",
-                type: "int",
-                nullable: true,
-                oldClrType: typeof(int),
-                oldType: "int");
+            //migrationBuilder.AlterColumn<int>(
+            //    name: "TeamId",
+            //    table: "UspTeamDataReturnModels",
+            //    type: "int",
+            //    nullable: true,
+            //    oldClrType: typeof(int),
+            //    oldType: "int");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AIResponses_TeamId_SurveyId",
@@ -52,15 +52,15 @@ namespace HPTA.Migrations.Migrations
                 name: "IX_AIResponses_UserId_SurveyId",
                 table: "AIResponses");
 
-            migrationBuilder.AlterColumn<int>(
-                name: "TeamId",
-                table: "UspTeamDataReturnModels",
-                type: "int",
-                nullable: false,
-                defaultValue: 0,
-                oldClrType: typeof(int),
-                oldType: "int",
-                oldNullable: true);
+            //migrationBuilder.AlterColumn<int>(
+            //    name: "TeamId",
+            //    table: "UspTeamDataReturnModels",
+            //    type: "int",
+            //    nullable: false,
+            //    defaultValue: 0,
+            //    oldClrType: typeof(int),
+            //    oldType: "int",
+            //    oldNullable: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AIResponses_TeamId",

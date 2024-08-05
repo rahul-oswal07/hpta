@@ -58,6 +58,7 @@ export class SurveyResultDetailsComponent implements OnInit {
   categoryChartOptions: ChartOptions;
   summaryChartOptions?: any;
   teamPerformance: Record<number, TeamPerformanceModel> = {};
+  pollingAttempts = 0;
 
   @ViewChild(DataStatusIndicator)
   dataStatusIndicator?: DataStatusIndicator;
@@ -352,7 +353,11 @@ export class SurveyResultDetailsComponent implements OnInit {
             this.teamPerformance = {};
             this.teamPerformanceProgress = "in_progress";
             // ToDo: replace this polling service with signalr service
-            setTimeout(() => this._loadPerformanceData(), 5000);
+            if(++this.pollingAttempts <= 3){
+              setTimeout(() => this._loadPerformanceData(), 5000);
+            }else{
+              this.teamPerformanceProgress = undefined;
+            }
           } else {
             this.teamPerformance = data;
             this.teamPerformanceProgress = undefined;

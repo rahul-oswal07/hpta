@@ -32,6 +32,10 @@ namespace EmailClient.Infrastructure
             {
                 return new EmailSender(templateService, appSettings.EmailClientConfig);
             });
+            services.AddSingleton<ILiquidTemplateService, LiquidTemplateService>(services =>
+            {
+                return new LiquidTemplateService(renderer);
+            });
         }
     }
 }

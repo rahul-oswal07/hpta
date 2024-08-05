@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Engagement Survey</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007BFF;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Hello {{ name }},</h2>
+        <p>As you all are aware, we had stopped the Employee Engagement survey at the beginning of this year. We have now decided to conduct the Employee Engagement Survey through a third party.</p>
+        <p>This survey is a vital tool for gauging employee satisfaction and gathering valuable feedback on how we can continue to improve our workplace.</p>
+        <p>Please take a few moments to complete the survey by clicking the link below:</p>
+        <p><a href="{{ survey_link }}" class="button">Take the Survey</a></p>
+        <p>Thank you for your time and feedback!</p>
+        <p>Best regards,<br>The Team</p>
+    </div>
+</body>
+</html>

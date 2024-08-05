@@ -10,10 +10,12 @@
     <PackageReference Include="AutoMapper" Version="13.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DevCentralClient\DevCentralClient.csproj" />
+    <ProjectReference Include="..\EmailClient\EmailClient.csproj" />
     <ProjectReference Include="..\HPTA.DTO\HPTA.DTO.csproj" />
     <ProjectReference Include="..\HPTA.Repositories\HPTA.Repositories.csproj" />
   </ItemGroup>

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HPTA.Api.Controllers;
 
 [ApiController]
-[Authorize]
+//[Authorize]
 public abstract class BaseController : Controller
 {
 }

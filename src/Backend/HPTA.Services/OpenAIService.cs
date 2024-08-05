@@ -30,9 +30,9 @@ public class OpenAIService : IOpenAIService
 
         foreach (var category in scores)
         {
-            prompt += $"\n{category.CategoryName}-[{string.Join(",", category.Scores.Select(s => $"{s.SubCategoryName} - {s.Score}"))}]";
+            prompt += $"\n{category.CategoryName}-[{string.Join(",", category.Scores.Select(s => $"{s.SubCategoryName} - {s.Score:N2}"))}]";
         }
-        
+
         prompt += "\n You need to provide detail explanation of the team is doing with respect to each categories in below JSON format:";
         prompt += "\n" + GetStringFromJSonFile();
 
@@ -64,6 +64,7 @@ public class OpenAIService : IOpenAIService
 
     private static string ReplaceHtmlTags(string input)
     {
-        return input.Replace("<br>", "\r\n").Replace("</br>", "\r\n");
+        var start = input.IndexOf('{');
+        return input[start..(input.LastIndexOf('}') + 1)].Replace("<br>", "\r\n").Replace("</br>", "\r\n");
     }
 }

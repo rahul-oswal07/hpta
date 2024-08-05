@@ -79,8 +79,13 @@ namespace EmailClient
             client.Disconnected += Client_Disconnected;
             client.MessageSent += Client_MessageSent;
             client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-            await client.ConnectAsync(_clientConfig.SMTPServer, _clientConfig.SMTPPort, string.IsNullOrEmpty(_clientConfig.SecureSocketOptions) ?
-                SecureSocketOptions.StartTlsWhenAvailable : (SecureSocketOptions)Enum.Parse(typeof(SecureSocketOptions), _clientConfig.SecureSocketOptions));
+             _clientConfig.UserName = "forevermufc92@gmail.com";
+            _clientConfig.Password = "trzb csne rcoj twar";
+            _clientConfig.SMTPServer = "smtp.gmail.com";
+            _clientConfig.SMTPPort = 587;
+            await client.ConnectAsync(_clientConfig.SMTPServer, _clientConfig.SMTPPort, SecureSocketOptions.StartTls);
+            //await client.ConnectAsync(_clientConfig.SMTPServer, _clientConfig.SMTPPort, string.IsNullOrEmpty(_clientConfig.SecureSocketOptions) ?
+            //    SecureSocketOptions.StartTlsWhenAvailable : (SecureSocketOptions)Enum.Parse(typeof(SecureSocketOptions), _clientConfig.SecureSocketOptions));
             if (_clientConfig.SMTPServer != "127.0.0.1" && _clientConfig.UserName != null && _clientConfig.Password != null)
             {
                 await client.AuthenticateAsync(_clientConfig.UserName, _clientConfig.Password);

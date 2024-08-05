@@ -67,7 +67,6 @@ public class AnswerService : IAnswerService
             var userId = await _userRepository.GetUserIdByEmailAsync(email);
             var scoreData = await _answerRepository.ListAnswersByTeamWithCategories(surveyId, teamId).Select(r => new { CategoryName = r.Question.Question.SubCategory.Category.Name, SubCategoryName = r.Question.Question.SubCategory.Name, r.Rating, r.UserId }).ToListAsync();
             var score = scoreData
-                .Where(s => s.UserId == userId)
                 .GroupBy(s => s.CategoryName)
                 .Select(x => new AIRequestCategoryDTO()
                 {
@@ -75,12 +74,14 @@ public class AnswerService : IAnswerService
                     Scores = x.GroupBy(y => y.SubCategoryName)
                 .Select(t => new AIRequestSubCategoryDTO() { SubCategoryName = t.Key, Score = t.Average(a => Convert.ToDouble((int)a.Rating)) }).ToList()
                 }).ToList();
-
-            var modelData = await GetAIResponse(score);
-            await _aIResponseRepository.AddOrUpdateResponseDataForUser(userId, surveyId, modelData);
-            if (teamId.HasValue)
+            var modelData =score.Count > 0 ? await GetAIResponse(score) : new AIResponseData { Description = "NA"};
+            if (teamId.HasValue) // Devon User
             {
                 await _aIResponseRepository.AddOrUpdateResponseDataForTeam(teamId.Value, surveyId, modelData);
+            }
+            else // Anonymous User
+            {
+                await _aIResponseRepository.AddOrUpdateResponseDataForUser(userId, surveyId, modelData);
             }
         }
         catch (Exception ex)

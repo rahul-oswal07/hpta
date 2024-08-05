@@ -1,4 +1,6 @@
-﻿using HPTA.Common.Configurations;
+﻿using EmailClient;
+using EmailClient.Contracts;
+using HPTA.Common.Configurations;
 using HPTA.Repositories.Contracts;
 using HPTA.Repositories.Infrastructure;
 using HPTA.Services.Contracts;
@@ -20,6 +22,7 @@ public static class ServiceDependencyRegistry
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<ITeamService, TeamService>();
         services.AddTransient<IOpenAIService, OpenAIService>();
+        services.AddTransient<IRabbitMQProducerService, RabbitMQProducerService>();
 
         services.AddSingleton<IHashingService, HashingService>((services) =>
         {
