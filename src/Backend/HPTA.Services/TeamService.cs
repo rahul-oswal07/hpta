@@ -20,6 +20,7 @@ public class TeamService : ITeamService
     private readonly IAIResponseRepository _aIResponseRepository;
     private readonly ISurveyRepository _surveyRepository;
     private readonly IUserTeamRepository _userTeamRepository;
+    private readonly IAnswerRepository answerRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<TeamService> Logger;
 
@@ -27,6 +28,7 @@ public class TeamService : ITeamService
 IAIResponseRepository aIResponseRepository,
 ISurveyRepository surveyRepository,
 IUserTeamRepository userTeamRepository,
+IAnswerRepository answerRepository,
 ILogger<TeamService> logger)
     {
         _teamRepository = teamRepository;
@@ -37,6 +39,7 @@ ILogger<TeamService> logger)
         _aIResponseRepository = aIResponseRepository;
         _surveyRepository = surveyRepository;
         this._userTeamRepository = userTeamRepository;
+        this.answerRepository = answerRepository;
         Logger = logger;
     }
 
@@ -160,28 +163,25 @@ ILogger<TeamService> logger)
         {
             throw new Exception("Invalid team or the user does not have access to the team.");
         }
+
         foreach (var surveyId in chartDataRequest.SurveyId)
         {
             if (teamId.HasValue) // Devon user
             {
-                if (!string.IsNullOrWhiteSpace(chartDataRequest.Email))
-                {
-                    var userPerformance = await _aIResponseRepository.GetResponseDataForUser(chartDataRequest.Email, surveyId);
-                    if (userPerformance != null)
-                        result.Add(surveyId, _mapper.Map<TeamPerformanceDTO>(userPerformance));
-                }
-                else
-                {
-                    var teamPerformance = await _aIResponseRepository.GetResponseDataForTeam(teamId.Value, surveyId);
-                    if (teamPerformance != null)
-                        result.Add(surveyId, _mapper.Map<TeamPerformanceDTO>(teamPerformance));
-                }
+                var teamPerformance = await _aIResponseRepository.GetResponseDataForTeam(teamId.Value, surveyId);
+                var lastUpdatedDateTime = await answerRepository.GetLastUpdatedDateTime(surveyId, teamId, null);
+                var mappedTeamPerformance = teamPerformance == null ? new TeamPerformanceDTO() : _mapper.Map<TeamPerformanceDTO>(teamPerformance);
+                mappedTeamPerformance.AssessmentDateTime = lastUpdatedDateTime;
+                result.Add(surveyId, mappedTeamPerformance);
             }
             else // Anonymous user
             {
                 var userPerformance = await _aIResponseRepository.GetResponseDataForUser(email, surveyId);
-                if (userPerformance != null)
-                    result.Add(surveyId, _mapper.Map<TeamPerformanceDTO>(userPerformance));
+                var lastUpdatedDateTime = await answerRepository.GetLastUpdatedDateTime(surveyId, teamId, null);
+                var mappedUserPerformance = userPerformance == null ? new TeamPerformanceDTO() : _mapper.Map<TeamPerformanceDTO>(userPerformance);
+                mappedUserPerformance.AssessmentDateTime = lastUpdatedDateTime;
+                result.Add(surveyId, mappedUserPerformance);
+
             }
         }
         return result;

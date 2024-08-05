@@ -43,16 +43,16 @@ public class TeamController : BaseController
     [HttpPost("performance/{teamId?}")]
     public async Task<ActionResult> GetPerformanceData(int? teamId, ChartDataRequestModel chartDataRequest)
     {
-        
-        if (chartDataRequest.SurveyId.Any(s => AITaskManager.IsJobRunning(s, teamId, chartDataRequest.Email)))
-        {
-            return Ok(new { Message= "in_progress" });
-        }
+
         var result = await _teamService.GetPerformanceData(teamId, chartDataRequest);
+        if (chartDataRequest.SurveyId.Any(s => AITaskManager.IsJobRunning(s, teamId)))
+        {
+            return Ok(new { Message = "in_progress" });
+        }
         bool inProgress = false;
         foreach (var item in chartDataRequest.SurveyId)
         {
-            if (!result.ContainsKey(item) || result[item] == null)
+            if (!result.TryGetValue(item, out TeamPerformanceDTO value) || value == null || (value.AssessmentDateTime.HasValue && value.Description == null))
             {
                 if (string.IsNullOrEmpty(chartDataRequest.Email))
                     chartDataRequest.Email = identityService.GetEmail();
