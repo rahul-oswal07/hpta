@@ -10,34 +10,34 @@ namespace RabbitMQConsumer
 {
     public class Worker : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
+        private readonly ILogger<Worker> _logger;   
         private IConnection _connection;
-        private IModel _channel;
+        private IChannel _channel;
         private readonly IEmailSender _emailService;
 
         public Worker(ILogger<Worker> logger ,IEmailSender emailService)
         {
             _logger = logger;
             _emailService = emailService;
-            InitializeRabbitMQ();
+             InitializeRabbitMQ().GetAwaiter().GetResult();
         }
 
-        private void InitializeRabbitMQ()
+        private async Task InitializeRabbitMQ()
         {
             var factory = new ConnectionFactory { HostName = "localhost" };
-            _connection = factory.CreateConnection();
-            _channel = _connection.CreateModel();
+            _connection = await factory.CreateConnectionAsync();
+            _channel = await _connection.CreateChannelAsync();
 
-            _channel.ExchangeDeclare(exchange: "EmailExchange", type: ExchangeType.Direct);
-            _channel.QueueDeclare(queue: "EmailQueue", durable: true, exclusive: false, autoDelete: false, arguments: null);
-            _channel.QueueBind(queue: "EmailQueue", exchange: "EmailExchange", routingKey: "email_queue");
+          await _channel.ExchangeDeclareAsync(exchange: "EmailExchange", type: ExchangeType.Direct);
+            await _channel.QueueDeclareAsync(queue: "EmailQueue", durable: true, exclusive: false, autoDelete: false, arguments: null);
+            await _channel.QueueBindAsync(queue: "EmailQueue", exchange: "EmailExchange", routingKey: "email_queue");
 
             _logger.LogInformation("RabbitMQ connection and channel initialized.");
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var consumer = new EventingBasicConsumer(_channel);
+            var consumer = new AsyncEventingBasicConsumer(_channel);
             consumer.Received += async (model, ea) =>
             {
                 var body = ea.Body.ToArray();
@@ -51,19 +51,19 @@ namespace RabbitMQConsumer
                     _logger.LogInformation($"Received message: {message}");
 
                     // Acknowledge the message
-                    _channel.BasicAck(ea.DeliveryTag, false);
+                    _channel.BasicAckAsync(ea.DeliveryTag, false);
                 }
             };
 
-            _channel.BasicConsume(queue: "EmailQueue", autoAck: false, consumer: consumer);
+            _channel.BasicConsumeAsync(queue: "EmailQueue", autoAck: false, consumer: consumer);
 
             return Task.CompletedTask;
         }
 
         public override void Dispose()
         {
-            _channel?.Close();
-            _connection?.Close();
+            _channel?.CloseAsync();
+            _connection?.CloseAsync();
             base.Dispose();
         }
     }
