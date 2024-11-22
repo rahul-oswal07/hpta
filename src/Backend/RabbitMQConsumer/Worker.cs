@@ -28,9 +28,22 @@ namespace RabbitMQConsumer
             _connection = await factory.CreateConnectionAsync();
             _channel = await _connection.CreateChannelAsync();
 
-          await _channel.ExchangeDeclareAsync(exchange: "EmailExchange", type: ExchangeType.Direct);
-            await _channel.QueueDeclareAsync(queue: "EmailQueue", durable: true, exclusive: false, autoDelete: false, arguments: null);
+            //Map<String, Object> args = new HashMap<String, Object>();
+            //args.put("x-dead-letter-exchange", "some.exchange.name");
+
+            var arguments = new Dictionary<string, object?>
+{
+    { "x-dead-letter-exchange", "dlx_exchange" },
+    { "x-dead-letter-routing-key", "email.failed" }
+};
+
+            await _channel.ExchangeDeclareAsync(exchange: "EmailExchange", type: ExchangeType.Direct);          
+            await _channel.QueueDeclareAsync(queue: "EmailQueue", durable: true, exclusive: false, autoDelete: false, arguments:arguments);
             await _channel.QueueBindAsync(queue: "EmailQueue", exchange: "EmailExchange", routingKey: "email_queue");
+
+            await _channel.ExchangeDeclareAsync(exchange: "dlx_exchange", type: ExchangeType.Direct);
+            await _channel.QueueDeclareAsync(queue: "dlx_queue", durable: true, exclusive: false, autoDelete: false, arguments: null);
+            await _channel.QueueBindAsync(queue: "dlx_queue", exchange: "dlx_exchange", routingKey: "email.failed");
 
             _logger.LogInformation("RabbitMQ connection and channel initialized.");
         }
@@ -43,7 +56,7 @@ namespace RabbitMQConsumer
                 var body = ea.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 var emailData = JsonConvert.DeserializeObject<EmailNotificationDTO>(message);
-               var result =  await _emailService.SendAsync("HPTA Survey", emailData?.Body, new EmailRecipient[] { new EmailRecipient() { Email = emailData.Email } });
+               var result =  await _emailService.SendAsync("HPTA Survey", emailData?.Body, new EmailRecipient[] { new EmailRecipient() { Email = "a.kardevon.nl" } });
 
                 if (result)
                 {
@@ -51,7 +64,12 @@ namespace RabbitMQConsumer
                     _logger.LogInformation($"Received message: {message}");
 
                     // Acknowledge the message
-                    _channel.BasicAckAsync(ea.DeliveryTag, false);
+                   await  _channel.BasicAckAsync(ea.DeliveryTag, false);
+                }
+                else
+                {
+                    await _channel.BasicNackAsync(ea.DeliveryTag, false,false);
+
                 }
             };
 

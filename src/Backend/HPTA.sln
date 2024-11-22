@@ -57,7 +57,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{BE92
 		..\..\Scripts\UDF.sql = ..\..\Scripts\UDF.sql
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitMQConsumer", "RabbitMQConsumer\RabbitMQConsumer.csproj", "{BAC55D79-07AE-4C38-977C-A195FD55C019}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMQConsumer", "RabbitMQConsumer\RabbitMQConsumer.csproj", "{BAC55D79-07AE-4C38-977C-A195FD55C019}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

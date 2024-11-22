@@ -73,28 +73,36 @@ namespace EmailClient
 
         private async Task<bool> SendAsync(MimeMessage message)
         {
-            using var client = new SmtpClient();
-            client.Authenticated += Client_Authenticated;
-            client.Connected += Client_Connected;
-            client.Disconnected += Client_Disconnected;
-            client.MessageSent += Client_MessageSent;
-            client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-             _clientConfig.UserName = "forevermufc92@gmail.com";
-            _clientConfig.Password = "trzb csne rcoj twar";
-            _clientConfig.SMTPServer = "smtp.gmail.com";
-            _clientConfig.SMTPPort = 587;
-            await client.ConnectAsync(_clientConfig.SMTPServer, _clientConfig.SMTPPort, SecureSocketOptions.StartTls);
-            //await client.ConnectAsync(_clientConfig.SMTPServer, _clientConfig.SMTPPort, string.IsNullOrEmpty(_clientConfig.SecureSocketOptions) ?
-            //    SecureSocketOptions.StartTlsWhenAvailable : (SecureSocketOptions)Enum.Parse(typeof(SecureSocketOptions), _clientConfig.SecureSocketOptions));
-            if (_clientConfig.SMTPServer != "127.0.0.1" && _clientConfig.UserName != null && _clientConfig.Password != null)
+            try
             {
-                await client.AuthenticateAsync(_clientConfig.UserName, _clientConfig.Password);
+                using var client = new SmtpClient();
+                client.Authenticated += Client_Authenticated;
+                client.Connected += Client_Connected;
+                client.Disconnected += Client_Disconnected;
+                client.MessageSent += Client_MessageSent;
+                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+                _clientConfig.UserName = "forevermufc92@gmail.com";
+                _clientConfig.Password = "trzb csne rcoj twar";
+                _clientConfig.SMTPServer = "smtp.gmail.com";
+                _clientConfig.SMTPPort = 587;
+                await client.ConnectAsync(_clientConfig.SMTPServer, _clientConfig.SMTPPort, SecureSocketOptions.StartTls);
+                //await client.ConnectAsync(_clientConfig.SMTPServer, _clientConfig.SMTPPort, string.IsNullOrEmpty(_clientConfig.SecureSocketOptions) ?
+                //    SecureSocketOptions.StartTlsWhenAvailable : (SecureSocketOptions)Enum.Parse(typeof(SecureSocketOptions), _clientConfig.SecureSocketOptions));
+                if (_clientConfig.SMTPServer != "127.0.0.1" && _clientConfig.UserName != null && _clientConfig.Password != null)
+                {
+                    await client.AuthenticateAsync(_clientConfig.UserName, _clientConfig.Password);
+                }
+
+                var result = await client.SendAsync(message);
+
+                client.Disconnect(true);
+                return true;
             }
-
-            _ = await client.SendAsync(message);
-
-            client.Disconnect(true);
-            return true;
+            catch (Exception ex)
+            {
+                
+                return false;
+            }
         }
 
         private void Client_MessageSent(object sender, MailKit.MessageSentEventArgs e)

@@ -12,8 +12,6 @@ namespace HPTA.Api.Controllers
         [HttpPost("send")]
         public async Task<IActionResult> SendEmail()
         {
-            //var emailData = new EmailNotificationDTO { Email = request.Email, Name = request.Name , SurveyLink = "https://synergy.prowareness.nl/synergy/" };
-            //await _Ra.SendAsync(emailData, "HPTA Survey", "Notification", [new EmailRecipient(request.Email, request.Name)]);
            await  _emailService.SendMessage();
             return Ok();
         }
