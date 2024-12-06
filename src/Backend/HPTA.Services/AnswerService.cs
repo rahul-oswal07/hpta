@@ -74,7 +74,7 @@ public class AnswerService : IAnswerService
                     Scores = x.GroupBy(y => y.SubCategoryName)
                 .Select(t => new AIRequestSubCategoryDTO() { SubCategoryName = t.Key, Score = t.Average(a => Convert.ToDouble((int)a.Rating)) }).ToList()
                 }).ToList();
-            var modelData =score.Count > 0 ? await GetAIResponse(score) : new AIResponseData { Description = "NA"};
+            var modelData = score.Count > 0 ? await GetAIResponse(score) : new AIResponseData { Description = "NA" };
             if (teamId.HasValue) // Devon User
             {
                 await _aIResponseRepository.AddOrUpdateResponseDataForTeam(teamId.Value, surveyId, modelData);
@@ -92,7 +92,14 @@ public class AnswerService : IAnswerService
 
     private async Task<AIResponseData> GetAIResponse(IEnumerable<AIRequestCategoryDTO> score)
     {
-        var result = JsonSerializer.Deserialize<TeamPerformanceDTO>(await _openAIService.GetPromptResponse(score), new JsonSerializerOptions { PropertyNameCaseInsensitive = true, NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString });
+
+        var jsonSerializerOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
+        };
+        var response = await _openAIService.GetPromptResponse(score);
+        var result = JsonSerializer.Deserialize<TeamPerformanceDTO>(response, jsonSerializerOptions);
         var modelData = _mapper.Map<AIResponseData>(result);
         return modelData;
     }

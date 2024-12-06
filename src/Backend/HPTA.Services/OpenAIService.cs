@@ -1,8 +1,14 @@
-﻿using HPTA.Common.Configurations;
+﻿using Azure.AI.OpenAI;
+using Azure;
+using HPTA.Common.Configurations;
 using HPTA.DTO;
 using HPTA.Services.Contracts;
 using Newtonsoft.Json;
+using OpenAI.Chat;
 using System.Text;
+using System.ClientModel;
+using Azure.Identity;
+using static System.Environment;
 
 namespace HPTA.Services;
 
@@ -17,8 +23,7 @@ public class OpenAIService : IOpenAIService
     public async Task<string> GetPromptResponse(IEnumerable<AIRequestCategoryDTO> scores)
     {
         var prompt = GetPrompt(scores);
-        string json = JsonConvert.SerializeObject(new PromptModel { UserInput = prompt });
-        string aiResponse = await GetAIResponse(json);
+        string aiResponse = await GetAIResponse(prompt);
         string response = ReplaceHtmlTags(aiResponse);
 
         return response;
@@ -40,16 +45,32 @@ public class OpenAIService : IOpenAIService
     }
 
 
-    private async Task<string> GetAIResponse(string json)
+    private async Task<string> GetAIResponse(string prompt)
     {
         try
         {
-            using var client = new HttpClient();
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(_connectionStrings.OpenAIUrl, content);
-            return await response.Content.ReadAsStringAsync();
+            string endpoint = "https://devongpt.openai.azure.com/"; // TO:DO - Move this to configuration
+            string key = "3b15a30215b34919bc0c298a82c0ea57";        // TO:DO move this to configularation  
+            ApiKeyCredential credential = new ApiKeyCredential(key);
+            AzureOpenAIClient azureClient = new(new Uri(endpoint), credential);
+            ChatClient chatClient = azureClient.GetChatClient("DevOnGPT");
+
+            ChatCompletion completion = await chatClient.CompleteChatAsync(
+              new ChatMessage[] {
+              new SystemChatMessage(prompt),
+              },
+              new ChatCompletionOptions()
+              {
+                  MaxOutputTokenCount = 800,
+                  Temperature = (float)0.7,
+                  FrequencyPenalty = (float)0,
+                  PresencePenalty = (float)0,
+              }
+            );
+
+            return completion.Content[0].Text;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             return null;
         }
